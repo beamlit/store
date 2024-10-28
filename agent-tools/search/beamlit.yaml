@@ -4,5 +4,5 @@ description: A search engine optimized for comprehensive, accurate, and trusted 
 parameters:
   - name: query
     type: string
-    description: Query to search the web with.
+    description: Query to search the web with
     required: true
