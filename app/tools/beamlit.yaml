@@ -1,0 +1,8 @@
+name: math
+type: tool
+description: A tool for performing mathematical calculations.
+parameters:
+  - name: expression
+    type: string
+    description: The mathematical expression to evaluate.
+    required: true

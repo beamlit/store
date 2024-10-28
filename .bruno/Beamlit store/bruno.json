@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Beamlit store",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

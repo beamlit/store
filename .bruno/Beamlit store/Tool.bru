@@ -1,0 +1,17 @@
+meta {
+  name: Tool
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "query": "2/(10x4)"
+  }
+}
