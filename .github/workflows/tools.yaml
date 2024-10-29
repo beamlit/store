@@ -35,13 +35,13 @@ jobs:
             const all_changed_files = ${{ steps.diff.outputs.all_changed_files }}
             const toolSet = new Set(all_changed_files.filter(file => file.includes("agent-tools/")).map(file => file.split("/")[1]))
             const uniqueToolsArray = [...toolSet]
-            console.log(uniqueToolsArray);
-            return { tools: uniqueToolsArray }
+
+            return uniqueToolsArray.length ? { tools: uniqueToolsArray } : null
     outputs:
       matrix: ${{ steps.generator.outputs.result }}
 
   build-tool:
-    if: ${{ fromJson(needs.gen-matrix.outputs.matrix).tools.length > 0 }}
+    if: ${{ fromJson(needs.gen-matrix.outputs.matrix) }}
     needs: gen-matrix
     name: build
     runs-on: ubuntu-latest
@@ -80,7 +80,7 @@ jobs:
             TOOL=${{ matrix.tools }}
 
   push-tool:
-    if: ${{ fromJson(needs.gen-matrix.outputs.matrix).tools.length > 0 }}
+    if: ${{ fromJson(needs.gen-matrix.outputs.matrix) }}
     needs:
       - build-tool
       - gen-matrix
