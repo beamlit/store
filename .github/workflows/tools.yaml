@@ -32,6 +32,15 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const method = "${{ github.event_name }}"
+            if (method === "workflow_dispatch") {
+              const fs = require('fs');
+              const path = require('path');
+              const toolsPath = path.join(process.cwd(), 'agent-tools');
+              const tools = fs.readdirSync(toolsPath)
+                            .filter(file => fs.statSync(path.join(toolsPath, file)).isDirectory());
+              return { tools };
+            }
             const all_changed_files = ${{ steps.diff.outputs.all_changed_files }}
             const toolSet = new Set(all_changed_files.filter(file => file.includes("agent-tools/")).map(file => file.split("/")[1]))
             const uniqueToolsArray = [...toolSet]
@@ -95,7 +104,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "20.x"
-      - run: npm install js-yaml node-fetch
+      - run: npm install js-yaml node-fetch@2
       - name: Push tool
         uses: actions/github-script@v7
         env:
