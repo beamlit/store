@@ -1,7 +1,7 @@
 ARGS:= $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 run-tool-dev:
-	uv run fastapi dev --port 1338
+	TOOL=$(ARGS) uv run fastapi dev --port 1338
 
 run-tool:
 	cp -r agent-tools/$(ARGS)/* app/tools/

@@ -20,8 +20,11 @@ async def lifespan(app: FastAPI):
     if RUN_MODE == 'dev':
         import shutil
 
+        if not os.path.exists("app/tools"):
+            os.makedirs("app/tools")
+        tool = os.getenv("TOOL", "math")
         cwd = os.getcwd()
-        source_folder = f"{cwd}/agent-tools/math"
+        source_folder = f"{cwd}/agent-tools/{tool}"
         destination_folder = f"{cwd}/app/tools"
         for file in os.listdir(source_folder):
             if file.endswith(".py") and (not os.path.exists(f"{destination_folder}/{file}") or not filecmp.cmp(f"{source_folder}/{file}", f"{destination_folder}/{file}")):
