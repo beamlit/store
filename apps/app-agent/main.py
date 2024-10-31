@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
         source_folder = f"{cwd}/agents/{agent}"
         destination_folder = f"{cwd}/apps/app-agent/agents"
         for file in os.listdir(source_folder):
-            if file.endswith(".py") and (not os.path.exists(f"{destination_folder}/{file}") or not filecmp.cmp(f"{source_folder}/{file}", f"{destination_folder}/{file}")):
+            if (file.endswith(".py") or file.endswith(".yaml")) and (not os.path.exists(f"{destination_folder}/{file}") or not filecmp.cmp(f"{source_folder}/{file}", f"{destination_folder}/{file}")):
                 shutil.copy(f"{source_folder}/{file}", f"{destination_folder}/{file}")
 
         bl_generate_tools = importlib.import_module(".agents.bl_generate_tools", package=PACKAGE)
