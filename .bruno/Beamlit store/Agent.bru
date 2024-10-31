@@ -1,0 +1,22 @@
+meta {
+  name: Agent
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content":  "whats the weather in San Francisco?"
+      }   
+    ]
+  }
+}

@@ -9,27 +9,35 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 RUN_MODE = 'prod' if sys.argv[1] == 'run' else 'dev'
+PACKAGE = os.getenv("PACKAGE", "app")
 
-main_tools = None
+main_agent = None
 if RUN_MODE == 'prod':
-    main_tools = importlib.import_module(".tools", package="app")
+    bl_generate_tools = importlib.import_module(".agents.bl_generate_tools", package=PACKAGE)
+    bl_generate_tools.run(f"{"/".join(bl_generate_tools.__file__.split("/")[0:-1])}/beamlit.py")
+    main_agent = importlib.import_module(".agents", package=PACKAGE)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global main_tools
+    global main_agent
     if RUN_MODE == 'dev':
         import shutil
 
-        if not os.path.exists("app/tools"):
-            os.makedirs("app/tools")
-        tool = os.getenv("TOOL", "math")
+        if not os.path.exists("apps/app-agent/agents"):
+            os.makedirs("apps/app-agent/agents")
+        agent = os.getenv("AGENT", "langchain-chat-completions") or "langchain-chat-completions"
         cwd = os.getcwd()
-        source_folder = f"{cwd}/agent-tools/{tool}"
-        destination_folder = f"{cwd}/app/tools"
+        source_folder = f"{cwd}/agents/{agent}"
+        destination_folder = f"{cwd}/apps/app-agent/agents"
         for file in os.listdir(source_folder):
             if file.endswith(".py") and (not os.path.exists(f"{destination_folder}/{file}") or not filecmp.cmp(f"{source_folder}/{file}", f"{destination_folder}/{file}")):
                 shutil.copy(f"{source_folder}/{file}", f"{destination_folder}/{file}")
-        main_tools = importlib.import_module(".tools", package="app")
+
+        bl_generate_tools = importlib.import_module(".agents.bl_generate_tools", package=PACKAGE)
+        destination = f"{"/".join(bl_generate_tools.__file__.split("/")[0:-1])}/beamlit.py"
+        if not os.path.exists(destination):
+            bl_generate_tools.run(f"{"/".join(bl_generate_tools.__file__.split("/")[0:-1])}/beamlit.py")
+        main_agent = importlib.import_module(".agents.main", package=PACKAGE)
     yield
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
@@ -41,9 +49,7 @@ async def health():
 @app.post("/")
 async def root(request: Request):
     try:
-        body = await request.json()
-        result = await main_tools.main(body)
-        return {"result": result}
+        return JSONResponse(await main_agent.main(request))
     except ValueError as e:
         content = {"error": str(e)}
         if RUN_MODE == 'dev':

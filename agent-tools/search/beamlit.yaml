@@ -6,3 +6,9 @@ parameters:
     type: string
     description: Query to search the web with.
     required: true
+configuration:
+  tavily_api_key:
+    type: string
+    description: Tavily API key.
+    required: true
+    mapping: TAVILY_API_KEY
