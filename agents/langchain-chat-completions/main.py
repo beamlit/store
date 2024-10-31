@@ -20,8 +20,9 @@ async def main(request: Request):
     config = {"configurable": {"thread_id": sub}}
     response = ""
     body = await request.json()
+    all_responses = []
     for chunk in agent_executor.stream(body, config):
-        print(chunk["messages"])
+        all_responses.append(chunk)
         if "output" in chunk:
             response = chunk["output"]
     if chain:
@@ -29,8 +30,7 @@ async def main(request: Request):
         llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
         agent_two = create_json_chat_agent(llm, tools_two, prompt)
         agent_two_executor = AgentExecutor(agent=agent_two, tools=tools_two)
-        for chunk in agent_two_executor.stream({"input": body["input"] + "\n" + response}, config):
-            print(chunk["messages"])
+        for chunk in agent_two_executor.stream({"input": all_responses}, config):
             if "output" in chunk:
                 response = chunk["output"]
     return response

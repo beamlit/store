@@ -1,8 +1,0 @@
-name: math
-type: tool
-description: A tool for performing mathematical calculations.
-parameters:
-  - name: query
-    type: string
-    description: The expression to evaluate.
-    required: true

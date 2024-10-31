@@ -6,8 +6,9 @@ __pycache__/
 node_modules
 package.json
 package-lock.json
-app/tools
 tmp
+apps/app-tool/tools
+apps/app-agent/agents
 # C extensions
 *.so
 

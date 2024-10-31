@@ -1,9 +1,0 @@
-[project]
-name = "store"
-version = "0.1.0"
-description = "A tool for performing mathematical calculations."
-readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "fastapi[standard]>=0.115.4",
-]
