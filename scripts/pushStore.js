@@ -8,15 +8,15 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const IMAGE = process.env.IMAGE;
 
-const parseYaml = async (function) => {
-  const yamlPath = path.join("functions", function, "beamlit.yaml");
+const parseYaml = async (func) => {
+  const yamlPath = path.join("functions", func, "beamlit.yaml");
   const yamlContent = await fs.readFile(yamlPath, "utf8");
   const parsedYaml = yaml.load(yamlContent);
   return parsedYaml;
 };
 
-const pushStore = async (function) => {
-  const content = await parseYaml(function);
+const pushStore = async (func) => {
+  const content = await parseYaml(func);
   content.image = IMAGE;
   const response = await fetch(
     `${STORE_URL}/admin/store/functions/${content.name}`,
@@ -34,7 +34,7 @@ const pushStore = async (function) => {
   );
   if (response.status !== 200) {
     throw new Error(
-      `Failed to push function ${function} to store, cause ${await response.text()}`
+      `Failed to push function ${func} to store, cause ${await response.text()}`
     );
   }
 };
