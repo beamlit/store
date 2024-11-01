@@ -3,9 +3,6 @@ type: agent
 compatible_llms:
   - openai
 llm: openai
-tools:
-  - search-zag
-  - math-zag
 configuration:
   openai_api_key:
     type: string

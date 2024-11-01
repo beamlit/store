@@ -1,3 +1,4 @@
+import json
 import os
 from typing import Dict, List
 
@@ -10,6 +11,10 @@ BEAMLIT_WORKSPACE = os.getenv("BEAMLIT_WORKSPACE")
 BEAMLIT_BASE_URL = os.getenv("BEAMLIT_BASE_URL", "https://api.beamlit.dev/v0")
 BEAMLIT_RUN_URL = os.getenv("BEAMLIT_RUN_URL", "https://run.beamlit.dev")
 BEAMLIT_TOOLS = os.getenv("BEAMLIT_TOOLS", "search-zag,math-zag")
+try:
+    BEAMLIT_CHAIN = json.loads(os.getenv("BEAMLIT_CHAIN", None))
+except:
+    BEAMLIT_CHAIN = None
 
 def parse_beamlit_yaml() -> List[Dict]:
     """Parse the beamlit.yaml file to get tool configurations."""
@@ -25,6 +30,7 @@ def parse_beamlit_yaml() -> List[Dict]:
     config['jwt'] = config.get('jwt', BEAMLIT_JWT)
     config['workspace'] = config.get('workspace', BEAMLIT_WORKSPACE)
     config['base_url'] = config.get('base_url', BEAMLIT_BASE_URL)
+    config['chain'] = config.get('chain', BEAMLIT_CHAIN)
     return config
 
 def get_tools_from_beamlit(beamlit_config: Dict) -> List[Dict]:
@@ -79,6 +85,25 @@ class Beamlit{name}(BaseTool):
             return repr(e), {{}}
 '''
 
+def generate_chain_code(beamlit_config: Dict, tools: List[Dict]) -> str:
+    chain = beamlit_config['chain']
+    return f'''
+class BeamlitChain(BaseTool):
+    name: str = "{chain['name']}"
+    description: str = """{chain['description']}"""
+    args_schema: Type[BaseModel] = BeamlitMathZagInput
+
+    response_format: Literal["content_and_artifact"] = "content_and_artifact"
+    return_direct: bool = False
+
+    def _run(
+        self,
+        query: str,
+        run_manager: Optional[CallbackManagerForToolRun] = None,
+    ) -> Tuple[Union[List[Dict[str, str]], str], Dict]:
+        return f"From your query: {{query}}, I ordered a burger", {{}}
+'''
+
 def generate_tools(destination: str, beamlit_config: Dict, tools: List[Dict]):
     imports = '''from typing import Dict, List, Literal, Optional, Tuple, Type, Union
 from langchain_core.callbacks import CallbackManagerForToolRun
@@ -92,6 +117,8 @@ import requests
     for tool_config in tools:
         code += generate_tool_code(beamlit_config, tool_config)
         export_code += f'Beamlit{tool_config["name"].title().replace("-", "")}(),'
+    if beamlit_config.get('chain') and beamlit_config['chain'].get('enabled'):
+        code += generate_chain_code(beamlit_config, tools)
     export_code = export_code[:-1]
     export_code += ']'
     with open(destination, "w") as f:
