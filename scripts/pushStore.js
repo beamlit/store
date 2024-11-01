@@ -8,18 +8,18 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const IMAGE = process.env.IMAGE;
 
-const parseYaml = async (tool) => {
-  const yamlPath = path.join("agent-tools", tool, "beamlit.yaml");
+const parseYaml = async (function) => {
+  const yamlPath = path.join("functions", function, "beamlit.yaml");
   const yamlContent = await fs.readFile(yamlPath, "utf8");
   const parsedYaml = yaml.load(yamlContent);
   return parsedYaml;
 };
 
-const pushStore = async (tool) => {
-  const content = await parseYaml(tool);
+const pushStore = async (function) => {
+  const content = await parseYaml(function);
   content.image = IMAGE;
   const response = await fetch(
-    `${STORE_URL}/admin/store/agent-tools/${content.name}`,
+    `${STORE_URL}/admin/store/functions/${content.name}`,
     {
       method: "PUT",
       body: JSON.stringify(content),
@@ -34,7 +34,7 @@ const pushStore = async (tool) => {
   );
   if (response.status !== 200) {
     throw new Error(
-      `Failed to push tool ${tool} to store, cause ${await response.text()}`
+      `Failed to push function ${function} to store, cause ${await response.text()}`
     );
   }
 };

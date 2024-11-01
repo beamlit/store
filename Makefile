@@ -1,17 +1,17 @@
 ARGS:= $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-run-tool-dev:
-	TOOL=$(ARGS) PACKAGE=apps.app-tool uv run fastapi dev --port 1338 apps/app-tool
+run-function-dev:
+	TOOL=$(ARGS) PACKAGE=apps.app-function uv run fastapi dev --port 1338 apps/app-function
 
-run-tool:
-	cp -r agent-tools/$(ARGS)/* apps/app-tool/tools/
-	PACKAGE=apps.app-tool uv run fastapi run --port 1338 apps/app-tool
+run-function:
+	cp -r functions/$(ARGS)/* apps/app-function/functions/
+	PACKAGE=apps.app-function uv run fastapi run --port 1338 apps/app-function
 
-build-tool:
-	docker build --build-arg TOOL=$(ARGS) -t agent-tools:$(ARGS) -f agent-tools/Dockerfile .
+build-function:
+	docker build --build-arg TOOL=$(ARGS) -t functions:$(ARGS) -f functions/Dockerfile .
 
-run-docker-tool:
-	docker run --rm -p 1338:80 agent-tools:$(ARGS)
+run-docker-function:
+	docker run --rm -p 1338:80 functions:$(ARGS)
 
 run-agent-dev:
 	AGENT=$(ARGS) PACKAGE=apps.app-agent uv run fastapi dev --port 1338 apps/app-agent
@@ -29,4 +29,4 @@ run-docker-agent:
 %:
 	@:
 
-.PHONY: run-tool run-tool-dev build-tool
+.PHONY: run-function run-function-dev build-function

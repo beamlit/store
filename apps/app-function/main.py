@@ -11,26 +11,26 @@ from fastapi.responses import JSONResponse
 RUN_MODE = 'prod' if sys.argv[1] == 'run' else 'dev'
 PACKAGE = os.getenv("PACKAGE", "app")
 
-main_tool = None
+main_function = None
 if RUN_MODE == 'prod':
-    main_tool = importlib.import_module(".tools", package=PACKAGE)
+    main_function = importlib.import_module(".functions", package=PACKAGE)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global main_tool
+    global main_function
     if RUN_MODE == 'dev':
         import shutil
 
-        if not os.path.exists("apps/app-tool/tools"):
-            os.makedirs("apps/app-tool/tools")
-        tool = os.getenv("TOOL", "math")
+        if not os.path.exists("apps/app-function/functions"):
+            os.makedirs("apps/app-function/functions")
+        function = os.getenv("TOOL", "math")
         cwd = os.getcwd()
-        source_folder = f"{cwd}/agent-tools/{tool}"
-        destination_folder = f"{cwd}/apps/app-tool/tools"
+        source_folder = f"{cwd}/functions/{function}"
+        destination_folder = f"{cwd}/apps/app-function/functions"
         for file in os.listdir(source_folder):
             if file.endswith(".py") and (not os.path.exists(f"{destination_folder}/{file}") or not filecmp.cmp(f"{source_folder}/{file}", f"{destination_folder}/{file}")):
                 shutil.copy(f"{source_folder}/{file}", f"{destination_folder}/{file}")
-        main_tool = importlib.import_module(".tools", package=PACKAGE)
+        main_function = importlib.import_module(".functions", package=PACKAGE)
     yield
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
@@ -43,7 +43,7 @@ async def health():
 async def root(request: Request):
     try:
         body = await request.json()
-        result = await main_tool.main(body)
+        result = await main_function.main(body)
         return {"result": result}
     except ValueError as e:
         content = {"error": str(e)}

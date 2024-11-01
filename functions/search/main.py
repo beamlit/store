@@ -1,8 +1,8 @@
 import os
 from typing import Any
 
-from langchain_community.tools.tavily_search.tool import (TavilyInput,
-                                                          TavilySearchResults)
+from langchain_community.functions.tavily_search.function import (
+    TavilyInput, TavilySearchResults)
 
 
 async def main(body: Any):

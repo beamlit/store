@@ -17,7 +17,7 @@ except:
     BEAMLIT_CHAIN = None
 
 def parse_beamlit_yaml() -> List[Dict]:
-    """Parse the beamlit.yaml file to get tool configurations."""
+    """Parse the beamlit.yaml file to get function configurations."""
     yaml_path = os.path.join(os.path.dirname(__file__), "beamlit.yaml")
 
     if not os.path.exists(yaml_path):
@@ -25,7 +25,7 @@ def parse_beamlit_yaml() -> List[Dict]:
 
     with open(yaml_path, "r") as f:
         config = yaml.safe_load(f)
-    config['tools'] = config.get('tools', BEAMLIT_TOOLS.split(','))
+    config['functions'] = config.get('functions', BEAMLIT_TOOLS.split(','))
     config['api_key'] = config.get('api_key', BEAMLIT_API_KEY)
     config['jwt'] = config.get('jwt', BEAMLIT_JWT)
     config['workspace'] = config.get('workspace', BEAMLIT_WORKSPACE)
@@ -33,25 +33,25 @@ def parse_beamlit_yaml() -> List[Dict]:
     config['chain'] = config.get('chain', BEAMLIT_CHAIN)
     return config
 
-def get_tools_from_beamlit(beamlit_config: Dict) -> List[Dict]:
+def get_functions_from_beamlit(beamlit_config: Dict) -> List[Dict]:
     headers = {"Api-Key": beamlit_config['api_key'], "X-Beamlit-Workspace": beamlit_config['workspace']}
-    response = requests.get(f"{beamlit_config['base_url']}/tools", headers=headers)
+    response = requests.get(f"{beamlit_config['base_url']}/functions", headers=headers)
     if response.status_code != 200:
-        raise Exception(f"Failed to get tools from beamlit: {response.text}")
-    tools = response.json()
-    for name in beamlit_config['tools']:
-        if not any(tool['name'] == name for tool in tools):
-            raise Exception(f"Tool {name} not found in beamlit")
-    return [tool for tool in tools if tool['name'] in beamlit_config['tools']]
+        raise Exception(f"Failed to get functions from beamlit: {response.text}")
+    functions = response.json()
+    for name in beamlit_config['functions']:
+        if not any(function['name'] == name for function in functions):
+            raise Exception(f"Function {name} not found in beamlit")
+    return [function for function in functions if function['name'] in beamlit_config['functions']]
 
-def generate_tool_code(beamlit_config: Dict, tool_config: Dict) -> str:
-    name = tool_config["name"].title().replace("-", "")
-    args_list = ", ".join(f"{param['name']}: str" for param in tool_config["parameters"])
+def generate_function_code(beamlit_config: Dict, function_config: Dict) -> str:
+    name = function_config["name"].title().replace("-", "")
+    args_list = ", ".join(f"{param['name']}: str" for param in function_config["parameters"])
     args_schema = "\n    ".join(
         f"{param['name']}: str = Field(description='{param.get('description', '')}')"
-        for param in tool_config["parameters"]
+        for param in function_config["parameters"]
     )
-    return_direct = str(tool_config.get("return_direct", False))
+    return_direct = str(function_config.get("return_direct", False))
     if beamlit_config.get('jwt'):
         headers = f'''{{
                 "Authorization": "Bearer {beamlit_config['jwt']}"
@@ -65,8 +65,8 @@ class Beamlit{name}Input(BaseModel):
     {args_schema}
 
 class Beamlit{name}(BaseTool):
-    name: str = "beamlit_{tool_config['name'].replace("-", "_")}"
-    description: str = """{tool_config['description']}"""
+    name: str = "beamlit_{function_config['name'].replace("-", "_")}"
+    description: str = """{function_config['description']}"""
     args_schema: Type[BaseModel] = Beamlit{name}Input
 
     response_format: Literal["content_and_artifact"] = "content_and_artifact"
@@ -79,13 +79,13 @@ class Beamlit{name}(BaseTool):
     ) -> Tuple[Union[List[Dict[str, str]], str], Dict]:
         try:
             headers = {headers}
-            response = requests.post("{BEAMLIT_RUN_URL}/{tool_config['workspace']}/tools/{tool_config['name']}", headers=headers, json={{{", ".join(f'"{param['name']}": {param['name']}' for param in tool_config["parameters"])}}})
+            response = requests.post("{BEAMLIT_RUN_URL}/{function_config['workspace']}/functions/{function_config['name']}", headers=headers, json={{{", ".join(f'"{param['name']}": {param['name']}' for param in function_config["parameters"])}}})
             return response.json(), {{}}
         except Exception as e:
             return repr(e), {{}}
 '''
 
-def generate_chain_code(beamlit_config: Dict, tools: List[Dict]) -> str:
+def generate_chain_code(beamlit_config: Dict, functions: List[Dict]) -> str:
     chain = beamlit_config['chain']
     return f'''
 class BeamlitChain(BaseTool):
@@ -104,21 +104,21 @@ class BeamlitChain(BaseTool):
         return f"From your query: {{query}}, I ordered a burger", {{}}
 '''
 
-def generate_tools(destination: str, beamlit_config: Dict, tools: List[Dict]):
+def generate_functions(destination: str, beamlit_config: Dict, functions: List[Dict]):
     imports = '''from typing import Dict, List, Literal, Optional, Tuple, Type, Union
 from langchain_core.callbacks import CallbackManagerForToolRun
-from langchain_core.tools import BaseTool
+from langchain_core.functions import BaseTool
 from pydantic import BaseModel, Field
 import requests
 '''
 
-    export_code = '\n\ntools = ['
+    export_code = '\n\nfunctions = ['
     code = imports
-    for tool_config in tools:
-        code += generate_tool_code(beamlit_config, tool_config)
-        export_code += f'Beamlit{tool_config["name"].title().replace("-", "")}(),'
+    for function_config in functions:
+        code += generate_function_code(beamlit_config, function_config)
+        export_code += f'Beamlit{function_config["name"].title().replace("-", "")}(),'
     if beamlit_config.get('chain') and beamlit_config['chain'].get('enabled'):
-        code += generate_chain_code(beamlit_config, tools)
+        code += generate_chain_code(beamlit_config, functions)
     export_code = export_code[:-1]
     export_code += ']'
     with open(destination, "w") as f:
@@ -126,5 +126,5 @@ import requests
 
 def run(destination: str):
     beamlit_config = parse_beamlit_yaml()
-    tools = get_tools_from_beamlit(beamlit_config)
-    generate_tools(destination, beamlit_config, tools)
+    functions = get_functions_from_beamlit(beamlit_config)
+    generate_functions(destination, beamlit_config, functions)

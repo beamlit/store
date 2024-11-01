@@ -13,8 +13,8 @@ PACKAGE = os.getenv("PACKAGE", "app")
 
 main_agent = None
 if RUN_MODE == 'prod':
-    bl_generate_tools = importlib.import_module(".agents.bl_generate_tools", package=PACKAGE)
-    bl_generate_tools.run(f"{"/".join(bl_generate_tools.__file__.split("/")[0:-1])}/beamlit.py")
+    bl_generate_functions = importlib.import_module(".agents.bl_generate_functions", package=PACKAGE)
+    bl_generate_functions.run(f"{"/".join(bl_generate_functions.__file__.split("/")[0:-1])}/beamlit.py")
     main_agent = importlib.import_module(".agents", package=PACKAGE)
 
 @asynccontextmanager
@@ -33,10 +33,10 @@ async def lifespan(app: FastAPI):
             if (file.endswith(".py") or file.endswith(".yaml")) and (not os.path.exists(f"{destination_folder}/{file}") or not filecmp.cmp(f"{source_folder}/{file}", f"{destination_folder}/{file}")):
                 shutil.copy(f"{source_folder}/{file}", f"{destination_folder}/{file}")
 
-        bl_generate_tools = importlib.import_module(".agents.bl_generate_tools", package=PACKAGE)
-        destination = f"{"/".join(bl_generate_tools.__file__.split("/")[0:-1])}/beamlit.py"
+        bl_generate_functions = importlib.import_module(".agents.bl_generate_functions", package=PACKAGE)
+        destination = f"{"/".join(bl_generate_functions.__file__.split("/")[0:-1])}/beamlit.py"
         if not os.path.exists(destination):
-            bl_generate_tools.run(f"{"/".join(bl_generate_tools.__file__.split("/")[0:-1])}/beamlit.py")
+            bl_generate_functions.run(f"{"/".join(bl_generate_functions.__file__.split("/")[0:-1])}/beamlit.py")
         main_agent = importlib.import_module(".agents.main", package=PACKAGE)
     yield
 

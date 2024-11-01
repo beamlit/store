@@ -1,6 +1,6 @@
 name: math
-type: tool
-description: A tool for performing mathematical calculations.
+type: function
+description: A function for performing mathematical calculations.
 parameters:
   - name: query
     type: string

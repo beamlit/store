@@ -8,13 +8,13 @@ ARG UV_VERSION="latest"
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Copy the application into the container.
-COPY apps/app-tool /beamlit/app
+COPY apps/app-function /beamlit/app
 COPY uv.lock /beamlit/uv.lock
 COPY README.md /beamlit/README.md
 COPY LICENSE /beamlit/LICENSE
 
-COPY agent-tools/${TOOL} /beamlit/app/tools/
-COPY agent-tools/${TOOL}/pyproject.toml /beamlit/pyproject.toml
+COPY functions/${TOOL} /beamlit/app/functions/
+COPY functions/${TOOL}/pyproject.toml /beamlit/pyproject.toml
 
 # Install the application dependencies.
 WORKDIR /beamlit
