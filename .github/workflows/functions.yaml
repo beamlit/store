@@ -25,7 +25,6 @@ jobs:
           files: functions/**
           dir_names: true
           json: true
-          json_raw_format: true
       - name: Generate functions matrix
         uses: actions/github-script@v7
         id: generator
