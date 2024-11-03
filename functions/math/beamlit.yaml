@@ -1,4 +1,5 @@
 name: math
+display_name: Math
 type: function
 description: A function for performing mathematical calculations.
 parameters:

@@ -1,4 +1,6 @@
 name: langchain-chat-completions
+display_name: AI Providers Agent
+description: A chat agent using AI providers to handle your tasks.
 type: agent
 configuration:
   - name: provider
