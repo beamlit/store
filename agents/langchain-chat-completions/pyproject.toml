@@ -1,7 +1,7 @@
 [project]
-name = "beamlit_simple_agent"
+name = "store"
 version = "0.1.0"
-description = "Beamlit langchain agents"
+description = "Beamlit langchain agents for providers"
 authors = [
     { name = "cploujoux", email = "cploujoux@beamlit.com" },
 ]

@@ -73,3 +73,6 @@ async def main(request: Request):
     if chain and chain.get('enabled'):
         response = await chain_function(all_responses, config)
     return response
+
+if __name__ == "__main__":
+    main()

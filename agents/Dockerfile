@@ -17,6 +17,7 @@ COPY agents/${AGENT}/pyproject.toml /beamlit/pyproject.toml
 
 # Install the application dependencies.
 WORKDIR /beamlit
+
 RUN uv sync --frozen --no-cache
 
 # Run the application.
