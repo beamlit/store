@@ -1,10 +1,10 @@
-name: Functions
+name: Agents
 
 on:
   push:
     branches: ["main"]
     paths:
-      - "functions/**"
+      - "agents/**"
   workflow_dispatch:
 
 permissions:
@@ -22,9 +22,9 @@ jobs:
         id: diff
         uses: tj-actions/changed-files@v41
         with:
-          files: functions/**
+          files: agents/**
           dir_names: true
-      - name: Generate functions matrix
+      - name: Generate agents matrix
         uses: actions/github-script@v7
         id: generator
         env:
@@ -36,20 +36,20 @@ jobs:
             if (method === "workflow_dispatch") {
               const fs = require('fs');
               const path = require('path');
-              const functionsPath = path.join(process.cwd(), 'functions');
-              const functions = fs.readdirSync(functionsPath)
-                            .filter(file => fs.statSync(path.join(functionsPath, file)).isDirectory());
-              return { functions };
+              const agentsPath = path.join(process.cwd(), 'agents');
+              const agents = fs.readdirSync(agentsPath)
+                            .filter(file => fs.statSync(path.join(agentsPath, file)).isDirectory());
+              return { agents };
             }
             const all_changed_files = process.env.ALL_CHANGED_FILES.split(" ")
-            const functionSet = new Set(all_changed_files.filter(file => file.includes("functions/")).map(file => file.split("/")[1]))
-            const uniqueFunctionsArray = [...functionSet]
+            const agentSet = new Set(all_changed_files.filter(file => file.includes("agents/")).map(file => file.split("/")[1]))
+            const uniqueFunctionsArray = [...agentSet]
 
-            return uniqueFunctionsArray.length ? { functions: uniqueFunctionsArray } : null
+            return uniqueFunctionsArray.length ? { agents: uniqueFunctionsArray } : null
     outputs:
       matrix: ${{ steps.generator.outputs.result }}
 
-  build-function:
+  build-agent:
     if: ${{ fromJson(needs.gen-matrix.outputs.matrix) }}
     needs: gen-matrix
     name: build
@@ -64,7 +64,7 @@ jobs:
         id: logger
         with:
           script: |
-            console.log("${{ matrix.functions }}")
+            console.log("${{ matrix.agents }}")
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -84,17 +84,17 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: .
           push: true
-          file: ./functions/Dockerfile
-          tags: ghcr.io/${{ github.repository_owner }}/functions/${{ matrix.functions }}:latest
+          file: ./agents/Dockerfile
+          tags: ghcr.io/${{ github.repository_owner }}/agents/${{ matrix.agents }}:latest
           build-args: |
-            TOOL=${{ matrix.functions }}
+            TOOL=${{ matrix.agents }}
 
-  push-function:
+  push-agent:
     if: ${{ fromJson(needs.gen-matrix.outputs.matrix) }}
     needs:
-      - build-function
+      - build-agent
       - gen-matrix
-    name: push-function
+    name: push-agent
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -106,14 +106,14 @@ jobs:
         with:
           node-version: "20.x"
       - run: npm install js-yaml node-fetch@2
-      - name: Push function
+      - name: Push agent
         uses: actions/github-script@v7
         env:
           STORE_URL: ${{ vars.STORE_URL }}
           ADMIN_USERNAME: ${{ secrets.STORE_ADMIN_USERNAME }}
           ADMIN_PASSWORD: ${{ secrets.STORE_ADMIN_PASSWORD }}
-          IMAGE: ghcr.io/${{ github.repository_owner }}/functions/${{ matrix.functions }}:latest
+          IMAGE: ghcr.io/${{ github.repository_owner }}/agents/${{ matrix.agents }}:latest
         with:
           script: |
             const pushStore = require("./scripts/pushStore.js");
-            pushStore("functions", "${{ matrix.functions }}");
+            pushStore("agents", "${{ matrix.agents }}");

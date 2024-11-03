@@ -1,4 +1,3 @@
-
 FROM python:3.12-slim
 
 ARG AGENT="langchain-chat-completions"
@@ -21,4 +20,5 @@ WORKDIR /beamlit
 RUN uv sync --frozen --no-cache
 
 # Run the application.
+ENV PATH="/beamlit/.venv/bin:$PATH"
 CMD ["/beamlit/.venv/bin/fastapi", "run", "app/main.py", "--port", "80", "--host", "0.0.0.0"]

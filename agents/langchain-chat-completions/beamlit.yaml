@@ -1,11 +1,46 @@
 name: langchain-chat-completions
 type: agent
-compatible_llms:
-  - openai
-llm: openai
 configuration:
-  openai_api_key:
-    type: string
-    description: OpenAI API key.
+  - name: provider
+    type: selectbox
+    description: The LLM to use.
     required: true
-    mapping: OPENAI_API_KEY
+    options:
+      - label: OpenAI
+        value: openai
+      - label: Anthropic
+        value: anthropic
+      - label: Mistral
+        value: mistral
+  - name: llm
+    type: selectbox
+    description: The LLM to use.
+    required: true
+    options:
+      - label: gpt-4o-mini
+        if: configuration.provider === 'openai'
+        value: gpt-4o-mini
+      - label: claude-3-5-sonnet-20240620
+        if: configuration.provider === 'anthropic'
+        value: claude-3-5-sonnet-20240620
+      - label: mistral-7b-latest
+        if: configuration.provider === 'mistral'
+        value: mistral-7b-latest
+  - name: openai_api_key
+    if: configuration.provider === 'openai'
+    description: OpenAI API key.
+    type: string
+    required: true
+    secret: true
+  - name: anthropic_api_key
+    if: configuration.provider === 'anthropic'
+    description: Anthropic API key.
+    type: string
+    required: true
+    secret: true
+  - name: mistral_api_key
+    if: configuration.provider === 'mistral'
+    description: Mistral API key.
+    type: string
+    required: true
+    secret: true

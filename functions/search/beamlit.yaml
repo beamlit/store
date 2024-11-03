@@ -7,8 +7,8 @@ parameters:
     description: Query to search the web with.
     required: true
 configuration:
-  tavily_api_key:
-    type: string
-    description: Tavily API key.
+  - name: tavily_api_key
+    mapped_to: TAVILY_API_KEY
+    description: Tavily API key
     required: true
-    mapping: TAVILY_API_KEY
+    secret: true

@@ -5,16 +5,6 @@ from typing import Dict, List
 import requests
 import yaml
 
-BEAMLIT_API_KEY = os.getenv("BEAMLIT_API_KEY")
-BEAMLIT_JWT = os.getenv("BEAMLIT_JWT")
-BEAMLIT_WORKSPACE = os.getenv("BEAMLIT_WORKSPACE")
-BEAMLIT_BASE_URL = os.getenv("BEAMLIT_BASE_URL", "https://api.beamlit.dev/v0")
-BEAMLIT_RUN_URL = os.getenv("BEAMLIT_RUN_URL", "https://run.beamlit.dev")
-BEAMLIT_TOOLS = os.getenv("BEAMLIT_TOOLS", "search-zag,math-zag")
-try:
-    BEAMLIT_CHAIN = json.loads(os.getenv("BEAMLIT_CHAIN", None))
-except:
-    BEAMLIT_CHAIN = None
 
 def parse_beamlit_yaml() -> List[Dict]:
     """Parse the beamlit.yaml file to get function configurations."""
@@ -25,16 +15,26 @@ def parse_beamlit_yaml() -> List[Dict]:
 
     with open(yaml_path, "r") as f:
         config = yaml.safe_load(f)
-    config['functions'] = config.get('functions', BEAMLIT_TOOLS.split(','))
-    config['api_key'] = config.get('api_key', BEAMLIT_API_KEY)
-    config['jwt'] = config.get('jwt', BEAMLIT_JWT)
-    config['workspace'] = config.get('workspace', BEAMLIT_WORKSPACE)
-    config['base_url'] = config.get('base_url', BEAMLIT_BASE_URL)
-    config['chain'] = config.get('chain', BEAMLIT_CHAIN)
+
+    for key in os.environ:
+        if key.startswith("BEAMLIT_"):
+            if key == "BEAMLIT_FUNCTIONS":
+                config['functions'] = os.getenv(key).split(',')
+            elif key == "BEAMLIT_CHAIN":
+                config['chain'] = json.loads(os.getenv(key))
+            else:
+                config[key.replace("BEAMLIT_", "").lower()] = os.getenv(key)
+    config['base_url'] = config.get('base_url', "https://api.beamlit.dev/v0")
+    config['run_url'] = config.get('run_url', "https://run.beamlit.dev")
     return config
 
 def get_functions_from_beamlit(beamlit_config: Dict) -> List[Dict]:
-    headers = {"Api-Key": beamlit_config['api_key'], "X-Beamlit-Workspace": beamlit_config['workspace']}
+    headers = {"X-Beamlit-Workspace": beamlit_config['workspace']}
+    if beamlit_config.get('api_key'):
+        headers["Api-Key"] = beamlit_config['api_key']
+    elif beamlit_config.get('jwt'):
+        headers["Authorization"] = f"Bearer {beamlit_config['jwt']}"
+
     response = requests.get(f"{beamlit_config['base_url']}/functions", headers=headers)
     if response.status_code != 200:
         raise Exception(f"Failed to get functions from beamlit: {response.text}")
@@ -79,7 +79,7 @@ class Beamlit{name}(BaseTool):
     ) -> Tuple[Union[List[Dict[str, str]], str], Dict]:
         try:
             headers = {headers}
-            response = requests.post("{BEAMLIT_RUN_URL}/{function_config['workspace']}/functions/{function_config['name']}", headers=headers, json={{{", ".join(f'"{param['name']}": {param['name']}' for param in function_config["parameters"])}}})
+            response = requests.post("{beamlit_config['base_url']}/{function_config['workspace']}/functions/{function_config['name']}", headers=headers, json={{{", ".join(f'"{param['name']}": {param['name']}' for param in function_config["parameters"])}}})
             return response.json(), {{}}
         except Exception as e:
             return repr(e), {{}}
