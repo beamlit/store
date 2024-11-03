@@ -33,7 +33,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const method = "${{ github.event_name }}"
-            if (method === "workflow_dispatch") {
+            if (method === "workflow_dispatch" || process.env.ALL_CHANGED_FILES === 'functions') {
               const fs = require('fs');
               const path = require('path');
               const functionsPath = path.join(process.cwd(), 'functions');
