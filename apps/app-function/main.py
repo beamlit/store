@@ -8,16 +8,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from .parse_beamlit import parse_beamlit_yaml
-
 RUN_MODE = 'prod' if sys.argv[1] == 'run' else 'dev'
 PACKAGE = os.getenv("PACKAGE", "app")
 
 main_function = None
 if RUN_MODE == 'prod':
     main_function = importlib.import_module(".functions", package=PACKAGE)
-
-config = parse_beamlit_yaml()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -47,7 +43,7 @@ async def health():
 async def root(request: Request):
     try:
         body = await request.json()
-        result = await main_function.main(body, config)
+        result = await main_function.main(body)
         return {"result": result}
     except ValueError as e:
         content = {"error": str(e)}

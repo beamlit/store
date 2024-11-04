@@ -13,6 +13,3 @@ dependencies = [
     "langgraph==0.2.40",
     "langchain-anthropic>=0.2.3",
 ]
-
-[tool.uv.workspace]
-members = ["agents/langchain-chat-completions"]

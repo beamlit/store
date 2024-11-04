@@ -4,6 +4,10 @@ from typing import Any
 
 from pydantic import BaseModel
 
+from .parse_beamlit import parse_beamlit_yaml
+
+# TODO: Move this to the sdk
+config = parse_beamlit_yaml()
 
 class Expression(BaseModel):
     query: str
@@ -47,6 +51,6 @@ def evaluate_math(expr: Expression) -> float:
     except Exception as e:
         raise ValueError(f"Invalid expression: {str(e)}")
 
-async def main(body: Any, config):
+async def main(body: Any):
     expr = Expression(**body)
     return evaluate_math(expr)
