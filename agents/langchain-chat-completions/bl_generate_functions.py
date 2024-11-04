@@ -24,6 +24,7 @@ def parse_beamlit_yaml() -> List[Dict]:
                 config['chain'] = json.loads(os.getenv(key))
             else:
                 config[key.replace("BEAMLIT_", "").lower()] = os.getenv(key)
+    config['environment'] = config.get('environment', 'production')
     config['base_url'] = config.get('base_url', "https://api.beamlit.dev/v0")
     config['run_url'] = config.get('run_url', "https://run.beamlit.dev")
     return config
@@ -35,23 +36,27 @@ def get_functions_from_beamlit(beamlit_config: Dict) -> List[Dict]:
     elif beamlit_config.get('jwt'):
         headers["Authorization"] = f"Bearer {beamlit_config['jwt']}"
 
-    response = requests.get(f"{beamlit_config['base_url']}/functions", headers=headers)
+    response = requests.get(f"{beamlit_config['base_url']}/functions", headers=headers, params={"deployment": "true"})
     if response.status_code != 200:
         raise Exception(f"Failed to get functions from beamlit: {response.text}")
     functions = response.json()
     for name in beamlit_config['functions']:
         if not any(function['name'] == name for function in functions):
             raise Exception(f"Function {name} not found in beamlit")
-    return [function for function in functions if function['name'] in beamlit_config['functions']]
+    return functions
 
 def generate_function_code(beamlit_config: Dict, function_config: Dict) -> str:
     name = function_config["name"].title().replace("-", "")
-    args_list = ", ".join(f"{param['name']}: str" for param in function_config["parameters"])
+    deployment = [deployment for deployment in function_config["deployments"] if deployment["environment"] == beamlit_config["environment"]]
+    if len(deployment) == 0:
+        raise Exception(f"No deployment found for environment {beamlit_config['environment']}")
+    deployment = deployment[0]
+    args_list = ", ".join(f"{param['name']}: str" for param in deployment["parameters"])
     args_schema = "\n    ".join(
         f"{param['name']}: str = Field(description='{param.get('description', '')}')"
-        for param in function_config["parameters"]
+        for param in deployment["parameters"]
     )
-    return_direct = str(function_config.get("return_direct", False))
+    return_direct = str(deployment.get("return_direct", False))
     if beamlit_config.get('jwt'):
         headers = f'''{{
                 "Authorization": "Bearer {beamlit_config['jwt']}"
@@ -66,7 +71,7 @@ class Beamlit{name}Input(BaseModel):
 
 class Beamlit{name}(BaseTool):
     name: str = "beamlit_{function_config['name'].replace("-", "_")}"
-    description: str = """{function_config['description']}"""
+    description: str = """{deployment['description']}"""
     args_schema: Type[BaseModel] = Beamlit{name}Input
 
     response_format: Literal["content_and_artifact"] = "content_and_artifact"
@@ -79,7 +84,7 @@ class Beamlit{name}(BaseTool):
     ) -> Tuple[Union[List[Dict[str, str]], str], Dict]:
         try:
             headers = {headers}
-            response = requests.post("{beamlit_config['base_url']}/{function_config['workspace']}/functions/{function_config['name']}", headers=headers, json={{{", ".join(f'"{param['name']}": {param['name']}' for param in function_config["parameters"])}}})
+            response = requests.post("{beamlit_config['base_url']}/{function_config['workspace']}/functions/{function_config['name']}", headers=headers, json={{{", ".join(f'"{param['name']}": {param['name']}' for param in deployment["parameters"])}}})
             return response.json(), {{}}
         except Exception as e:
             return repr(e), {{}}
@@ -107,7 +112,7 @@ class BeamlitChain(BaseTool):
 def generate_functions(destination: str, beamlit_config: Dict, functions: List[Dict]):
     imports = '''from typing import Dict, List, Literal, Optional, Tuple, Type, Union
 from langchain_core.callbacks import CallbackManagerForToolRun
-from langchain_core.functions import BaseTool
+from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 import requests
 '''

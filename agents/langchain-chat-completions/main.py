@@ -21,7 +21,7 @@ except:
 # Create the agent
 model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 agent = create_json_chat_agent(model, functions, prompt)
-agent_executor = AgentExecutor(agent=agent, functions=functions)
+agent_executor = AgentExecutor(agent=agent, tools=functions)
 
 def get_chat_model(config):
     if "provider" not in config:
@@ -48,7 +48,7 @@ async def chain_function(all_responses, config):
     chain_functions = [BeamlitChain()]
     model = get_chat_model(config)
     agent_two = create_json_chat_agent(model, chain_functions, prompt)
-    agent_two_executor = AgentExecutor(agent=agent_two, functions=chain_functions)
+    agent_two_executor = AgentExecutor(agent=agent_two, tools=chain_functions)
     for chunk in agent_two_executor.stream({"input": json.dumps(all_responses)}, config):
         if "output" in chunk:
             response = chunk["output"]
