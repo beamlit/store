@@ -47,6 +47,6 @@ def evaluate_math(expr: Expression) -> float:
     except Exception as e:
         raise ValueError(f"Invalid expression: {str(e)}")
 
-async def main(body: Any):
+async def main(body: Any, config):
     expr = Expression(**body)
     return evaluate_math(expr)
