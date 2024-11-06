@@ -13,6 +13,7 @@ async def main(body: Any):
     api_key = config.get('tavily_api_key')
     if not api_key:
         raise Exception("Tavily Key must be set to use this function")
+    os.environ['TAVILY_API_KEY'] = api_key
     input = TavilyInput(**body)
     tavily = TavilySearchResults(api_key=api_key, max_results=2)
     result = tavily.invoke(input.query)
