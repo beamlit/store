@@ -20,28 +20,28 @@ configuration:
     required: true
     options:
       - label: gpt-4o-mini
-        if: configuration.provider === 'openai'
+        if: provider === 'openai'
         value: gpt-4o-mini
       - label: claude-3-5-sonnet-20240620
-        if: configuration.provider === 'anthropic'
+        if: provider === 'anthropic'
         value: claude-3-5-sonnet-20240620
       - label: mistral-7b-latest
-        if: configuration.provider === 'mistral'
+        if: provider === 'mistral'
         value: mistral-7b-latest
   - name: openai_api_key
-    if: configuration.provider === 'openai'
+    if: provider === 'openai'
     description: OpenAI API key.
     type: string
     required: true
     secret: true
   - name: anthropic_api_key
-    if: configuration.provider === 'anthropic'
+    if: provider === 'anthropic'
     description: Anthropic API key.
     type: string
     required: true
     secret: true
   - name: mistral_api_key
-    if: configuration.provider === 'mistral'
+    if: provider === 'mistral'
     description: Mistral API key.
     type: string
     required: true
