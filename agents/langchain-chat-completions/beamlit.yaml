@@ -18,6 +18,7 @@ configuration:
     type: selectbox
     description: The LLM to use.
     required: true
+    if: provider !== ''
     options:
       - label: gpt-4o-mini
         if: provider === 'openai'
