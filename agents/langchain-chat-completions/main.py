@@ -18,11 +18,6 @@ try:
 except:
     BEAMLIT_CHAIN = None
 
-# Create the agent
-model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-agent = create_json_chat_agent(model, functions, prompt)
-agent_executor = AgentExecutor(agent=agent, tools=functions)
-
 def get_chat_model(config):
     if "provider" not in config:
         raise ValueError("Provider not found in configuration")
@@ -35,43 +30,41 @@ def get_chat_model(config):
     else:
         raise ValueError(f"Invalid provider: {config['provider']}")
 
-def init_config(config):
-    beamlit_config = parse_beamlit_yaml()
-    chain = beamlit_config['chain']
-    for key in os.environ:
-        if key.startswith("BEAMLIT_"):
-            config[key.replace("BEAMLIT_", "").lower()] = os.getenv(key)
+# Create the agent
+beamlit_config = parse_beamlit_yaml()
+model = get_chat_model(beamlit_config)
+agent = create_json_chat_agent(model, functions, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=functions)
 
-async def chain_function(all_responses, config):
+async def chain_function(all_responses, agent_config):
     from .beamlit import BeamlitChain
 
     chain_functions = [BeamlitChain()]
-    model = get_chat_model(config)
+    model = get_chat_model(beamlit_config)
     agent_two = create_json_chat_agent(model, chain_functions, prompt)
     agent_two_executor = AgentExecutor(agent=agent_two, tools=chain_functions)
-    for chunk in agent_two_executor.stream({"input": json.dumps(all_responses)}, config):
+    for chunk in agent_two_executor.stream({"input": json.dumps(all_responses)}, agent_config):
         if "output" in chunk:
             response = chunk["output"]
     return response
 
 async def main(request: Request):
     sub = request.headers.get("X-Beamlit-Sub", str(uuid.uuid4()))
-    config = {"configurable": {"thread_id": sub}}
+    agent_config = {"configurable": {"thread_id": sub}}
     response = ""
     body = await request.json()
     if body.get("inputs"):
         body["input"] = body["inputs"]
 
     all_responses = [body]
-    for chunk in agent_executor.stream(body, config):
+    for chunk in agent_executor.stream(body, agent_config):
         if "output" in chunk:
             response = chunk["output"]
 
     all_responses.append({"input": response})
-    beamlit_config = parse_beamlit_yaml()
     chain = beamlit_config['chain']
     if chain and chain.get('enabled'):
-        response = await chain_function(all_responses, config)
+        response = await chain_function(all_responses, agent_config)
     return response
 
 if __name__ == "__main__":

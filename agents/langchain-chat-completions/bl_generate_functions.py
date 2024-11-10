@@ -1,33 +1,10 @@
-import json
-import os
 from typing import Dict, List
 
 import requests
 import yaml
 
+from .parse_beamlit import parse_beamlit_yaml
 
-def parse_beamlit_yaml() -> List[Dict]:
-    """Parse the beamlit.yaml file to get function configurations."""
-    yaml_path = os.path.join(os.path.dirname(__file__), "beamlit.yaml")
-
-    if not os.path.exists(yaml_path):
-        raise Exception("beamlit.yaml not found")
-
-    with open(yaml_path, "r") as f:
-        config = yaml.safe_load(f)
-
-    for key in os.environ:
-        if key.startswith("BEAMLIT_"):
-            if key == "BEAMLIT_FUNCTIONS":
-                config['functions'] = os.getenv(key).split(',')
-            elif key == "BEAMLIT_CHAIN":
-                config['chain'] = json.loads(os.getenv(key))
-            else:
-                config[key.replace("BEAMLIT_", "").lower()] = os.getenv(key)
-    config['environment'] = config.get('environment', 'production')
-    config['base_url'] = config.get('base_url', "https://api.beamlit.dev/v0")
-    config['run_url'] = config.get('run_url', "https://run.beamlit.dev")
-    return config
 
 def get_functions_from_beamlit(beamlit_config: Dict) -> List[Dict]:
     headers = {"X-Beamlit-Workspace": beamlit_config['workspace']}
@@ -93,10 +70,14 @@ class Beamlit{name}(BaseTool):
 def generate_chain_code(beamlit_config: Dict, functions: List[Dict]) -> str:
     chain = beamlit_config['chain']
     return f'''
+class BeamlitChainInput(BaseModel):
+    query: str = Field(description='{chain['description']}')
+
+
 class BeamlitChain(BaseTool):
     name: str = "{chain['name']}"
     description: str = """{chain['description']}"""
-    args_schema: Type[BaseModel] = BeamlitMathZagInput
+    args_schema: Type[BaseModel] = BeamlitChainInput
 
     response_format: Literal["content_and_artifact"] = "content_and_artifact"
     return_direct: bool = False
