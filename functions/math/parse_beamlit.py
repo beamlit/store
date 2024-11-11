@@ -17,8 +17,8 @@ def parse_beamlit_yaml() -> List[Dict]:
         config = yaml.safe_load(f)
 
     for key in os.environ:
-        if key.startswith("BEAMLIT_"):
-            config[key.replace("BEAMLIT_", "").lower()] = os.getenv(key)
+        if key.startswith("BL_"):
+            config[key.replace("BL_", "").lower()] = os.getenv(key)
     config['base_url'] = config.get('base_url', "https://api.beamlit.dev/v0")
     config['run_url'] = config.get('run_url', "https://run.beamlit.dev")
     return config

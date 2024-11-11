@@ -14,9 +14,9 @@ from .bl_generate_functions import parse_beamlit_yaml
 from .prompt import prompt
 
 try:
-    BEAMLIT_CHAIN = json.loads(os.getenv("BEAMLIT_CHAIN", None))
+    BL_CHAIN = json.loads(os.getenv("BL_CHAIN", None))
 except:
-    BEAMLIT_CHAIN = None
+    BL_CHAIN = None
 
 def get_chat_model(config):
     if "provider" not in config:

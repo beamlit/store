@@ -16,13 +16,13 @@ def parse_beamlit_yaml() -> List[Dict]:
         config = yaml.safe_load(f)
 
     for key in os.environ:
-        if key.startswith("BEAMLIT_"):
-            if key == "BEAMLIT_FUNCTIONS":
+        if key.startswith("BL_"):
+            if key == "BL_FUNCTIONS":
                 config['functions'] = os.getenv(key).split(',')
-            elif key == "BEAMLIT_CHAIN":
+            elif key == "BL_CHAIN":
                 config['chain'] = json.loads(os.getenv(key))
             else:
-                config[key.replace("BEAMLIT_", "").lower()] = os.getenv(key)
+                config[key.replace("BL_", "").lower()] = os.getenv(key)
 
     if os.getenv("BL_CREDENTIALS") and config.get('api_key') is None:
         config['api_key'] = os.environ["BL_CREDENTIALS"]
