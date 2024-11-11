@@ -24,9 +24,6 @@ def parse_beamlit_yaml() -> List[Dict]:
             else:
                 config[key.replace("BL_", "").lower()] = os.getenv(key)
 
-    if os.getenv("BL_CREDENTIALS") and config.get('api_key') is None:
-        config['api_key'] = os.environ["BL_CREDENTIALS"]
-
     config['environment'] = config.get('environment', 'production')
     config['base_url'] = config.get('base_url', "https://api.beamlit.dev/v0")
     config['run_url'] = config.get('run_url', "https://run.beamlit.dev")
