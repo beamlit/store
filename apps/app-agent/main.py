@@ -58,8 +58,8 @@ async def root(request: Request):
         if RUN_MODE == 'dev':
             content["traceback"] = str(traceback.format_exc())
         return JSONResponse(status_code=400, content=content)
-    except Exception:
-        content = {"error": "Internal server error"}
+    except Exception as e:
+        content = {"error": f"Internal server error, {e}"}
         if RUN_MODE == 'dev':
             content["traceback"] = str(traceback.format_exc())
         return JSONResponse(status_code=500, content=content)

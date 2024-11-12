@@ -57,7 +57,7 @@ async def main(request: Request):
             response = chunk["output"]
 
     all_responses.append({"input": response})
-    chain = BL_CONFIG['chain']
+    chain = BL_CONFIG.get('chain')
     if chain and chain.get('enabled'):
         response = await chain_function(all_responses, agent_config)
     return response
