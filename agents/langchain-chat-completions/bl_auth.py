@@ -17,7 +17,7 @@ async def retrieve_jwt():
         BL_CONFIG['jwt'] = content.get('access_token')
         BL_CONFIG['jwt_expires_in'] = content.get('expires_in')
     else:
-        raise Exception("Failed to retrieve JWT")
+        raise Exception(f"Failed to retrieve JWT, {response.text}")
 
 async def auth():
     # If jwt or api_key is set, we don't need to retrieve jwt dynamically

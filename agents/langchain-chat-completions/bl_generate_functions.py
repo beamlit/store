@@ -8,10 +8,11 @@ from .bl_config import BL_CONFIG
 
 def get_functions_from_beamlit() -> List[Dict]:
     headers = {"X-Beamlit-Workspace": BL_CONFIG['workspace']}
+
     if BL_CONFIG.get('api_key'):
         headers["Api-Key"] = BL_CONFIG['api_key']
     elif BL_CONFIG.get('jwt'):
-        headers["Authorization"] = f"Bearer {BL_CONFIG['jwt']}"
+        headers["X-Beamlit-Authorization"] = f"Bearer {BL_CONFIG['jwt']}"
 
     response = requests.get(f"{BL_CONFIG['base_url']}/functions", headers=headers, params={"deployment": "true"})
     if response.status_code != 200:
@@ -36,11 +37,11 @@ def generate_function_code(function_config: Dict) -> str:
     return_direct = str(deployment.get("return_direct", False))
     if BL_CONFIG.get('jwt'):
         headers = f'''{{
-                "Authorization": f"Bearer {{BL_CONFIG['jwt']}}"
+                "X-Beamlit-Authorization": f"Bearer {{BL_CONFIG['jwt']}}"
             }}'''
     else:
         headers = f'''{{
-                "Api-Key": BL_CONFIG['api_key']
+                "X-Beamlit-Api-Key": BL_CONFIG['api_key']
             }}'''
     return f'''
 class Beamlit{name}Input(BaseModel):
@@ -62,6 +63,8 @@ class Beamlit{name}(BaseTool):
         try:
             headers = {headers}
             response = requests.post("{BL_CONFIG['run_url']}/{function_config['workspace']}/functions/{function_config['name']}", headers=headers, json={{{", ".join(f'"{param['name']}": {param['name']}' for param in deployment["parameters"])}}})
+            if response.status_code >= 400:
+                raise Exception(f"Failed to run tool {name}, {{response.status_code}}::{{response.text}}")
             return response.json(), {{}}
         except Exception as e:
             return repr(e), {{}}
