@@ -1,3 +1,4 @@
+import asyncio
 import filecmp
 import importlib
 import os
@@ -12,10 +13,6 @@ RUN_MODE = 'prod' if sys.argv[1] == 'run' else 'dev'
 PACKAGE = os.getenv("PACKAGE", "app")
 
 main_agent = None
-if RUN_MODE == 'prod':
-    bl_generate_functions = importlib.import_module(".agents.bl_generate_functions", package=PACKAGE)
-    bl_generate_functions.run(f"{"/".join(bl_generate_functions.__file__.split("/")[0:-1])}/beamlit.py")
-    main_agent = importlib.import_module(".agents", package=PACKAGE)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -33,11 +30,17 @@ async def lifespan(app: FastAPI):
             if (file.endswith(".py") or file.endswith(".yaml")) and (not os.path.exists(f"{destination_folder}/{file}") or not filecmp.cmp(f"{source_folder}/{file}", f"{destination_folder}/{file}")):
                 shutil.copy(f"{source_folder}/{file}", f"{destination_folder}/{file}")
 
-        bl_generate_functions = importlib.import_module(".agents.bl_generate_functions", package=PACKAGE)
-        destination = f"{"/".join(bl_generate_functions.__file__.split("/")[0:-1])}/beamlit.py"
-        if not os.path.exists(destination):
-            bl_generate_functions.run(f"{"/".join(bl_generate_functions.__file__.split("/")[0:-1])}/beamlit.py")
-        main_agent = importlib.import_module(".agents.main", package=PACKAGE)
+    bl_config = importlib.import_module(".agents.bl_config", package=PACKAGE)
+    bl_config.init()
+    bl_auth = importlib.import_module(".agents.bl_auth", package=PACKAGE)
+    await bl_auth.auth()
+    asyncio.create_task(bl_auth.auth_loop())
+    bl_generate_functions = importlib.import_module(".agents.bl_generate_functions", package=PACKAGE)
+    destination = f"{"/".join(bl_generate_functions.__file__.split("/")[0:-1])}/beamlit.py"
+    if not os.path.exists(destination):
+        bl_generate_functions.run(f"{"/".join(bl_generate_functions.__file__.split("/")[0:-1])}/beamlit.py")
+    main_agent = importlib.import_module(".agents.main", package=PACKAGE)
+
     yield
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
