@@ -167,9 +167,11 @@ from .bl_config import BL_CONFIG
         for agent in agents:
             code += generate_chain_code(agent)
             export_chain += f'BeamlitChain{agent["name"].title().replace("-", "")}(),'
-    export_code = export_code[:-1]
+    if len(functions) > 0:
+        export_code = export_code[:-1]
     export_code += ']'
-    export_chain = export_chain[:-1]
+    if BL_CONFIG.get('agent_chain') and len(BL_CONFIG['agent_chain']) > 0:
+        export_chain = export_chain[:-1]
     export_chain += ']'
     with open(destination, "w") as f:
         f.write(code + export_code + export_chain)
