@@ -32,12 +32,11 @@ agent = create_json_chat_agent(model, functions, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=functions)
 
 async def chain_function(all_responses, agent_config):
-    from .beamlit import BeamlitChain
+    from .beamlit import chains
 
-    chain_functions = [BeamlitChain()]
     model = get_chat_model()
-    agent_two = create_json_chat_agent(model, chain_functions, prompt)
-    agent_two_executor = AgentExecutor(agent=agent_two, tools=chain_functions)
+    agent_two = create_json_chat_agent(model, chains, prompt)
+    agent_two_executor = AgentExecutor(agent=agent_two, tools=chains)
     for chunk in agent_two_executor.stream({"input": json.dumps(all_responses)}, agent_config):
         if "output" in chunk:
             response = chunk["output"]
@@ -57,8 +56,8 @@ async def main(request: Request):
             response = chunk["output"]
 
     all_responses.append({"input": response})
-    chain = BL_CONFIG.get('chain')
-    if chain and chain.get('enabled'):
+    chain = BL_CONFIG.get('agent_chain')
+    if chain and len(chain) > 0:
         response = await chain_function(all_responses, agent_config)
     return response
 
