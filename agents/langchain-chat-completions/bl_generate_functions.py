@@ -14,6 +14,9 @@ def get_functions_from_beamlit() -> List[Dict]:
     elif BL_CONFIG.get('jwt'):
         headers["X-Beamlit-Authorization"] = f"Bearer {BL_CONFIG['jwt']}"
 
+    if not BL_CONFIG.get('functions') or len(BL_CONFIG['functions']) == 0:
+        return []
+
     response = requests.get(f"{BL_CONFIG['base_url']}/functions", headers=headers, params={"deployment": "true"})
     if response.status_code != 200:
         raise Exception(f"Failed to get functions from beamlit: {response.text}")
