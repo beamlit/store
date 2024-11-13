@@ -1,6 +1,7 @@
 import asyncio
 import filecmp
 import importlib
+import logging
 import os
 import sys
 import traceback
@@ -8,6 +9,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+
+from .logger import init as logger_init
 
 RUN_MODE = 'prod' if sys.argv[1] == 'run' else 'dev'
 PACKAGE = os.getenv("PACKAGE", "app")
@@ -31,7 +34,7 @@ async def lifespan(app: FastAPI):
                 shutil.copy(f"{source_folder}/{file}", f"{destination_folder}/{file}")
 
     bl_config = importlib.import_module(".agents.bl_config", package=PACKAGE)
-    bl_config.init()
+    config = bl_config.init()
     bl_auth = importlib.import_module(".agents.bl_auth", package=PACKAGE)
     await bl_auth.auth()
     asyncio.create_task(bl_auth.auth_loop())
@@ -40,7 +43,7 @@ async def lifespan(app: FastAPI):
     if not os.path.exists(destination):
         bl_generate_functions.run(f"{"/".join(bl_generate_functions.__file__.split("/")[0:-1])}/beamlit.py")
     main_agent = importlib.import_module(".agents.main", package=PACKAGE)
-
+    logger_init()
     yield
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)

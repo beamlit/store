@@ -8,6 +8,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+from .logger import init as logger_init
+
 RUN_MODE = 'prod' if sys.argv[1] == 'run' else 'dev'
 PACKAGE = os.getenv("PACKAGE", "app")
 
@@ -31,6 +33,9 @@ async def lifespan(app: FastAPI):
             if file.endswith(".py") and (not os.path.exists(f"{destination_folder}/{file}") or not filecmp.cmp(f"{source_folder}/{file}", f"{destination_folder}/{file}")):
                 shutil.copy(f"{source_folder}/{file}", f"{destination_folder}/{file}")
         main_function = importlib.import_module(".functions", package=PACKAGE)
+
+    logger_init()
+
     yield
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
