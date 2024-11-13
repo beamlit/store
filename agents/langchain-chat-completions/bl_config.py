@@ -21,7 +21,7 @@ def init() -> List[Dict]:
     for key in os.environ:
         if key.startswith("BL_"):
             if key == "BL_FUNCTIONS":
-                BL_CONFIG['functions'] = os.getenv(key).replace(" ", "").split(',')
+                BL_CONFIG['functions'] = [f for f in os.getenv(key).replace(" ", "").split(',') if f]
             elif key == "BL_AGENT_CHAIN":
                 BL_CONFIG['agent_chain'] = json.loads(os.getenv(key))
             else:

@@ -147,7 +147,7 @@ class BeamlitChain{name}(BaseTool):
             return repr(e), {{}}
 '''
 
-def generate_functions(destination: str, functions: List[Dict]):
+def run(destination: str):
     imports = '''from typing import Dict, List, Literal, Optional, Tuple, Type, Union
 from langchain_core.callbacks import CallbackManagerForToolRun
 from langchain_core.tools import BaseTool
@@ -159,15 +159,17 @@ from .bl_config import BL_CONFIG
     export_code = '\n\nfunctions = ['
     export_chain = '\n\nchains = ['
     code = imports
-    for function_config in functions:
-        code += generate_function_code(function_config)
-        export_code += f'Beamlit{function_config["name"].title().replace("-", "")}(),'
+    if BL_CONFIG.get('functions') and len(BL_CONFIG['functions']) > 0:
+        functions = get_functions_from_beamlit()
+        for function_config in functions:
+            code += generate_function_code(function_config)
+            export_code += f'Beamlit{function_config["name"].title().replace("-", "")}(),'
     if BL_CONFIG.get('agent_chain') and len(BL_CONFIG['agent_chain']) > 0:
         agents = get_agents_from_beamlit()
         for agent in agents:
             code += generate_chain_code(agent)
             export_chain += f'BeamlitChain{agent["name"].title().replace("-", "")}(),'
-    if len(functions) > 0:
+    if BL_CONFIG.get('functions') and len(BL_CONFIG['functions']) > 0:
         export_code = export_code[:-1]
     export_code += ']'
     if BL_CONFIG.get('agent_chain') and len(BL_CONFIG['agent_chain']) > 0:
@@ -175,7 +177,3 @@ from .bl_config import BL_CONFIG
     export_chain += ']'
     with open(destination, "w") as f:
         f.write(code + export_code + export_chain)
-
-def run(destination: str):
-    functions = get_functions_from_beamlit()
-    generate_functions(destination, functions)
