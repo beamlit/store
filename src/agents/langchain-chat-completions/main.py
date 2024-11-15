@@ -91,7 +91,9 @@ async def main(request: Request):
         response = await ask_agent(body, agent_config)
         all_responses.append({"input": response, "llm": True})
 
-    if request.query_params.get('all_responses'):
+    send_all_responses = request.query_params.get('all_responses') in ["true", "True", "TRUE"]
+    logger.info(f"Sending all_responses:{send_all_responses}")
+    if send_all_responses is True:
         return all_responses
     return all_responses[-1]
 
