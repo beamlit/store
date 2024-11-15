@@ -9,8 +9,9 @@ from langchain_core.prompts.loading import load_prompt_from_config
 from langchain_mistralai.chat_models import ChatMistralAI
 from langchain_openai import ChatOpenAI
 
+from common.bl_config import BL_CONFIG
+
 from .beamlit import functions
-from .bl_config import BL_CONFIG
 from .prompt import prompt
 
 logger = logging.getLogger(__name__)
@@ -50,35 +51,49 @@ async def chain_function(all_responses, agent_config):
             response = chunk["output"]
     return response
 
+async def ask_agent(body, agent_config):
+    global model
+    if model is None:
+        model = get_chat_model()
+        logger.info(f"Chat model configured, using: {BL_CONFIG['provider']}:{BL_CONFIG['llm']}")
+
+    response = ""
+    agent = create_json_chat_agent(model, functions, prompt)
+    agent_executor = AgentExecutor(agent=agent, tools=functions)
+    for chunk in agent_executor.stream(body, agent_config):
+        logger.debug(chunk)
+        if "output" in chunk:
+            response = chunk["output"]
+    return response
+
 async def main(request: Request):
     global model
 
     sub = request.headers.get("X-Beamlit-Sub", str(uuid.uuid4()))
     agent_config = {"configurable": {"thread_id": sub}}
-    response = ""
     body = await request.json()
     if body.get("inputs"):
         body["input"] = body["inputs"]
 
-    # Create the agent
-    if model is None:
-        model = get_chat_model()
-        logger.info(f"Chat model configured, using: {BL_CONFIG['provider']}:{BL_CONFIG['llm']}")
-
-    agent = create_json_chat_agent(model, functions, prompt)
-    agent_executor = AgentExecutor(agent=agent, tools=functions)
 
     all_responses = [body]
-    for chunk in agent_executor.stream(body, agent_config):
-        logger.debug(chunk)
-        if "output" in chunk:
-            response = chunk["output"]
+    functions = BL_CONFIG.get('functions')
+    if len(functions) > 0:
+        response = await ask_agent(body, agent_config)
+        all_responses.append({"input": response, "function": True})
 
-    all_responses.append({"input": response})
     chain = BL_CONFIG.get('agent_chain')
     if chain and len(chain) > 0:
         response = await chain_function(all_responses, agent_config)
-    return response
+        all_responses.append({"input": response, "chain": True})
+
+    if len(all_responses) == 1:
+        response = await ask_agent(body, agent_config)
+        all_responses.append({"input": response, "llm": True})
+
+    if request.query_params.get('all_responses'):
+        return all_responses
+    return all_responses[-1]
 
 if __name__ == "__main__":
     main()

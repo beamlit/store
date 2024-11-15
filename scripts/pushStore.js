@@ -9,7 +9,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const IMAGE = process.env.IMAGE;
 
 const parseYaml = async (type, func) => {
-  const yamlPath = path.join(type, func, "beamlit.yaml");
+  const yamlPath = path.join("src", type, func, "beamlit.yaml");
   const yamlContent = await fs.readFile(yamlPath, "utf8");
   const parsedYaml = yaml.load(yamlContent);
   return parsedYaml;

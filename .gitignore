@@ -7,8 +7,8 @@ node_modules
 package.json
 package-lock.json
 tmp
-apps/app-function/functions
-apps/app-agent/agents
+src/apps/app-function/functions
+src/apps/app-agent/agents
 # C extensions
 *.so
 

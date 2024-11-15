@@ -1,17 +1,21 @@
 meta {
   name: Agent
   type: http
-  seq: 4
+  seq: 3
 }
 
 post {
-  url: http://localhost:1338
+  url: http://localhost:1338?all_responses=true
   body: json
   auth: none
 }
 
+params:query {
+  all_responses: true
+}
+
 body:json {
   {
-    "input": "What's the weather in san francisco ?"
+    "input": "I want you to order a burge at the best place in San Francisco"
   }
 }

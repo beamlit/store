@@ -1,0 +1,17 @@
+meta {
+  name: Function search
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "query": "weather in san francisco"
+  }
+}

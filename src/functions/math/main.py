@@ -4,10 +4,6 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from .parse_beamlit import parse_beamlit_yaml
-
-# TODO: Move this to the sdk
-config = parse_beamlit_yaml()
 
 class Expression(BaseModel):
     query: str

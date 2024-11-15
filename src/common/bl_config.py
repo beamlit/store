@@ -7,13 +7,13 @@ import yaml
 global BL_CONFIG
 BL_CONFIG = {}
 
-def init() -> List[Dict]:
+def init(directory: str = os.path.dirname(__file__)) -> List[Dict]:
     """Parse the beamlit.yaml file to get function configurations."""
     global BL_CONFIG
-    yaml_path = os.path.join(os.path.dirname(__file__), "beamlit.yaml")
+    yaml_path = os.path.join(directory, "beamlit.yaml")
 
     if not os.path.exists(yaml_path):
-        raise Exception("beamlit.yaml not found")
+        raise Exception(f"beamlit.yaml not found in {directory}")
 
     with open(yaml_path, "r") as f:
         BL_CONFIG = yaml.safe_load(f)

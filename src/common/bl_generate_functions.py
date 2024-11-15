@@ -1,9 +1,8 @@
 from typing import Dict, List
 
 import requests
-import yaml
 
-from .bl_config import BL_CONFIG
+from common.bl_config import BL_CONFIG
 
 
 def get_functions_from_beamlit() -> List[Dict]:
@@ -153,7 +152,7 @@ from langchain_core.callbacks import CallbackManagerForToolRun
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 import requests
-from .bl_config import BL_CONFIG
+from common.bl_config import BL_CONFIG
 '''
 
     export_code = '\n\nfunctions = ['

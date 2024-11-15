@@ -1,22 +1,24 @@
 FROM python:3.12-slim
 
-ARG TOOL="search"
+ARG AGENT="langchain-chat-completions"
 ARG UV_VERSION="latest"
 
 # Install uv.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Copy the application into the container.
-COPY apps/app-function /beamlit/app
+COPY src/apps/app-agent /beamlit/app
+COPY src/common /beamlit/common
 COPY uv.lock /beamlit/uv.lock
 COPY README.md /beamlit/README.md
 COPY LICENSE /beamlit/LICENSE
 
-COPY functions/${TOOL} /beamlit/app/functions/
-COPY functions/${TOOL}/pyproject.toml /beamlit/pyproject.toml
+COPY src/agents/${AGENT} /beamlit/app/agents/
+COPY src/agents/${AGENT}/pyproject.toml /beamlit/pyproject.toml
 
 # Install the application dependencies.
 WORKDIR /beamlit
+
 RUN uv sync --frozen --no-cache
 
 # Run the application.
