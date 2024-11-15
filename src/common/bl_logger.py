@@ -17,7 +17,7 @@ class ColoredFormatter(logging.Formatter):
         return super().format(record)
 
 def init():
-    level = os.getenv('LOG_LEVEL', os.getenv('BL_LOG_LEVEL', logging.INFO))
+    level = os.getenv('LOG_LEVEL', os.getenv('BL_LOG_LEVEL', logging.DEBUG))
     handler = logging.StreamHandler()
     handler.setFormatter(ColoredFormatter('%(levelname)s:\t  %(name)s - %(message)s'))
     logging.basicConfig(

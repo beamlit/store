@@ -75,7 +75,7 @@ async def main(request: Request):
     if body.get("inputs"):
         body["input"] = body["inputs"]
 
-
+    response = ""
     all_responses = [body]
     functions = BL_CONFIG.get('functions')
     if len(functions) > 0:
@@ -95,7 +95,7 @@ async def main(request: Request):
     logger.info(f"Sending all_responses:{send_all_responses}")
     if send_all_responses is True:
         return all_responses
-    return all_responses[-1]
+    return response
 
 if __name__ == "__main__":
     main()
