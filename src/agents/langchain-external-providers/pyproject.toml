@@ -14,9 +14,3 @@ dependencies = [
     "langchain-core==0.3.13",
     "langgraph==0.2.40",
 ]
-
-[build-system]
-requires = [
-    "hatchling",
-]
-build-backend = "hatchling.build"
