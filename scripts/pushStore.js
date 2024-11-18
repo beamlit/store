@@ -15,8 +15,8 @@ const parseYaml = async (type, func) => {
   return parsedYaml;
 };
 
-const pushStore = async (type, func) => {
-  const content = await parseYaml(type, func);
+const pushStore = async (type, resource) => {
+  const content = await parseYaml(type, resource);
   content.image = IMAGE;
   const response = await fetch(
     `${STORE_URL}/admin/store/${type}/${content.name}`,
@@ -34,7 +34,7 @@ const pushStore = async (type, func) => {
   );
   if (response.status !== 200) {
     throw new Error(
-      `Failed to push ${type} ${func} to store, cause ${await response.text()}`
+      `Failed to push ${type} ${resource} to store, cause ${await response.text()}`
     );
   }
 };
