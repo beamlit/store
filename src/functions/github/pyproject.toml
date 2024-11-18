@@ -8,4 +8,5 @@ dependencies = [
     "fastapi[standard]>=0.115.4",
     "langchain-community>=0.3.3",
     "pygithub>=2.5.0",
+    "tiktoken>=0.8.0"
 ]

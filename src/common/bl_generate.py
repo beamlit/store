@@ -1,15 +1,28 @@
-from typing import Dict
+from typing import Dict, Tuple
 
 from common.bl_config import BL_CONFIG
 
 
-def generate_function_code(function_config: Dict) -> str:
-    name = function_config["function"].title().replace("-", "")
+def getTitlesName(name: str) -> str:
+    return name.title().replace("-", "").replace("_", "")
+
+def generate_kit_function_code(function_config: Dict) -> Tuple[str, str]:
+    export_code = ""
+    code = ""
+    for kit in function_config["kit"]:
+        body = {"function": kit["name"], "workspace": function_config["workspace"], **kit}
+        new_code, export = generate_function_code(body, force_name_in_endpoint=function_config["function"])
+        code += new_code
+        export_code += export
+    return code, export_code
+
+def generate_function_code(function_config: Dict, force_name_in_endpoint: str = "") -> Tuple[str, str]:
+    name = getTitlesName(function_config["function"])
     args_list = ", ".join(f"{param['name']}: str" for param in function_config["parameters"])
-    args_schema = "\n    ".join(
-        f"{param['name']}: str = Field(description='{param.get('description', '')}')"
-        for param in function_config["parameters"]
-    )
+    args_schema = ""
+    for param in function_config["parameters"]:
+        args_schema += f'{param["name"]}: str = Field(description="""{param.get("description", "")}""")\n    '
+
     return_direct = str(function_config.get("return_direct", False))
     if BL_CONFIG.get('jwt'):
         headers = f'''{{
@@ -19,6 +32,7 @@ def generate_function_code(function_config: Dict) -> str:
         headers = f'''{{
                 "X-Beamlit-Api-Key": BL_CONFIG['api_key']
             }}'''
+    endpoint_name = force_name_in_endpoint or function_config["function"]
     return f'''
 class Beamlit{name}Input(BaseModel):
     {args_schema}
@@ -38,16 +52,16 @@ class Beamlit{name}(BaseTool):
     ) -> Tuple[Union[List[Dict[str, str]], str], Dict]:
         try:
             headers = {headers}
-            response = requests.post("{BL_CONFIG['run_url']}/{function_config['workspace']}/functions/{function_config['function']}", headers=headers, json={{{", ".join(f'"{param['name']}": {param['name']}' for param in function_config["parameters"])}}})
+            response = requests.post("{BL_CONFIG['run_url']}/{function_config['workspace']}/functions/{endpoint_name}", headers=headers, json={{{", ".join(f'"{param['name']}": {param['name']}' for param in function_config["parameters"])}}})
             if response.status_code >= 400:
                 raise Exception(f"Failed to run tool {name}, {{response.status_code}}::{{response.text}}")
             return response.json(), {{}}
         except Exception as e:
             return repr(e), {{}}
-'''
+''', f'Beamlit{getTitlesName(function_config["function"])}(),'
 
-def generate_chain_code(agent: Dict) -> str:
-    name = agent["name"].title().replace("-", "")
+def generate_chain_code(agent: Dict) -> Tuple[str, str]:
+    name = getTitlesName(agent["name"])
     return_direct = str(agent.get("return_direct", False))
     if BL_CONFIG.get('jwt'):
         headers = f'''{{
@@ -82,7 +96,7 @@ class BeamlitChain{name}(BaseTool):
             return response.json(), {{}}
         except Exception as e:
             return repr(e), {{}}
-'''
+''', f'BeamlitChain{name}(),'
 
 def run(destination: str):
     imports = '''from typing import Dict, List, Literal, Optional, Tuple, Type, Union
@@ -98,12 +112,19 @@ from common.bl_config import BL_CONFIG
     code = imports
     if BL_CONFIG.get('agent_functions') and len(BL_CONFIG['agent_functions']) > 0:
         for function_config in BL_CONFIG['agent_functions']:
-            code += generate_function_code(function_config)
-            export_code += f'Beamlit{function_config["function"].title().replace("-", "")}(),'
+            if function_config.get("kit") and len(function_config["kit"]) > 0:
+                new_code, export = generate_kit_function_code(function_config)
+                code += new_code
+                export_code += export
+            else:
+                new_code, export = generate_function_code(function_config)
+                code += new_code
+                export_code += export
     if BL_CONFIG.get('agent_chain') and len(BL_CONFIG['agent_chain']) > 0:
         for agent in BL_CONFIG['agent_chain']:
-            code += generate_chain_code(agent)
-            export_chain += f'BeamlitChain{agent["name"].title().replace("-", "")}(),'
+            new_code, export = generate_chain_code(agent)
+            code += new_code
+            export_chain += export
     if BL_CONFIG.get('agent_functions') and len(BL_CONFIG['agent_functions']) > 0:
         export_code = export_code[:-1]
     export_code += ']'

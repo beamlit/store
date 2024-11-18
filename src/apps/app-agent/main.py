@@ -63,7 +63,7 @@ async def root(request: Request):
     from common.bl_config import BL_CONFIG
     try:
         chain = BL_CONFIG.get('agent_chain') or []
-        functions = BL_CONFIG.get('functions') or []
+        functions = BL_CONFIG.get('agent_functions') or []
         if len(chain) == 0 and len(functions) == 0:
             content = {"error": "No agent chain or functions configured"}
             return JSONResponse(status_code=400, content=content)
