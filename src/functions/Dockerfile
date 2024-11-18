@@ -9,7 +9,6 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 # Copy the application into the container.
 COPY src/apps/app-function /beamlit/app
 COPY src/common /beamlit/common
-COPY uv.lock /beamlit/uv.lock
 COPY README.md /beamlit/README.md
 COPY LICENSE /beamlit/LICENSE
 
@@ -18,7 +17,7 @@ COPY src/functions/${TOOL}/pyproject.toml /beamlit/pyproject.toml
 
 # Install the application dependencies.
 WORKDIR /beamlit
-RUN uv sync --frozen --no-cache
+RUN uv sync --no-cache
 
 # Run the application.
 ENV PATH="/beamlit/.venv/bin:$PATH"
