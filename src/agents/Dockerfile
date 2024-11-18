@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-ARG AGENT="langchain-chat-completions"
+ARG AGENT="langchain-external-providers"
 ARG UV_VERSION="latest"
 
 # Install uv.

@@ -23,7 +23,7 @@ async def lifespan(app: FastAPI):
         import shutil
         if not os.path.exists("src/apps/app-agent/agents"):
             os.makedirs("src/apps/app-agent/agents")
-        agent = os.getenv("AGENT", "langchain-chat-completions") or "langchain-chat-completions"
+        agent = os.getenv("AGENT", "langchain-external-providers") or "langchain-external-providers"
         cwd = os.getcwd()
         source_folder = f"{cwd}/src/agents/{agent}"
         destination_folder = f"{cwd}/src/apps/app-agent/agents"
