@@ -18,9 +18,9 @@ run-agent-dev:
 	AGENT=$(ARGS) PACKAGE=apps.app-agent uv run fastapi dev --port 1338 src/apps/app-agent
 
 run-agent:
+	rm -rf src/apps/app-agent/agents/beamlit.py
 	mkdir -p src/apps/app-agent/agents
 	cp -r src/agents/$(ARGS)/* src/apps/app-agent/agents/
-	rm -rf src/apps/app-agent/agents/beamlit.py
 	PACKAGE=apps.app-agent uv run fastapi run --port 1338 src/apps/app-agent
 
 build-agent:

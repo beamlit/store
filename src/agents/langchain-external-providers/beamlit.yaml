@@ -1,6 +1,6 @@
-name: langchain-chat-completions
+name: langchain-external-providers
 display_name: AI Providers Agent
-description: A chat agent using AI providers to handle your tasks.
+description: A chat agent using AI providers like OpenAI, Anthropic, and Mistral to handle your tasks.
 type: agent
 configuration:
   - name: provider

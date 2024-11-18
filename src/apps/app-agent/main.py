@@ -21,7 +21,6 @@ async def lifespan(app: FastAPI):
     global main_agent
     if RUN_MODE == 'dev':
         import shutil
-
         if not os.path.exists("src/apps/app-agent/agents"):
             os.makedirs("src/apps/app-agent/agents")
         agent = os.getenv("AGENT", "langchain-chat-completions") or "langchain-chat-completions"
@@ -32,15 +31,23 @@ async def lifespan(app: FastAPI):
             if (file.endswith(".py") or file.endswith(".yaml")) and (not os.path.exists(f"{destination_folder}/{file}") or not filecmp.cmp(f"{source_folder}/{file}", f"{destination_folder}/{file}")):
                 shutil.copy(f"{source_folder}/{file}", f"{destination_folder}/{file}")
 
+    # Init configuration
     bl_config = importlib.import_module("common.bl_config", package=PACKAGE)
+    bl_config.BL_CONFIG["type"] = "agent"
     bl_config.init(os.path.join(os.path.dirname(__file__), "agents"))
+
+    # Authenticate loop for control plane authentication
     bl_auth = importlib.import_module("common.bl_auth", package=PACKAGE)
     await bl_auth.auth()
     asyncio.create_task(bl_auth.auth_loop())
-    bl_generate_functions = importlib.import_module("common.bl_generate_functions", package=PACKAGE)
+
+    # Init agent configuration
+    bl_config.init_agent()
+
+    bl_generate = importlib.import_module("common.bl_generate", package=PACKAGE)
     destination = f"{os.path.dirname(__file__)}/agents/beamlit.py"
     if not os.path.exists(destination):
-        bl_generate_functions.run(destination)
+        bl_generate.run(destination)
     main_agent = importlib.import_module(".agents.main", package=PACKAGE)
     logger_init()
     yield
@@ -53,8 +60,14 @@ async def health():
 
 @app.post("/")
 async def root(request: Request):
+    from common.bl_config import BL_CONFIG
     try:
-        return JSONResponse(await main_agent.main(request))
+        chain = BL_CONFIG.get('agent_chain') or []
+        functions = BL_CONFIG.get('functions') or []
+        if len(chain) == 0 and len(functions) == 0:
+            content = {"error": "No agent chain or functions configured"}
+            return JSONResponse(status_code=400, content=content)
+        return await main_agent.main(request)
     except ValueError as e:
         content = {"error": str(e)}
         if RUN_MODE == 'dev':
