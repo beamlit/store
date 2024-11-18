@@ -12,4 +12,5 @@ dependencies = [
     "langchain-core==0.3.13",
     "langgraph==0.2.40",
     "langchain-anthropic>=0.2.3",
+    "pygithub>=2.5.0",
 ]
