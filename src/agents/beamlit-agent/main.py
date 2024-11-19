@@ -30,6 +30,7 @@ def get_chat_model():
         max_tokens=100,
         default_query=params,
         default_headers=headers,
+        api_key="fake_api_key",
         temperature=0
     )
 
