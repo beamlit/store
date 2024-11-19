@@ -23,11 +23,11 @@ def get_chat_model():
     if "provider" not in BL_CONFIG:
         raise ValueError("Provider not found in configuration")
     if BL_CONFIG['provider'] == 'openai':
-        return ChatOpenAI(model=BL_CONFIG["llm"], temperature=0, api_key=BL_CONFIG["openai_api_key"])
+        return ChatOpenAI(model=BL_CONFIG["model"], temperature=0, api_key=BL_CONFIG["openai_api_key"])
     elif BL_CONFIG['provider'] == 'anthropic':
-        return ChatAnthropic(model=BL_CONFIG["llm"], temperature=0, api_key=BL_CONFIG["anthropic_api_key"])
+        return ChatAnthropic(model=BL_CONFIG["model"], temperature=0, api_key=BL_CONFIG["anthropic_api_key"])
     elif BL_CONFIG['provider'] == 'mistral':
-        return ChatMistralAI(model=BL_CONFIG["llm"], temperature=0, api_key=BL_CONFIG["mistral_api_key"])
+        return ChatMistralAI(model=BL_CONFIG["model"], temperature=0, api_key=BL_CONFIG["mistral_api_key"])
     else:
         raise ValueError(f"Invalid provider: {BL_CONFIG['provider']}")
 
@@ -35,7 +35,7 @@ async def ask_agent(body, tools, agent_config):
     global model
     if model is None:
         model = get_chat_model()
-        logger.info(f"Chat model configured, using: {BL_CONFIG['provider']}:{BL_CONFIG['llm']}")
+        logger.info(f"Chat model configured, using: {BL_CONFIG['provider']}:{BL_CONFIG['model']}")
 
     memory = MemorySaver()
     agent = create_react_agent(model, tools, checkpointer=memory)

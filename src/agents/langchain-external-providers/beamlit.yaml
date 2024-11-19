@@ -7,7 +7,7 @@ configuration:
   - name: provider
     display_name: Provider
     type: selectbox
-    description: The LLM to use.
+    description: The provider to use.
     required: true
     options:
       - label: OpenAI
@@ -19,7 +19,7 @@ configuration:
   - name: model
     display_name: Model
     type: selectbox
-    description: The LLM to use.
+    description: The Model to use.
     required: true
     if: provider !== ''
     options:

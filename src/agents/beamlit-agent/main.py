@@ -18,9 +18,9 @@ global model
 model = None
 
 def get_base_url():
-    if "llm" not in BL_CONFIG:
-        raise ValueError("LLM not found in configuration")
-    return f'{BL_CONFIG["run_url"]}/{BL_CONFIG["workspace"]}/models/{BL_CONFIG["llm"]}/v1'
+    if "model" not in BL_CONFIG:
+        raise ValueError("model not found in configuration")
+    return f'{BL_CONFIG["run_url"]}/{BL_CONFIG["workspace"]}/models/{BL_CONFIG["model"]}/v1'
 
 def get_chat_model():
     headers = {"Authorization": f"Bearer {BL_CONFIG['jwt']}", "X-Beamlit-Environment": BL_CONFIG["environment"]}
@@ -37,7 +37,7 @@ async def ask_agent(body, tools, agent_config):
     global model
     if model is None:
         model = get_chat_model()
-        logger.info(f"Chat model configured, using: {BL_CONFIG['provider']}:{BL_CONFIG['llm']}")
+        logger.info(f"Chat model configured, using: {BL_CONFIG['model']}")
 
     memory = MemorySaver()
     agent = create_react_agent(model, tools, checkpointer=memory)
