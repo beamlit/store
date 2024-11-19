@@ -4,7 +4,8 @@ description: A chat agent using a compatible Beamlit Model to handle your tasks.
 type: agent
 framework: langchain
 configuration:
-  - name: model_name
+  - name: model
+    display_name: Model
     type: selectbeamlitmodel
     description: The Beamlit Model to use.
     available_models:

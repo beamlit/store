@@ -5,12 +5,15 @@ subtype: kit
 description: A function to perform actions on Github.
 configuration:
   - name: github_repository
+    display_name: Repository
     description: Github repository name
     required: true
   - name: github_app_id
+    display_name: App ID
     description: Github app id
     required: true
   - name: github_app_private_key
+    display_name: Private Key
     description: Github app private key
     type: textarea
     secret: true

@@ -5,6 +5,7 @@ type: agent
 framework: langchain
 configuration:
   - name: provider
+    display_name: Provider
     type: selectbox
     description: The LLM to use.
     required: true
@@ -15,7 +16,8 @@ configuration:
         value: anthropic
       - label: Mistral
         value: mistral
-  - name: llm
+  - name: model
+    display_name: Model
     type: selectbox
     description: The LLM to use.
     required: true
@@ -31,18 +33,21 @@ configuration:
         if: provider === 'mistral'
         value: mistral-7b-latest
   - name: openai_api_key
+    display_name: OpenAI API Key
     if: provider === 'openai'
     description: OpenAI API key.
     type: string
     required: true
     secret: true
   - name: anthropic_api_key
+    display_name: Anthropic API Key
     if: provider === 'anthropic'
     description: Anthropic API key.
     type: string
     required: true
     secret: true
   - name: mistral_api_key
+    display_name: Mistral API Key
     if: provider === 'mistral'
     description: Mistral API key.
     type: string

@@ -9,6 +9,7 @@ parameters:
     required: true
 configuration:
   - name: tavily_api_key
+    display_name: Tavily API Key
     description: Tavily API key
     required: true
     secret: true
