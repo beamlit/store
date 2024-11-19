@@ -33,6 +33,7 @@ async def lifespan(app: FastAPI):
                 shutil.copy(f"{source_folder}/{file}", f"{destination_folder}/{file}")
 
     bl_config = importlib.import_module("common.bl_config", package=PACKAGE)
+    bl_config.BL_CONFIG["type"] = "function"
     bl_config.init(os.path.join(os.path.dirname(__file__), "functions"))
 
     bl_auth = importlib.import_module("common.bl_auth", package=PACKAGE)

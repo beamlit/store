@@ -1,0 +1,12 @@
+name: beamlit-agent
+display_name: AI Beamlit Agent
+description: A chat agent using a compatible Beamlit Model to handle your tasks.
+type: agent
+framework: langchain
+configuration:
+  - name: model_name
+    type: selectbeamlitmodel
+    description: The Beamlit Model to use.
+    available_models:
+      - meta-llama/Llama-3.2-1B-Instruct
+    required: true

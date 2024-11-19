@@ -22,9 +22,9 @@ def init_agent():
         return
 
     # Init configuration from beamlit control plane
-    name = BL_CONFIG.get('name')
-    env = BL_CONFIG.get('environment')
-    headers = {"X-Beamlit-Workspace": BL_CONFIG['workspace']}
+    name = BL_CONFIG['name']
+    env = BL_CONFIG['environment']
+    headers = {"X-Beamlit-Workspace": BL_CONFIG['workspace'], "X-Beamlit-Environment": env}
 
     if BL_CONFIG.get('api_key'):
         headers["Api-Key"] = BL_CONFIG['api_key']
@@ -37,7 +37,6 @@ def init_agent():
     agent_config = response.json()
     BL_CONFIG['agent_functions'] = agent_config['functions']
     BL_CONFIG['agent_chain'] = agent_config['agent_chain']
-    return
 
 def init(directory: str = os.path.dirname(__file__)) -> List[Dict]:
     """Parse the beamlit.yaml file to get function configurations."""
@@ -54,6 +53,7 @@ def init(directory: str = os.path.dirname(__file__)) -> List[Dict]:
         if key.startswith("BL_"):
             BL_CONFIG[key.replace("BL_", "").lower()] = os.getenv(key)
 
+    BL_CONFIG['name'] = BL_CONFIG.get('name', 'dev-name')
     BL_CONFIG['environment'] = BL_CONFIG.get('environment', 'production')
     BL_CONFIG['base_url'] = BL_CONFIG.get('base_url', "https://api.beamlit.dev/v0")
     BL_CONFIG['run_url'] = BL_CONFIG.get('run_url', "https://run.beamlit.dev")
@@ -64,6 +64,8 @@ def init(directory: str = os.path.dirname(__file__)) -> List[Dict]:
         raise Exception("Workspace is required")
     if not BL_CONFIG['environment']:
         raise Exception("Environment is required")
+    if not BL_CONFIG['name']:
+        raise Exception("Name is required")
     if not BL_CONFIG['type']:
         raise Exception("Type is required")
     return BL_CONFIG

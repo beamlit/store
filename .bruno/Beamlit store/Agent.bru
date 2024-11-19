@@ -5,17 +5,17 @@ meta {
 }
 
 post {
-  url: http://localhost:1338?all_responses=true
+  url: http://localhost:1338?debug=true
   body: json
   auth: none
 }
 
 params:query {
-  all_responses: true
+  debug: true
 }
 
 body:json {
   {
-    "input": "Can you retrieve pull request from my github repository, after retrieving it generate a small changelog about each one ?"
+    "input": "Give me the content of my api/README.md on github"
   }
 }

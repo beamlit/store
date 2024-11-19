@@ -2,8 +2,6 @@ import logging
 import uuid
 
 from fastapi import Request, Response
-from langchain_anthropic import ChatAnthropic
-from langchain_mistralai.chat_models import ChatMistralAI
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import create_react_agent
@@ -19,17 +17,21 @@ global model
 
 model = None
 
+def get_base_url():
+    if "llm" not in BL_CONFIG:
+        raise ValueError("LLM not found in configuration")
+    return f'{BL_CONFIG["run_url"]}/{BL_CONFIG["workspace"]}/models/{BL_CONFIG["llm"]}/v1'
+
 def get_chat_model():
-    if "provider" not in BL_CONFIG:
-        raise ValueError("Provider not found in configuration")
-    if BL_CONFIG['provider'] == 'openai':
-        return ChatOpenAI(model=BL_CONFIG["llm"], temperature=0, api_key=BL_CONFIG["openai_api_key"])
-    elif BL_CONFIG['provider'] == 'anthropic':
-        return ChatAnthropic(model=BL_CONFIG["llm"], temperature=0, api_key=BL_CONFIG["anthropic_api_key"])
-    elif BL_CONFIG['provider'] == 'mistral':
-        return ChatMistralAI(model=BL_CONFIG["llm"], temperature=0, api_key=BL_CONFIG["mistral_api_key"])
-    else:
-        raise ValueError(f"Invalid provider: {BL_CONFIG['provider']}")
+    headers = {"Authorization": f"Bearer {BL_CONFIG['jwt']}", "X-Beamlit-Environment": BL_CONFIG["environment"]}
+    params = {"environment": BL_CONFIG["environment"]}
+    return ChatOpenAI(
+        base_url=get_base_url(),
+        max_tokens=100,
+        default_query=params,
+        default_headers=headers,
+        temperature=0
+    )
 
 async def ask_agent(body, tools, agent_config):
     global model

@@ -5,6 +5,6 @@ description = "A search engine optimized for comprehensive, accurate, and truste
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi[standard]>=0.115.4",
-    "langchain-community>=0.3.3",
+    "fastapi[standard]==0.115.4",
+    "langchain-community==0.3.3",
 ]
