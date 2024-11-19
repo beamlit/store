@@ -90,10 +90,13 @@ class BeamlitChain{name}(BaseTool):
     ) -> Tuple[Union[List[Dict[str, str]], str], Dict]:
         try:
             headers = {headers}
-            response = requests.post("{BL_CONFIG['run_url']}/{agent['workspace']}/agents/{agent['name']}", headers=headers, json={{"input": input}})
+            response = requests.post("{BL_CONFIG['run_url']}/{BL_CONFIG['workspace']}/agents/{agent['name']}", headers=headers, json={{"input": input}})
             if response.status_code >= 400:
                 raise Exception(f"Failed to run tool {agent['name']}, {{response.status_code}}::{{response.text}}")
-            return response.json(), {{}}
+            if response.headers.get("Content-Type") == "application/json":
+                return response.json(), {{}}
+            else:
+                return response.text, {{}}
         except Exception as e:
             return repr(e), {{}}
 ''', f'BeamlitChain{name}(),'
@@ -122,6 +125,7 @@ from common.bl_config import BL_CONFIG
                 export_code += export
     if BL_CONFIG.get('agent_chain') and len(BL_CONFIG['agent_chain']) > 0:
         for agent in BL_CONFIG['agent_chain']:
+            print(agent)
             new_code, export = generate_chain_code(agent)
             code += new_code
             export_chain += export

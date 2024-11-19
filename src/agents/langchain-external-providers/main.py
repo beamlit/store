@@ -47,7 +47,7 @@ async def ask_agent(body, tools, agent_config):
 
 async def main(request: Request):
     sub = request.headers.get("X-Beamlit-Sub", str(uuid.uuid4()))
-    agent_config = {"configurable": {"thread_id": sub}}
+    agent_config = {"configurable": {"thread_id": sub}, "recursion_limit": 100}
     body = await request.json()
     if body.get("inputs"):
         body["input"] = body["inputs"]
