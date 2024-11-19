@@ -23,7 +23,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'get_issues', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'get_issues'"
         required: true
       - name: no_input
         type: string
@@ -36,7 +36,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'get_issue', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'get_issue'"
         required: true
       - name: issue_number
         type: integer
@@ -54,7 +54,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'comment_on_issue', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'comment_on_issue'"
         required: true
       - name: input
         type: string
@@ -67,7 +67,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'get_pull_request', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'get_pull_request'"
         required: true
       - name: pr_number
         type: integer
@@ -87,7 +87,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'create_pull_request', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'create_pull_request'"
         required: true
       - name: formatted_pr
         type: string
@@ -104,7 +104,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'create_file', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'create_file'"
         required: true
       - name: formatted_file
         type: string
@@ -118,7 +118,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'read_file', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'read_file'"
         required: true
       - name: formatted_filepath
         type: string
@@ -134,7 +134,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'update_file', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'update_file'"
         required: true
       - name: formatted_file_update
         type: string
@@ -148,7 +148,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'delete_file', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'delete_file'"
         required: true
       - name: formatted_filepath
         type: string
@@ -163,7 +163,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'get_files_from_directory', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'get_files_from_directory'"
         required: true
       - name: input
         type: string
@@ -177,7 +177,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'set_active_branch', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'set_active_branch'"
         required: true
       - name: branch_name
         type: string
@@ -190,7 +190,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'search_code', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'search_code'"
         required: true
       - name: search_query
         type: string
@@ -204,7 +204,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'create_review_request', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'create_review_request'"
         required: true
       - name: username
         type: string
@@ -217,7 +217,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'search_issues_and_prs', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'search_issues_and_prs'"
         required: true
       - name: search_query
         type: string
@@ -230,7 +230,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'list_open_pull_requests', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'list_open_pull_requests'"
         required: true
       - name: no_input
         type: string
@@ -244,7 +244,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'list_pull_request_files', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'list_pull_request_files'"
         required: true
       - name: pr_number
         type: integer
@@ -259,7 +259,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'list_files_in_main_branch', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'list_files_in_main_branch'"
         required: true
       - name: no_input
         type: string
@@ -273,7 +273,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'list_files_in_bot_branch', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'list_files_in_bot_branch'"
         required: true
       - name: no_input
         type: string
@@ -286,7 +286,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'list_branches_in_repo', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'list_branches_in_repo'"
         required: true
       - name: no_input
         type: string
@@ -299,7 +299,7 @@ kit:
     parameters:
       - name: name
         type: string
-        description: Must be 'create_branch', do not add beamlit_ prefix
+        description: "**VERY IMPORTANT**: Must be equal to 'create_branch'"
         required: true
       - name: branch_name
         type: string
