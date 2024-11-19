@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
 
         if not os.path.exists("src/apps/app-function/functions"):
             os.makedirs("src/apps/app-function/functions")
-        function = os.getenv("TOOL", "math")
+        function = os.getenv("FUNCTION", "math")
         cwd = os.getcwd()
         source_folder = f"{cwd}/src/functions/{function}"
         destination_folder = f"{cwd}/src/apps/app-function/functions"

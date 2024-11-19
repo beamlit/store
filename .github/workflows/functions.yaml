@@ -87,7 +87,7 @@ jobs:
           file: ./src/functions/Dockerfile
           tags: ghcr.io/${{ github.repository_owner }}/functions/${{ matrix.functions }}:latest
           build-args: |
-            TOOL=${{ matrix.functions }}
+            FUNCTION=${{ matrix.functions }}
 
   push-function:
     if: ${{ fromJson(needs.gen-matrix.outputs.matrix) }}

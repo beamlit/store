@@ -87,7 +87,7 @@ jobs:
           file: ./src/agents/Dockerfile
           tags: ghcr.io/${{ github.repository_owner }}/agents/${{ matrix.agents }}:latest
           build-args: |
-            TOOL=${{ matrix.agents }}
+            AGENT=${{ matrix.agents }}
 
   push-agent:
     if: ${{ fromJson(needs.gen-matrix.outputs.matrix) }}

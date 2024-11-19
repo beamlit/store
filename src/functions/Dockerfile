@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-ARG TOOL="search"
+ARG FUNCTION="search"
 ARG UV_VERSION="latest"
 
 # Install uv.
@@ -12,8 +12,8 @@ COPY src/common /beamlit/common
 COPY README.md /beamlit/README.md
 COPY LICENSE /beamlit/LICENSE
 
-COPY src/functions/${TOOL} /beamlit/app/functions/
-COPY src/functions/${TOOL}/pyproject.toml /beamlit/pyproject.toml
+COPY src/functions/${FUNCTION} /beamlit/app/functions/
+COPY src/functions/${FUNCTION}/pyproject.toml /beamlit/pyproject.toml
 
 # Install the application dependencies.
 WORKDIR /beamlit

@@ -1,7 +1,7 @@
 ARGS:= $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 run-function-dev:
-	TOOL=$(ARGS) PACKAGE=apps.app-function uv run fastapi dev --port 1338 src/apps/app-function
+	FUNCTION=$(ARGS) PACKAGE=apps.app-function uv run fastapi dev --port 1338 src/apps/app-function
 
 run-function:
 	mkdir -p src/apps/app-function/functions
@@ -9,7 +9,7 @@ run-function:
 	PACKAGE=apps.app-function uv run fastapi run --port 1338 src/apps/app-function
 
 build-function:
-	docker build --build-arg TOOL=$(ARGS) -t functions:$(ARGS) -f src/functions/Dockerfile .
+	docker build --build-arg FUNCTION=$(ARGS) -t functions:$(ARGS) -f src/functions/Dockerfile .
 
 run-docker-function:
 	docker run --rm -p 1338:80 functions:$(ARGS)
