@@ -1,7 +1,8 @@
 import logging
+import time
 import uuid
 
-from fastapi import Request, Response
+from fastapi import BackgroundTasks, Request, Response
 from langchain_anthropic import ChatAnthropic
 from langchain_mistralai.chat_models import ChatMistralAI
 from langchain_openai import ChatOpenAI
@@ -9,6 +10,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import create_react_agent
 
 from common.bl_config import BL_CONFIG
+from common.bl_register_request import handle_chunk, register, send
 
 # this is dynamically generated, so ignore linting
 from .beamlit import chains, functions  # type: ignore
@@ -31,7 +33,7 @@ def get_chat_model():
     else:
         raise ValueError(f"Invalid provider: {BL_CONFIG['provider']}")
 
-async def ask_agent(body, tools, agent_config):
+async def ask_agent(request, body, tools, agent_config, background_tasks: BackgroundTasks):
     global model
     if model is None:
         model = get_chat_model()
@@ -40,20 +42,25 @@ async def ask_agent(body, tools, agent_config):
     memory = MemorySaver()
     agent = create_react_agent(model, tools, checkpointer=memory)
     all_responses = []
+    start = time.time()
     for chunk in agent.stream({"messages": [("user", body["input"])]}, config=agent_config):
-        # Do update asynchronously of task in control plane, use a queue to update the task
+        end = time.time()
+        background_tasks.add_task(handle_chunk, request, chunk, start, end)
         all_responses.append(chunk)
+        start = end
     return all_responses
 
-async def main(request: Request):
+async def main(request: Request, background_tasks: BackgroundTasks):
     sub = request.headers.get("X-Beamlit-Sub", str(uuid.uuid4()))
     agent_config = {"configurable": {"thread_id": sub}}
     body = await request.json()
     if body.get("inputs"):
         body["input"] = body["inputs"]
 
-    responses = await ask_agent(body, chains + functions, agent_config)
     debug = request.query_params.get('debug') in ["true", "True", "TRUE"]
+    background_tasks.add_task(register, request)
+    responses = await ask_agent(request, body, chains + functions, agent_config, background_tasks)
+    background_tasks.add_task(send, request, debug=debug)
     if debug:
         return responses
     else:
