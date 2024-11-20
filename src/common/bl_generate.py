@@ -52,8 +52,9 @@ class Beamlit{name}(BaseTool):
     ) -> Tuple[Union[List[Dict[str, str]], str], Dict]:
         try:
             headers = {headers}
-            response = requests.post("{BL_CONFIG['run_url']}/{function_config['workspace']}/functions/{endpoint_name}", headers=headers, json={{{", ".join(f'"{param['name']}": {param['name']}' for param in function_config["parameters"])}}})
+            response = requests.post("{BL_CONFIG['run_url']}/{BL_CONFIG['workspace']}/functions/{endpoint_name}", headers=headers, json={{{", ".join(f'"{param['name']}": {param['name']}' for param in function_config["parameters"])}}})
             if response.status_code >= 400:
+                logger.error(f"Failed to run tool {function_config['name']}, {{response.status_code}}::{{response.text}}")
                 raise Exception(f"Failed to run tool {name}, {{response.status_code}}::{{response.text}}")
             return response.json(), {{}}
         except Exception as e:
@@ -92,6 +93,7 @@ class BeamlitChain{name}(BaseTool):
             headers = {headers}
             response = requests.post("{BL_CONFIG['run_url']}/{BL_CONFIG['workspace']}/agents/{agent['name']}", headers=headers, json={{"input": input}})
             if response.status_code >= 400:
+                logger.error(f"Failed to run tool {agent['name']}, {{response.status_code}}::{{response.text}}")
                 raise Exception(f"Failed to run tool {agent['name']}, {{response.status_code}}::{{response.text}}")
             if response.headers.get("Content-Type") == "application/json":
                 return response.json(), {{}}
@@ -106,8 +108,11 @@ def run(destination: str):
 from langchain_core.callbacks import CallbackManagerForToolRun
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
+from logging import getLogger
 import requests
 from common.bl_config import BL_CONFIG
+
+logger = getLogger(__name__)
 '''
 
     export_code = '\n\nfunctions = ['
@@ -125,7 +130,6 @@ from common.bl_config import BL_CONFIG
                 export_code += export
     if BL_CONFIG.get('agent_chain') and len(BL_CONFIG['agent_chain']) > 0:
         for agent in BL_CONFIG['agent_chain']:
-            print(agent)
             new_code, export = generate_chain_code(agent)
             code += new_code
             export_chain += export
