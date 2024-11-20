@@ -11,12 +11,12 @@ def generate_kit_function_code(function_config: Dict) -> Tuple[str, str]:
     code = ""
     for kit in function_config["kit"]:
         body = {"function": kit["name"], "workspace": function_config["workspace"], **kit}
-        new_code, export = generate_function_code(body, force_name_in_endpoint=function_config["function"])
+        new_code, export = generate_function_code(body, force_name_in_endpoint=function_config["function"], kit=True)
         code += new_code
         export_code += export
     return code, export_code
 
-def generate_function_code(function_config: Dict, force_name_in_endpoint: str = "") -> Tuple[str, str]:
+def generate_function_code(function_config: Dict, force_name_in_endpoint: str = "", kit: bool = False) -> Tuple[str, str]:
     name = getTitlesName(function_config["function"])
     args_list = ", ".join(f"{param['name']}: str" for param in function_config["parameters"])
     args_schema = ""
@@ -33,6 +33,15 @@ def generate_function_code(function_config: Dict, force_name_in_endpoint: str = 
                 "X-Beamlit-Api-Key": BL_CONFIG['api_key']
             }}'''
     endpoint_name = force_name_in_endpoint or function_config["function"]
+    body = f'{", ".join(f'"{param['name']}": {param['name']}' for param in function_config["parameters"])}'
+    if kit is True:
+        has_name = False
+        for param in function_config["parameters"]:
+            if param["name"] == "name":
+                has_name = True
+                break
+        if not has_name:
+            body += f', "name": "{function_config["function"]}"'
     return f'''
 class Beamlit{name}Input(BaseModel):
     {args_schema}
@@ -52,7 +61,7 @@ class Beamlit{name}(BaseTool):
     ) -> Tuple[Union[List[Dict[str, str]], str], Dict]:
         try:
             headers = {headers}
-            response = requests.post("{BL_CONFIG['run_url']}/{BL_CONFIG['workspace']}/functions/{endpoint_name}", headers=headers, json={{{", ".join(f'"{param['name']}": {param['name']}' for param in function_config["parameters"])}}})
+            response = requests.post("{BL_CONFIG['run_url']}/{BL_CONFIG['workspace']}/functions/{endpoint_name}", headers=headers, json={{{body}}})
             if response.status_code >= 400:
                 logger.error(f"Failed to run tool {function_config['name']}, {{response.status_code}}::{{response.text}}")
                 raise Exception(f"Failed to run tool {name}, {{response.status_code}}::{{response.text}}")
