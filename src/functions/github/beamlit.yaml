@@ -24,10 +24,6 @@ kit:
       This tool will fetch a list of the repository's issues. It will return the title, and issue
       number of 5 issues. It takes no input.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'get_issues'"
-        required: true
       - name: no_input
         type: string
         description: No input required, e.g. `` (empty string).
@@ -37,10 +33,6 @@ kit:
       This tool will fetch the title, body, and comment thread of a specific issue. **VERY IMPORTANT**:
       You must specify the issue number as an integer.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'get_issue'"
-        required: true
       - name: issue_number
         type: integer
         description: Issue number as an integer, e.g. `42`
@@ -55,10 +47,6 @@ kit:
       - Then you must place two newlines
       - Then you must specify your comment
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'comment_on_issue'"
-        required: true
       - name: input
         type: string
         description: Follow the required formatting.
@@ -68,10 +56,6 @@ kit:
       This tool will fetch the title, body, comment thread and commit history of a specific Pull
       Request (by PR number). **VERY IMPORTANT**: You must specify the PR number as an integer.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'get_pull_request'"
-        required: true
       - name: pr_number
         type: integer
         description: The PR number as an integer, e.g. `12`
@@ -88,10 +72,6 @@ kit:
       When appropriate, always reference relevant issues in the body by using the syntax
       `closes #<issue_number` like `closes #3, closes #6`.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'create_pull_request'"
-        required: true
       - name: formatted_pr
         type: string
         description: Follow the required formatting.
@@ -105,10 +85,6 @@ kit:
         path must not start with a slash)
       - Then you must specify the contents of the file
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'create_file'"
-        required: true
       - name: formatted_file
         type: string
         description: Follow the required formatting.
@@ -119,10 +95,6 @@ kit:
       Simply pass in the full file path of the file you would like to read. **IMPORTANT**: the path
       must not start with a slash
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'read_file'"
-        required: true
       - name: formatted_filepath
         type: string
         description: The full file path of the file you would like to read where the path must NOT start with a slash, e.g. `some_dir/my_file.py`.
@@ -135,10 +107,6 @@ kit:
       - Then you must specify the old contents which you would like to replace wrapped in OLD <<<< and >>>> OLD
       - Then you must specify the new contents which you would like to replace the old contents with wrapped in NEW <<<< and >>>> NEW
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'update_file'"
-        required: true
       - name: formatted_file_update
         type: string
         description: Strictly follow the provided rules.
@@ -149,10 +117,6 @@ kit:
       repository. Simply pass in the full file path of the file you would like to delete.
       **IMPORTANT**: the path must not start with a slash
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'delete_file'"
-        required: true
       - name: formatted_filepath
         type: string
         description: |
@@ -164,10 +128,6 @@ kit:
       This tool will fetch a list of all files in a specified directory. **VERY IMPORTANT**: You must
       specify the path of the directory as a string input parameter.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'get_files_from_directory'"
-        required: true
       - name: input
         type: string
         description: The path of the directory, e.g. `some_dir/inner_dir`.
@@ -178,10 +138,6 @@ kit:
       and `git switch -c <branch_name>`. **VERY IMPORTANT**: You must specify the name of the branch
       as a string input parameter.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'set_active_branch'"
-        required: true
       - name: branch_name
         type: string
         description: The name of the branch, e.g. `my_branch`.
@@ -191,10 +147,6 @@ kit:
       This tool will search for code in the repository. **VERY IMPORTANT**: You must specify the
       search query as a string input parameter.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'search_code'"
-        required: true
       - name: search_query
         type: string
         description: A keyword-focused natural language search query for code, e.g. `MyFunctionName()`.
@@ -205,10 +157,6 @@ kit:
       branch. **VERY IMPORTANT**: You must specify the username of the person who is being requested
       as a string input parameter.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'create_review_request'"
-        required: true
       - name: username
         type: string
         description: GitHub username of the user being requested, e.g. `my_username`.
@@ -218,10 +166,6 @@ kit:
       This tool will search for issues and pull requests in the repository. **VERY IMPORTANT**: You
       must specify the search query as a string input parameter.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'search_issues_and_prs'"
-        required: true
       - name: search_query
         type: string
         description: Natural language search query, e.g. `My issue title or topic`.
@@ -231,10 +175,6 @@ kit:
       This tool will fetch a list of the repository's Pull Requests (PRs). It will return the title,
       and PR number of 5 PRs. It takes no input.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'list_open_pull_requests'"
-        required: true
       - name: no_input
         type: string
         description: No input required, e.g. `` (empty string).
@@ -245,10 +185,6 @@ kit:
       an input. This is useful for understanding the code changes in a PR or contributing to it.
       **VERY IMPORTANT**: You must specify the PR number as an integer input parameter.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'list_pull_request_files'"
-        required: true
       - name: pr_number
         type: integer
         description: The PR number as an integer, e.g. `12`
@@ -260,10 +196,6 @@ kit:
       This can be useful for understanding the structure and content of the repository, especially
       when navigating through large codebases. No input parameters are required.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'list_files_in_main_branch'"
-        required: true
       - name: no_input
         type: string
         description: No input required, e.g. `` (empty string).
@@ -274,10 +206,6 @@ kit:
       implement changes. This is great for getting a high level overview of the structure of your
       code. No input parameters are required.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'list_files_in_bot_branch'"
-        required: true
       - name: no_input
         type: string
         description: No input required, e.g. `` (empty string).
@@ -287,10 +215,6 @@ kit:
       This tool will fetch a list of all branches in the repository. It will return the name of each
       branch. No input parameters are required.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'list_branches_in_repo'"
-        required: true
       - name: no_input
         type: string
         description: No input required, e.g. `` (empty string).
@@ -300,10 +224,6 @@ kit:
       This tool will create a new branch in the repository. **VERY IMPORTANT**: You must specify the
       name of the new branch as a string input parameter.
     parameters:
-      - name: name
-        type: string
-        description: "**VERY IMPORTANT**: Must be equal to 'create_branch'"
-        required: true
       - name: branch_name
         type: string
         description: The name of the branch, e.g. `my_branch`.
