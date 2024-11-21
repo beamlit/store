@@ -63,8 +63,8 @@ class Beamlit{name}(BaseTool):
             headers = {headers}
             response = requests.post("{BL_CONFIG['run_url']}/{BL_CONFIG['workspace']}/functions/{endpoint_name}", headers=headers, json={{{body}}})
             if response.status_code >= 400:
-                logger.error(f"Failed to run tool {function_config['name']}, {{response.status_code}}::{{response.text}}")
-                raise Exception(f"Failed to run tool {name}, {{response.status_code}}::{{response.text}}")
+                logger.error(f"Failed to run function {name}, {{response.status_code}}::{{response.text}}")
+                raise Exception(f"Failed to run function {name}, {{response.status_code}}::{{response.text}}")
             return response.json(), {{}}
         except Exception as e:
             return repr(e), {{}}
