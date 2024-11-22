@@ -71,7 +71,7 @@ async def main(request: Request, background_tasks: BackgroundTasks):
         body["input"] = body["inputs"]
 
     debug = request.query_params.get('debug') in ["true", "True", "TRUE"]
-    background_tasks.add_task(register, debug=debug)
+    background_tasks.add_task(register, time.time(), debug=debug)
     responses = await ask_agent(body, chains + functions, agent_config, background_tasks, debug=debug)
     background_tasks.add_task(send, debug=debug)
     if debug:
