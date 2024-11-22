@@ -43,7 +43,7 @@ async def ask_agent(body, tools, agent_config, background_tasks: BackgroundTasks
 
     # instantiate tools with headers and params
     headers = {
-        "x-request-id": correlation_id.get() or "",
+        "x-beamlit-request-id": correlation_id.get() or "",
     }
     if BL_CONFIG.get('jwt'):
         headers["x-beamlit-authorization"] = f"Bearer {BL_CONFIG['jwt']}"

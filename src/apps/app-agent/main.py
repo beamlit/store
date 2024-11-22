@@ -59,7 +59,7 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
-app.add_middleware(CorrelationIdMiddleware, generator=lambda: str(uuid4()))
+app.add_middleware(CorrelationIdMiddleware, header_name="x-beamlit-request-id", generator=lambda: str(uuid4()))
 
 @app.get("/health")
 async def health():
