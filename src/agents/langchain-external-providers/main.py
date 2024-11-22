@@ -80,6 +80,5 @@ async def main(request: Request, background_tasks: BackgroundTasks):
         content = responses[-1]["agent"]["messages"][-1].content
         return Response(content=content, headers={"Content-Type": "text/plain"}, status_code=200)
 
-
 if __name__ == "__main__":
     main()

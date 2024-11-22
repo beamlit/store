@@ -1,15 +1,20 @@
+import time
 from datetime import datetime, timezone
 from logging import getLogger
 
 import requests
 from asgi_correlation_id import correlation_id
-from fastapi import Request
 
 from common.bl_config import BL_CONFIG
 
 history = {}
 
 logger = getLogger(__name__)
+
+def get_date_from_time(time: float):
+    local_dt = datetime.now()
+    tz = timezone(local_dt.astimezone().utcoffset())
+    return datetime.fromtimestamp(time, tz=tz).isoformat()
 
 def set_event(id, event):
     global history
@@ -74,11 +79,8 @@ def handle_chunk_agent(chunk, start_dt, end_dt):
 async def handle_chunk(chunk, start: float, end: float, debug=False):
     global history
 
-    # Get local timezone offset from UTC
-    local_dt = datetime.now()
-    tz = timezone(local_dt.astimezone().utcoffset())
-    start_dt = datetime.fromtimestamp(start, tz=tz).isoformat()
-    end_dt = datetime.fromtimestamp(end, tz=tz).isoformat()
+    start_dt = get_date_from_time(start)
+    end_dt = get_date_from_time(end)
     if "agent" in chunk:
         handle_chunk_agent(chunk, start_dt, end_dt)
     elif "tools" in chunk:
@@ -105,6 +107,9 @@ async def send(debug=False):
     for _, event in rhistory["tmp_events"].items():
         rhistory["events"].append(event)
     rhistory["events"].sort(key=lambda x: x["start"])
+    rhistory["end"] = get_date_from_time(time.time())
+    status = "success" if all(event["status"] == "success" for event in rhistory["events"]) else "failed"
+    rhistory["status"] = status
     if debug is True:
         send_to_beamlit(request_id, rhistory)
     else:
@@ -119,6 +124,7 @@ async def register(debug=False):
         "environment": BL_CONFIG["environment"],
         "agent": BL_CONFIG["name"],
         "workspace": BL_CONFIG["workspace"],
+        "start": get_date_from_time(time.time()),
         "events": [],
         "tmp_events": {}
     }
