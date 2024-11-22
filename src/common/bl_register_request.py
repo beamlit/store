@@ -70,7 +70,7 @@ def handle_chunk_agent(request, chunk, start_dt, end_dt):
                 event["status"] = "running"
                 set_event(request, tool["id"], event)
 
-async def handle_chunk(request, chunk, start: float, end: float):
+async def handle_chunk(request, chunk, start: float, end: float, debug=False):
     global history
 
     # Get local timezone offset from UTC
@@ -108,7 +108,7 @@ async def send(request: Request, debug=False):
         send_to_beamlit(request_id, rhistory)
 
 
-async def register(request: Request):
+async def register(request: Request, debug=False):
     global history
 
     request_id = request.headers["x-request-id"]

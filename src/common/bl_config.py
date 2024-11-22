@@ -32,8 +32,7 @@ def init_agent():
         headers["X-Beamlit-Authorization"] = f"Bearer {BL_CONFIG['jwt']}"
 
     response = requests.get(f"{BL_CONFIG['base_url']}/agents/{name}/deployments/{env}", headers=headers, params={"configuration": "true"})
-    if response.status_code != 200:
-        raise Exception(f"Failed to get agent configuration from beamlit: {response.text}")
+    response.raise_for_status()
     agent_config = response.json()
     BL_CONFIG['agent_functions'] = agent_config['functions']
     BL_CONFIG['agent_chain'] = agent_config['agent_chain']

@@ -33,14 +33,26 @@ def get_chat_model():
     else:
         raise ValueError(f"Invalid provider: {BL_CONFIG['provider']}")
 
-async def ask_agent(request, body, tools, agent_config, background_tasks: BackgroundTasks):
+async def ask_agent(request: Request, body, tools, agent_config, background_tasks: BackgroundTasks, debug=False):
     global model
     if model is None:
         model = get_chat_model()
         logger.info(f"Chat model configured, using: {BL_CONFIG['provider']}:{BL_CONFIG['model']}")
 
+
+    # instantiate tools with headers and params
+    headers = {
+        "x-request-id": request.headers.get("x-request-id"),
+    }
+    if BL_CONFIG.get('jwt'):
+        headers["x-beamlit-authorization"] = f"Bearer {BL_CONFIG['jwt']}"
+    else:
+        headers["x-beamlit-api-key"] = BL_CONFIG['api_key']
+    metadata = {"params": {"debug": str(debug).lower()}, "headers": headers}
+    instantiated_tools = [tool(metadata=metadata) for tool in tools]
+
     memory = MemorySaver()
-    agent = create_react_agent(model, tools, checkpointer=memory)
+    agent = create_react_agent(model, instantiated_tools, checkpointer=memory)
     all_responses = []
     start = time.time()
     for chunk in agent.stream({"messages": [("user", body["input"])]}, config=agent_config):
@@ -58,8 +70,8 @@ async def main(request: Request, background_tasks: BackgroundTasks):
         body["input"] = body["inputs"]
 
     debug = request.query_params.get('debug') in ["true", "True", "TRUE"]
-    background_tasks.add_task(register, request)
-    responses = await ask_agent(request, body, chains + functions, agent_config, background_tasks)
+    background_tasks.add_task(register, request, debug=debug)
+    responses = await ask_agent(request, body, chains + functions, agent_config, background_tasks, debug=debug)
     background_tasks.add_task(send, request, debug=debug)
     if debug:
         return responses

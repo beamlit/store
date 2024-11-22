@@ -24,14 +24,6 @@ def generate_function_code(function_config: Dict, force_name_in_endpoint: str = 
         args_schema += f'{param["name"]}: str = Field(description="""{param.get("description", "")}""")\n    '
 
     return_direct = str(function_config.get("return_direct", False))
-    if BL_CONFIG.get('jwt'):
-        headers = f'''{{
-                "X-Beamlit-Authorization": f"Bearer {{BL_CONFIG['jwt']}}"
-            }}'''
-    else:
-        headers = f'''{{
-                "X-Beamlit-Api-Key": BL_CONFIG['api_key']
-            }}'''
     endpoint_name = force_name_in_endpoint or function_config["function"]
     body = f'{", ".join(f'"{param['name']}": {param['name']}' for param in function_config["parameters"])}'
     if kit is True:
@@ -60,27 +52,20 @@ class Beamlit{name}(BaseTool):
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> Tuple[Union[List[Dict[str, str]], str], Dict]:
         try:
-            headers = {headers}
-            response = requests.post("{BL_CONFIG['run_url']}/{BL_CONFIG['workspace']}/functions/{endpoint_name}", headers=headers, json={{{body}}})
+            headers = self.metadata.get("headers", {{}})
+            params = self.metadata.get("params", {{}})
+            response = requests.post("{BL_CONFIG['run_url']}/{BL_CONFIG['workspace']}/functions/{endpoint_name}", headers=headers, params=params, json={{{body}}})
             if response.status_code >= 400:
                 logger.error(f"Failed to run function {name}, {{response.status_code}}::{{response.text}}")
                 raise Exception(f"Failed to run function {name}, {{response.status_code}}::{{response.text}}")
             return response.json(), {{}}
         except Exception as e:
             return repr(e), {{}}
-''', f'Beamlit{getTitlesName(function_config["function"])}(),'
+''', f'Beamlit{getTitlesName(function_config["function"])},'
 
 def generate_chain_code(agent: Dict) -> Tuple[str, str]:
     name = getTitlesName(agent["name"])
     return_direct = str(agent.get("return_direct", False))
-    if BL_CONFIG.get('jwt'):
-        headers = f'''{{
-                "X-Beamlit-Authorization": f"Bearer {{BL_CONFIG['jwt']}}"
-            }}'''
-    else:
-        headers = f'''{{
-                "X-Beamlit-Api-Key": BL_CONFIG['api_key']
-            }}'''
     return f'''
 class BeamlitChain{name}Input(BaseModel):
     input: str = Field(description='{agent['description']}')
@@ -99,8 +84,9 @@ class BeamlitChain{name}(BaseTool):
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> Tuple[Union[List[Dict[str, str]], str], Dict]:
         try:
-            headers = {headers}
-            response = requests.post("{BL_CONFIG['run_url']}/{BL_CONFIG['workspace']}/agents/{agent['name']}", headers=headers, json={{"input": input}})
+            headers = self.metadata.get("headers", {{}})
+            params = self.metadata.get("params", {{}})
+            response = requests.post("{BL_CONFIG['run_url']}/{BL_CONFIG['workspace']}/agents/{agent['name']}", headers=headers, params=params, json={{"input": input}})
             if response.status_code >= 400:
                 logger.error(f"Failed to run tool {agent['name']}, {{response.status_code}}::{{response.text}}")
                 raise Exception(f"Failed to run tool {agent['name']}, {{response.status_code}}::{{response.text}}")
@@ -110,7 +96,7 @@ class BeamlitChain{name}(BaseTool):
                 return response.text, {{}}
         except Exception as e:
             return repr(e), {{}}
-''', f'BeamlitChain{name}(),'
+''', f'BeamlitChain{name},'
 
 def run(destination: str):
     imports = '''from typing import Dict, List, Literal, Optional, Tuple, Type, Union
