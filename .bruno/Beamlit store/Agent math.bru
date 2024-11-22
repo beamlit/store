@@ -1,0 +1,21 @@
+meta {
+  name: Agent math
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+params:query {
+  ~debug: true
+}
+
+body:json {
+  {
+    "inputs": "Calculate 2+2"
+  }
+}

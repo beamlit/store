@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from logging import getLogger
 
 import requests
+from asgi_correlation_id import correlation_id
 from fastapi import Request
 
 from common.bl_config import BL_CONFIG
@@ -10,17 +11,17 @@ history = {}
 
 logger = getLogger(__name__)
 
-def set_event(request, id, event):
+def set_event(id, event):
     global history
 
-    request_id = request.headers["x-request-id"]
+    request_id = correlation_id.get() or ""
     rhistory = history[request_id]
     rhistory["tmp_events"][id] = event
 
-def get_event(request, id):
+def get_event(id):
     global history
 
-    request_id = request.headers["x-request-id"]
+    request_id = correlation_id.get() or ""
     rhistory = history[request_id]
     return rhistory["tmp_events"].get(id) or {}
 
@@ -35,42 +36,42 @@ def find_function_name(function_name: str) -> str:
                     return function_config['function']
     return function_name
 
-def handle_chunk_tools(request, chunk, start_dt, end_dt):
+def handle_chunk_tools(chunk, start_dt, end_dt):
     messages = chunk["tools"]["messages"]
     for message in messages:
         # that means this is a request to send calls
         if message.content != "":
-            event = get_event(request, message.tool_call_id)
+            event = get_event(message.tool_call_id)
             event["end"] = end_dt
             event_status = "failed" if message.content.startswith("Exception") else "success"
             if event_status == "failed":
                 event["error"] = message.content
             event["status"] = event_status
-            set_event(request, message.tool_call_id, event)
+            set_event(message.tool_call_id, event)
 
-def handle_chunk_agent(request, chunk, start_dt, end_dt):
+def handle_chunk_agent(chunk, start_dt, end_dt):
     messages = chunk["agent"]["messages"]
     for message in messages:
         # that means this is a request to send calls
         if message.content == "" and message.tool_calls:
             for tool in message.tool_calls:
-                event = get_event(request, tool["id"])
+                event = get_event(tool["id"])
                 event["id"] = tool["id"]
                 event_type = "agent" if "beamlit_chain_" in tool["name"] else "function"
                 event["start"] = start_dt
                 if event_type == "agent":
-                    event["name"] = tool["name"].replace("beamlit_chain_", "", 1)
+                    event["name"] = tool["name"].replace("beamlit_chain_", "", 1).replace("_", "-")
                 else:
-                    tool_name = tool["name"].replace("beamlit_", "", 1)
+                    tool_name = tool["name"].replace("beamlit_", "", 1).replace("_", "-")
                     event["name"] = find_function_name(tool_name)
                     if event["name"] != tool_name:
                         event["sub_function"] = tool_name
                 event["type"] = event_type
                 event["parameters"] = tool.get("args")
                 event["status"] = "running"
-                set_event(request, tool["id"], event)
+                set_event(tool["id"], event)
 
-async def handle_chunk(request, chunk, start: float, end: float, debug=False):
+async def handle_chunk(chunk, start: float, end: float, debug=False):
     global history
 
     # Get local timezone offset from UTC
@@ -79,9 +80,9 @@ async def handle_chunk(request, chunk, start: float, end: float, debug=False):
     start_dt = datetime.fromtimestamp(start, tz=tz).isoformat()
     end_dt = datetime.fromtimestamp(end, tz=tz).isoformat()
     if "agent" in chunk:
-        handle_chunk_agent(request, chunk, start_dt, end_dt)
+        handle_chunk_agent(chunk, start_dt, end_dt)
     elif "tools" in chunk:
-        handle_chunk_tools(request, chunk, start_dt, end_dt)
+        handle_chunk_tools(chunk, start_dt, end_dt)
 
 def send_to_beamlit(request_id, rhistory):
     name = BL_CONFIG['name']
@@ -98,20 +99,22 @@ def send_to_beamlit(request_id, rhistory):
     if response.status_code != 200:
         logger.error(f"Failed to send history to beamlit: {response.text}")
 
-async def send(request: Request, debug=False):
-    request_id = request.headers["x-request-id"]
+async def send(debug=False):
+    request_id = correlation_id.get() or ""
     rhistory = history[request_id]
     for _, event in rhistory["tmp_events"].items():
         rhistory["events"].append(event)
     rhistory["events"].sort(key=lambda x: x["start"])
     if debug is True:
         send_to_beamlit(request_id, rhistory)
+    else:
+        logger.info(f"Skipping sending history to beamlit for request: {request_id}")
+        print(rhistory)
 
-
-async def register(request: Request, debug=False):
+async def register(debug=False):
     global history
 
-    request_id = request.headers["x-request-id"]
+    request_id = correlation_id.get() or ""
     history[request_id] = {
         "status": "running",
         "environment": BL_CONFIG["environment"],

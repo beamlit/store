@@ -21,7 +21,6 @@ main_agent = None
 async def init_app():
     import common.bl_auth as bl_auth
     import common.bl_generate as bl_generate
-    import common.bl_register_request as bl_register_request
 
     global main_agent
 

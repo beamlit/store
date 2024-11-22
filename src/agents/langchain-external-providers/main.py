@@ -2,6 +2,7 @@ import logging
 import time
 import uuid
 
+from asgi_correlation_id import correlation_id
 from fastapi import BackgroundTasks, Request, Response
 from langchain_anthropic import ChatAnthropic
 from langchain_mistralai.chat_models import ChatMistralAI
@@ -33,7 +34,7 @@ def get_chat_model():
     else:
         raise ValueError(f"Invalid provider: {BL_CONFIG['provider']}")
 
-async def ask_agent(request: Request, body, tools, agent_config, background_tasks: BackgroundTasks, debug=False):
+async def ask_agent(body, tools, agent_config, background_tasks: BackgroundTasks, debug=False):
     global model
     if model is None:
         model = get_chat_model()
@@ -42,7 +43,7 @@ async def ask_agent(request: Request, body, tools, agent_config, background_task
 
     # instantiate tools with headers and params
     headers = {
-        "x-request-id": request.headers.get("x-request-id"),
+        "x-request-id": correlation_id.get() or "",
     }
     if BL_CONFIG.get('jwt'):
         headers["x-beamlit-authorization"] = f"Bearer {BL_CONFIG['jwt']}"
@@ -57,7 +58,7 @@ async def ask_agent(request: Request, body, tools, agent_config, background_task
     start = time.time()
     for chunk in agent.stream({"messages": [("user", body["input"])]}, config=agent_config):
         end = time.time()
-        background_tasks.add_task(handle_chunk, request, chunk, start, end)
+        background_tasks.add_task(handle_chunk, chunk, start, end)
         all_responses.append(chunk)
         start = end
     return all_responses
@@ -70,9 +71,9 @@ async def main(request: Request, background_tasks: BackgroundTasks):
         body["input"] = body["inputs"]
 
     debug = request.query_params.get('debug') in ["true", "True", "TRUE"]
-    background_tasks.add_task(register, request, debug=debug)
-    responses = await ask_agent(request, body, chains + functions, agent_config, background_tasks, debug=debug)
-    background_tasks.add_task(send, request, debug=debug)
+    background_tasks.add_task(register, debug=debug)
+    responses = await ask_agent(body, chains + functions, agent_config, background_tasks, debug=debug)
+    background_tasks.add_task(send, debug=debug)
     if debug:
         return responses
     else:
