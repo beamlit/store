@@ -110,6 +110,10 @@ async def send(debug=False):
     rhistory["events"].sort(key=lambda x: x["start"])
     rhistory["end"] = get_date_from_time(time.time())
     status = "success" if all(event["status"] == "success" for event in rhistory["events"]) else "failed"
+    if len(rhistory["events"]) > 0:
+        status = rhistory["events"][-1]["status"]
+    else:
+        status = "success"
     rhistory["status"] = status
     if debug is True:
         send_to_beamlit(request_id, rhistory)
