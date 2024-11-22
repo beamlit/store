@@ -5,8 +5,9 @@ import os
 import sys
 import traceback
 from contextlib import asynccontextmanager
+from uuid import uuid4
 
-from asgi_correlation_id import CorrelationIdMiddleware
+from asgi_correlation_id import CorrelationIdMiddleware, correlation_id
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse
 
@@ -58,7 +59,7 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
-app.add_middleware(CorrelationIdMiddleware)
+app.add_middleware(CorrelationIdMiddleware, generator=lambda: str(uuid4()))
 
 @app.get("/health")
 async def health():
@@ -66,8 +67,13 @@ async def health():
 
 @app.post("/")
 async def root(request: Request, background_tasks: BackgroundTasks):
+    from logging import getLogger
+
     from common.bl_config import BL_CONFIG
+
+    logger = getLogger(__name__)
     try:
+        logger.info(f"Received request: {request.headers} vs {correlation_id.get()}")
         chain = BL_CONFIG.get('agent_chain') or []
         functions = BL_CONFIG.get('agent_functions') or []
         if len(chain) == 0 and len(functions) == 0:
