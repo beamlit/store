@@ -115,7 +115,7 @@ async def send(debug=False):
     else:
         logger.info(f"Skipping sending history to beamlit for request: {request_id}")
 
-async def register(debug=False):
+async def register(start: float, debug=False):
     global history
 
     request_id = correlation_id.get() or ""
@@ -124,7 +124,7 @@ async def register(debug=False):
         "environment": BL_CONFIG["environment"],
         "agent": BL_CONFIG["name"],
         "workspace": BL_CONFIG["workspace"],
-        "start": get_date_from_time(time.time()),
+        "start": get_date_from_time(start),
         "events": [],
         "tmp_events": {}
     }
