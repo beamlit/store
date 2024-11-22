@@ -73,7 +73,6 @@ async def root(request: Request, background_tasks: BackgroundTasks):
 
     logger = getLogger(__name__)
     try:
-        logger.info(f"Received request: {request.headers} vs {correlation_id.get()}")
         chain = BL_CONFIG.get('agent_chain') or []
         functions = BL_CONFIG.get('agent_functions') or []
         if len(chain) == 0 and len(functions) == 0:
@@ -84,9 +83,11 @@ async def root(request: Request, background_tasks: BackgroundTasks):
         content = {"error": str(e)}
         if RUN_MODE == 'dev':
             content["traceback"] = str(traceback.format_exc())
+        logger.error(f"{content}")
         return JSONResponse(status_code=400, content=content)
     except Exception as e:
         content = {"error": f"Internal server error, {e}"}
         if RUN_MODE == 'dev':
             content["traceback"] = str(traceback.format_exc())
+        logger.error(f"{content}")
         return JSONResponse(status_code=500, content=content)

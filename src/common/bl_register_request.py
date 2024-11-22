@@ -1,3 +1,4 @@
+import json
 import time
 from datetime import datetime, timezone
 from logging import getLogger
@@ -33,12 +34,12 @@ def get_event(id):
 def find_function_name(function_name: str) -> str:
     for function_config in BL_CONFIG['agent_functions']:
         if function_config['function'] == function_name:
-            return function_config['function']
+            return function_config['function'].replace("_", "")
     for function_config in BL_CONFIG['agent_functions']:
         if function_config.get("kit") and len(function_config["kit"]) > 0:
             for kit in function_config["kit"]:
                 if kit["name"] == function_name:
-                    return function_config['function']
+                    return function_config['function'].replace("_", "")
     return function_name
 
 def handle_chunk_tools(chunk, start_dt, end_dt):
@@ -48,7 +49,7 @@ def handle_chunk_tools(chunk, start_dt, end_dt):
         if message.content != "":
             event = get_event(message.tool_call_id)
             event["end"] = end_dt
-            event_status = "failed" if message.content.startswith("Exception") else "success"
+            event_status = "failed" if message.status == "error" else "success"
             if event_status == "failed":
                 event["error"] = message.content
             event["status"] = event_status
@@ -67,7 +68,7 @@ def handle_chunk_agent(chunk, start_dt, end_dt):
                 if event_type == "agent":
                     event["name"] = tool["name"].replace("beamlit_chain_", "", 1).replace("_", "-")
                 else:
-                    tool_name = tool["name"].replace("beamlit_", "", 1).replace("_", "-")
+                    tool_name = tool["name"].replace("beamlit_", "", 1)
                     event["name"] = find_function_name(tool_name)
                     if event["name"] != tool_name:
                         event["sub_function"] = tool_name

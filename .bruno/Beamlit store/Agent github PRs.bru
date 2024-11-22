@@ -1,0 +1,21 @@
+meta {
+  name: Agent github PRs
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+params:query {
+  ~debug: true
+}
+
+body:json {
+  {
+    "inputs": "List me my PR and add a changelog. Also list my PR from the store repository and do the changelog"
+  }
+}
