@@ -1,9 +1,0 @@
-name: math
-display_name: Math
-type: function
-description: A function for performing mathematical calculations.
-parameters:
-  - name: query
-    type: string
-    description: The expression to evaluate.
-    required: true

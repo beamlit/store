@@ -102,18 +102,17 @@ jobs:
       matrix: ${{ fromJson(needs.gen-matrix.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-python@v4
         with:
-          node-version: "20.x"
-      - run: npm install js-yaml node-fetch@2
+          python-version: '3.12'
+      - run: pip install yaml requests pydash
       - name: Push function
-        uses: actions/github-script@v7
         env:
           STORE_URL: ${{ vars.STORE_URL }}
           ADMIN_USERNAME: ${{ secrets.STORE_ADMIN_USERNAME }}
           ADMIN_PASSWORD: ${{ secrets.STORE_ADMIN_PASSWORD }}
           IMAGE: ghcr.io/${{ github.repository_owner }}/functions/${{ matrix.functions }}:latest
-        with:
-          script: |
-            const pushStore = require("./scripts/pushStore.js");
-            pushStore("functions", "${{ matrix.functions }}");
+          PACKAGE_TYPE: functions
+          PACKAGE_NAME: ${{ matrix.functions }}
+        run: |
+          python scripts/push_to_store.py

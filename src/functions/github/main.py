@@ -9,19 +9,17 @@ from common.bl_config import BL_CONFIG
 
 async def main(body: Dict[str, Any]):
     """
-    name: github
     display_name: Github
-    kit: true
     description: This function kit is used to perform actions on Github.
     configuration:
-        - name: github_token
-          display_name: Github Token
-          description: Github token
-          required: true
-        - name: github_repository
-          display_name: Repository
-          description: Github repository name
-          required: false
+    - name: github_token
+      display_name: Github Token
+      description: Github token
+      required: true
+    - name: github_repository
+      display_name: Repository
+      description: Github repository name
+      required: false
     """
     if "github_token" not in BL_CONFIG:
         raise ValueError("github_token missing from configuration.")
