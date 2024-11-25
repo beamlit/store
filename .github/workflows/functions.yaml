@@ -110,6 +110,7 @@ jobs:
         run: |
           pip install uv
           uv sync
+          . .venv/bin/activate
       - name: Push function
         env:
           STORE_URL: ${{ vars.STORE_URL }}
