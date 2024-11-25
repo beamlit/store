@@ -1,0 +1,18 @@
+meta {
+  name: Issue: get_issue
+  type: http
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "get_issue",
+    "repository": "beamlit/controlplane",
+    "issue_number": 34
+  }
+}

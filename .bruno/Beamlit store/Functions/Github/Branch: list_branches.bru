@@ -1,7 +1,6 @@
 meta {
-  name: Function github
+  name: Branch: list_branches
   type: http
-  seq: 2
 }
 
 post {
@@ -12,7 +11,7 @@ post {
 
 body:json {
   {
-    "name": "get_issues",
-    "no_input": ""
+    "name": "list_branches",
+    "repository": "beamlit/controlplane"
   }
 }

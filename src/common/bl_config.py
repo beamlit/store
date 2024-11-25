@@ -42,11 +42,9 @@ def init(directory: str = os.path.dirname(__file__)) -> List[Dict]:
     global BL_CONFIG
     yaml_path = os.path.join(directory, "beamlit.yaml")
 
-    if not os.path.exists(yaml_path):
-        raise Exception(f"beamlit.yaml not found in {directory}")
-
-    with open(yaml_path, "r") as f:
-        BL_CONFIG = yaml.safe_load(f)
+    if os.path.exists(yaml_path):
+        with open(yaml_path, "r") as f:
+            BL_CONFIG = yaml.safe_load(f)
 
     for key in os.environ:
         if key.startswith("BL_"):

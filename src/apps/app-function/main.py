@@ -16,11 +16,22 @@ PACKAGE = os.getenv("PACKAGE", "app")
 
 main_function = None
 
+def copy_folder(source_folder: str, destination_folder: str):
+    import shutil
+
+    for file in os.listdir(source_folder):
+        if os.path.isdir(f"{source_folder}/{file}"):
+            if not os.path.exists(f"{destination_folder}/{file}"):
+                os.makedirs(f"{destination_folder}/{file}")
+            copy_folder(f"{source_folder}/{file}", f"{destination_folder}/{file}")
+        elif not os.path.exists(f"{destination_folder}/{file}") or not filecmp.cmp(f"{source_folder}/{file}", f"{destination_folder}/{file}"):
+            shutil.copy(f"{source_folder}/{file}", f"{destination_folder}/{file}")
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global main_function
     if RUN_MODE == 'dev':
-        import shutil
+
 
         if not os.path.exists("src/apps/app-function/functions"):
             os.makedirs("src/apps/app-function/functions")
@@ -28,9 +39,7 @@ async def lifespan(app: FastAPI):
         cwd = os.getcwd()
         source_folder = f"{cwd}/src/functions/{function}"
         destination_folder = f"{cwd}/src/apps/app-function/functions"
-        for file in os.listdir(source_folder):
-            if file.endswith(".py") and (not os.path.exists(f"{destination_folder}/{file}") or not filecmp.cmp(f"{source_folder}/{file}", f"{destination_folder}/{file}")):
-                shutil.copy(f"{source_folder}/{file}", f"{destination_folder}/{file}")
+        copy_folder(source_folder, destination_folder)
 
     bl_config = importlib.import_module("common.bl_config", package=PACKAGE)
     bl_config.BL_CONFIG["type"] = "function"

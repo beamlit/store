@@ -1,0 +1,18 @@
+meta {
+  name: PR: open_pull_request
+  type: http
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "open_pull_request",
+    "repository": "beamlit/controlplane",
+    "pr_number": 34
+  }
+}

@@ -49,6 +49,21 @@ async def ask_agent(body, tools, agent_config):
     return all_responses
 
 async def main(request: Request):
+    """
+        name: beamlit-agent
+        display_name: AI Beamlit Agent
+        description: A chat agent using a compatible Beamlit Model to handle your tasks.
+        type: agent
+        framework: langchain
+        configuration:
+        - name: model
+            display_name: Model
+            type: selectbeamlitmodel
+            description: The Beamlit Model to use.
+            available_models:
+            - meta-llama/Llama-3.2-1B-Instruct
+            required: true
+    """
     sub = request.headers.get("X-Beamlit-Sub", str(uuid.uuid4()))
     agent_config = {"configurable": {"thread_id": sub}}
     body = await request.json()

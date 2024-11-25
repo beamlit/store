@@ -1,0 +1,18 @@
+meta {
+  name: Branch: delete_branch
+  type: http
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "delete_branch",
+    "repository": "beamlit/controlplane",
+    "branch": "test-chris"
+  }
+}

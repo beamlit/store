@@ -1,0 +1,19 @@
+meta {
+  name: File: read_file
+  type: http
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "read_file",
+    "repository": "beamlit/controlplane",
+    "path": "text.txt",
+    "branch": "test-chris"
+  }
+}
