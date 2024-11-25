@@ -57,12 +57,12 @@ async def main(request: Request):
         framework: langchain
         configuration:
         - name: model
-            display_name: Model
-            type: selectbeamlitmodel
-            description: The Beamlit Model to use.
-            available_models:
-            - meta-llama/Llama-3.2-1B-Instruct
-            required: true
+          display_name: Model
+          type: selectbeamlitmodel
+          description: The Beamlit Model to use.
+          available_models:
+          - meta-llama/Llama-3.2-1B-Instruct
+          required: true
     """
     sub = request.headers.get("X-Beamlit-Sub", str(uuid.uuid4()))
     agent_config = {"configurable": {"thread_id": sub}}

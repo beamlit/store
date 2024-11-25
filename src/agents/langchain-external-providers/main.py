@@ -72,11 +72,11 @@ async def main(request: Request, background_tasks: BackgroundTasks):
         framework: langchain
         configuration:
         - name: provider
-            display_name: Provider
-            type: selectbox
-            description: The provider to use.
-            required: true
-            options:
+          display_name: Provider
+          type: selectbox
+          description: The provider to use.
+          required: true
+          options:
             - label: OpenAI
               value: openai
             - label: Anthropic
@@ -84,12 +84,12 @@ async def main(request: Request, background_tasks: BackgroundTasks):
             - label: Mistral
               value: mistral
         - name: model
-            display_name: Model
-            type: selectbox
-            description: The Model to use.
-            required: true
-            if: provider !== ''
-            options:
+          display_name: Model
+          type: selectbox
+          description: The Model to use.
+          required: true
+          if: provider !== ''
+          options:
             - label: gpt-4o-mini
               if: provider === 'openai'
               value: gpt-4o-mini
@@ -100,26 +100,26 @@ async def main(request: Request, background_tasks: BackgroundTasks):
               if: provider === 'mistral'
               value: mistral-7b-latest
         - name: openai_api_key
-            display_name: OpenAI API Key
-            if: provider === 'openai'
-            description: OpenAI API key.
-            type: string
-            required: true
-            secret: true
+          display_name: OpenAI API Key
+          if: provider === 'openai'
+          description: OpenAI API key.
+          type: string
+          required: true
+          secret: true
         - name: anthropic_api_key
-            display_name: Anthropic API Key
-            if: provider === 'anthropic'
-            description: Anthropic API key.
-            type: string
-            required: true
-            secret: true
+          display_name: Anthropic API Key
+          if: provider === 'anthropic'
+          description: Anthropic API key.
+          type: string
+          required: true
+          secret: true
         - name: mistral_api_key
-            display_name: Mistral API Key
-            if: provider === 'mistral'
-            description: Mistral API key.
-            type: string
-            required: true
-            secret: true
+          display_name: Mistral API Key
+          if: provider === 'mistral'
+          description: Mistral API key.
+          type: string
+          required: true
+          secret: true
 
     """
     sub = request.headers.get("X-Beamlit-Sub", str(uuid.uuid4()))
