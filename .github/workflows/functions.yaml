@@ -108,8 +108,8 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pyyaml==6.0.2 requests==2.32.3 pydash==8.0.4
+          pip install uv
+          uv sync
       - name: Push function
         env:
           STORE_URL: ${{ vars.STORE_URL }}
