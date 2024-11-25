@@ -64,6 +64,64 @@ async def ask_agent(body, tools, agent_config, background_tasks: BackgroundTasks
     return all_responses
 
 async def main(request: Request, background_tasks: BackgroundTasks):
+    """
+        name: langchain-external-providers
+        display_name: AI Providers Agent
+        description: A chat agent using AI providers like OpenAI, Anthropic, and Mistral to handle your tasks.
+        type: agent
+        framework: langchain
+        configuration:
+        - name: provider
+            display_name: Provider
+            type: selectbox
+            description: The provider to use.
+            required: true
+            options:
+            - label: OpenAI
+              value: openai
+            - label: Anthropic
+              value: anthropic
+            - label: Mistral
+              value: mistral
+        - name: model
+            display_name: Model
+            type: selectbox
+            description: The Model to use.
+            required: true
+            if: provider !== ''
+            options:
+            - label: gpt-4o-mini
+              if: provider === 'openai'
+              value: gpt-4o-mini
+            - label: claude-3-5-sonnet-20240620
+              if: provider === 'anthropic'
+              value: claude-3-5-sonnet-20240620
+            - label: mistral-7b-latest
+              if: provider === 'mistral'
+              value: mistral-7b-latest
+        - name: openai_api_key
+            display_name: OpenAI API Key
+            if: provider === 'openai'
+            description: OpenAI API key.
+            type: string
+            required: true
+            secret: true
+        - name: anthropic_api_key
+            display_name: Anthropic API Key
+            if: provider === 'anthropic'
+            description: Anthropic API key.
+            type: string
+            required: true
+            secret: true
+        - name: mistral_api_key
+            display_name: Mistral API Key
+            if: provider === 'mistral'
+            description: Mistral API key.
+            type: string
+            required: true
+            secret: true
+
+    """
     sub = request.headers.get("X-Beamlit-Sub", str(uuid.uuid4()))
     agent_config = {"configurable": {"thread_id": sub}}
     body = await request.json()

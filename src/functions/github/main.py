@@ -1,29 +1,37 @@
 from typing import Any, Dict
 
+from github import Auth, Github
 from langchain_community.utilities.github import GitHubAPIWrapper
 
+import functions.github.kit as kit
 from common.bl_config import BL_CONFIG
 
 
 async def main(body: Dict[str, Any]):
-    if "github_repository" not in BL_CONFIG:
-        raise ValueError("github_repository missing from configuration.")
-    if "github_app_id" not in BL_CONFIG:
-        raise ValueError("github_app_id missing from configuration.")
-    if "github_app_private_key" not in BL_CONFIG:
-        raise ValueError("github_app_private_key missing from configuration.")
+    """
+    display_name: Github
+    description: This function kit is used to perform actions on Github.
+    configuration:
+    - name: github_token
+      display_name: Github Token
+      description: Github token
+      required: true
+    - name: github_repository
+      display_name: Repository
+      description: Github repository name
+      required: false
+    """
+    if "github_token" not in BL_CONFIG:
+        raise ValueError("github_token missing from configuration.")
 
-    config = {
-        "github_repository": BL_CONFIG["github_repository"],
-        "github_app_id": BL_CONFIG["github_app_id"],
-        "github_app_private_key": BL_CONFIG["github_app_private_key"],
-        "github_base_branch": BL_CONFIG.get("github_base_branch", None),
-        "active_branch": BL_CONFIG.get("active_branch", None),
-    }
-
-    api = GitHubAPIWrapper(**config)
     mode = body.pop("name")
-    if len(body.keys()) > 1 or len(body.keys()) == 0:
-        raise ValueError(f"Expected one argument in function schema, got {body.keys()}.")
-    query = str(list(body.values())[0])
-    return api.run(mode, query)
+    modes = {}
+
+    for func_name in dir(kit):
+        if not func_name.startswith('_'):
+            modes[func_name] = getattr(kit, func_name)
+    auth = Auth.Token(BL_CONFIG["github_token"])
+    gh = Github(auth=auth)
+    if mode not in modes:
+        raise ValueError(f"Invalid mode: {mode}")
+    return await modes[mode](gh, **body)

@@ -1,7 +1,6 @@
 meta {
-  name: Function math
+  name: Issue: get_issues
   type: http
-  seq: 2
 }
 
 post {
@@ -12,6 +11,7 @@ post {
 
 body:json {
   {
-    "query": "1+2"
+    "name": "get_issues",
+    "repository": "beamlit/controlplane"
   }
 }

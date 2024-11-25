@@ -1,0 +1,21 @@
+meta {
+  name: File: create_file
+  type: http
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "create_file",
+    "repository": "beamlit/controlplane",
+    "branch": "test-chris",
+    "path": "text.txt",
+    "message": "Add hello world to test, very important",
+    "content": "hello world"
+  }
+}

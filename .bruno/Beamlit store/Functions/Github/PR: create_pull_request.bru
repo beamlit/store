@@ -1,0 +1,22 @@
+meta {
+  name: PR: create_pull_request
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "create_pull_request",
+    "repository": "beamlit/controlplane",
+    "source_branch": "test-chris",
+    "destination_branch": "main",
+    "title": "Test pull request random",
+    "input": "Empty"
+  }
+}

@@ -1,0 +1,17 @@
+meta {
+  name: PR: list_open_pull_requests
+  type: http
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "list_open_pull_requests",
+    "repository": "beamlit/controlplane"
+  }
+}

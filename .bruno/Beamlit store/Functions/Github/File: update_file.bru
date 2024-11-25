@@ -1,0 +1,22 @@
+meta {
+  name: File: update_file
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "update_file",
+    "repository": "beamlit/controlplane",
+    "branch": "test-chris",
+    "path": "text.txt",
+    "message": "Update hello world to test, very important",
+    "content": "hello world 2"
+  }
+}
