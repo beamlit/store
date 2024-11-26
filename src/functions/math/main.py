@@ -1,11 +1,12 @@
 import math
 import operator
-from typing import Any
+from typing import Any, Dict
 
+from fastapi import BackgroundTasks, Request
 from pydantic import BaseModel, Field
 
 
-async def main(body: Any):
+async def main(request: Request, body: Dict[str, Any], background_tasks: BackgroundTasks):
     """
         display_name: Math
         description: A function for performing mathematical calculations.
