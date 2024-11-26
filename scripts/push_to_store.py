@@ -130,7 +130,7 @@ def run():
             value["description"] = tmp_value
             value["configuration"] = {}
         parameters = get_parameters(func)
-        print(parameters)
+        value["parameters"] = parameters
     except Exception as e:
         print(f"Could not parse value from docstring, {e}")
 

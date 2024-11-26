@@ -18,11 +18,16 @@ def generate_kit_function_code(function_config: Dict) -> Tuple[str, str]:
 
 def generate_function_code(function_config: Dict, force_name_in_endpoint: str = "", kit: bool = False) -> Tuple[str, str]:
     name = getTitlesName(function_config["function"])
-    args_list = ", ".join(f"{param['name']}: str" for param in function_config["parameters"])
+    if len(function_config["parameters"]) > 0:
+        args_list = ", ".join(f"{param['name']}: str" for param in function_config["parameters"])
+        args_list += ", "
+    else:
+        args_list = ""
     args_schema = ""
     for param in function_config["parameters"]:
         args_schema += f'{param["name"]}: str = Field(description="""{param.get("description", "")}""")\n    '
-
+    if len(args_schema) == 0:
+        args_schema = "pass"
     return_direct = str(function_config.get("return_direct", False))
     endpoint_name = force_name_in_endpoint or function_config["function"]
     body = f'{", ".join(f'"{param['name']}": {param['name']}' for param in function_config["parameters"])}'
@@ -33,7 +38,9 @@ def generate_function_code(function_config: Dict, force_name_in_endpoint: str = 
                 has_name = True
                 break
         if not has_name:
-            body += f', "name": "{function_config["function"]}"'
+            if len(body) > 0:
+                body += ", "
+            body += f'"name": "{function_config["function"]}"'
     return f'''
 class Beamlit{name}Input(BaseModel):
     {args_schema}
@@ -46,11 +53,7 @@ class Beamlit{name}(BaseTool):
     response_format: Literal["content_and_artifact"] = "content_and_artifact"
     return_direct: bool = {return_direct}
 
-    def _run(
-        self,
-        {args_list},
-        run_manager: Optional[CallbackManagerForToolRun] = None,
-    ) -> Tuple[Union[List[Dict[str, str]], str], Dict]:
+    def _run(self, {args_list} run_manager: Optional[CallbackManagerForToolRun] = None) -> Tuple[Union[List[Dict[str, str]], str], Dict]:
         try:
             headers = self.metadata.get("headers", {{}})
             params = self.metadata.get("params", {{}})
