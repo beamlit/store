@@ -1,0 +1,17 @@
+meta {
+  name: Star: get_star
+  type: http
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "get_star",
+    "repository": "beamlit/controlplane"
+  }
+}

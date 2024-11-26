@@ -5,6 +5,7 @@ from .pull_request import (close_pull_request, create_pull_request,
                            create_review_request, get_pull_request,
                            list_open_pull_requests, list_pull_request_files,
                            open_pull_request, search_issues_and_prs)
+from .star import get_star, set_star
 
 __all__ = [
     "create_branch",
@@ -27,4 +28,6 @@ __all__ = [
     "list_pull_request_files",
     "open_pull_request",
     "search_issues_and_prs",
+    "get_star",
+    "set_star",
 ]
