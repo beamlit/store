@@ -52,9 +52,10 @@ def get_parameters(func):
                         # Get fields from parent class if it's a Pydantic model
                         if hasattr(parent_class, 'model_fields'):
                             for key, value in parent_class.model_fields.items():
+                                print(value.annotation.__name__)
                                 parameters.append({
                                     "name": key,
-                                    "type": mapping.get(class_node.annotation.id, "string"),
+                                    "type": mapping.get(value.annotation.__name__, "string"),
                                     "description": value.description,
                                     "required": not hasattr(value, "default")
                                 })
@@ -135,7 +136,8 @@ def run():
         print(f"Could not parse value from docstring, {e}")
 
     print(f"Pushing {type} {resource} to store")
-    push_store(type, value)
+    # push_store(type, value)
+    # print(json.dumps(value, indent=2))
     print(f"Pushed {type} {resource} to store")
 
 if __name__ == "__main__":

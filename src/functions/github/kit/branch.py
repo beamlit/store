@@ -35,7 +35,10 @@ async def list_branches(gh: Github, **kwargs):
     """
     This function will list all branches in the repository.
     """
-    repo = gh.get_repo(kwargs["repository"])
+    class ListBranchesInput(RepositoryInput):
+        pass
+    input = ListBranchesInput(**kwargs)
+    repo = gh.get_repo(input.repository)
     branches = [
         branch.raw_data for branch in repo.get_branches()
     ]

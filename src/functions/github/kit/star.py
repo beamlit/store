@@ -1,7 +1,5 @@
-import requests
 from github import Github
 
-from common.bl_config import BL_CONFIG
 from functions.github.models import RepositoryInput
 
 
