@@ -2,7 +2,7 @@ from github import Github
 from pydantic import BaseModel, Field, field_validator
 from pydash import pick
 
-from ..utils.models import RepositoryInput
+from functions.github.models import RepositoryInput
 
 
 async def get_issues(gh: Github, **kwargs):

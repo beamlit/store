@@ -1,7 +1,7 @@
 from github import Github
 from pydantic import Field
 
-from ..utils.models import RepositoryBranchInput, RepositoryInput
+from functions.github.models import RepositoryBranchInput
 
 
 async def create_file(gh: Github, **kwargs):

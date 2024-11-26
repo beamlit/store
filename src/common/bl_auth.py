@@ -5,7 +5,7 @@ import requests
 from .bl_config import BL_CONFIG
 
 
-async def retrieve_jwt():
+def retrieve_jwt():
     global BL_CONFIG
 
     client_credentials = BL_CONFIG.get('client_credentials')
@@ -19,12 +19,12 @@ async def retrieve_jwt():
     else:
         raise Exception(f"Failed to retrieve JWT, {response.text}")
 
-async def auth():
+def auth():
     # If jwt or api_key is set, we don't need to retrieve jwt dynamically
     if BL_CONFIG.get('jwt') or BL_CONFIG.get('api_key'):
         return
     if BL_CONFIG.get('client_credentials'):
-        await retrieve_jwt()
+        retrieve_jwt()
         return
     raise Exception("No beamlit client_credentials found, need JWT or API Key or client_credentials")
 
@@ -32,4 +32,4 @@ async def auth_loop():
     if BL_CONFIG.get('client_credentials'):
         while True:
             await asyncio.sleep(BL_CONFIG['jwt_expires_in'] - 10)
-            await auth()
+            auth()

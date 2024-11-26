@@ -10,11 +10,10 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import create_react_agent
 
+# this is dynamically generated, so ignore linting
+from agents.beamlit import chains, functions  # type: ignore
 from common.bl_config import BL_CONFIG
 from common.bl_register_request import handle_chunk, register, send
-
-# this is dynamically generated, so ignore linting
-from .beamlit import chains, functions  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +22,7 @@ global model
 model = None
 
 def get_chat_model():
+    print(BL_CONFIG)
     if "provider" not in BL_CONFIG:
         raise ValueError("Provider not found in configuration")
     if BL_CONFIG['provider'] == 'openai':

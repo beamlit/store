@@ -7,8 +7,7 @@ node_modules
 package.json
 package-lock.json
 tmp
-src/apps/app-function/functions
-src/apps/app-agent/agents
+src/agents/beamlit.py
 # C extensions
 *.so
 

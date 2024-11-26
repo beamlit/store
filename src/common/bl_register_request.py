@@ -100,7 +100,7 @@ def send_to_beamlit(request_id, rhistory):
 
     response = requests.put(url, headers=headers, json=rhistory)
     if response.status_code != 200:
-        logger.error(f"Failed to send history to beamlit: {response.text}")
+        logger.error(f"Failed to send history to beamlit: {response.status_code}:{response.text}")
 
 async def send(debug=False):
     request_id = correlation_id.get() or ""

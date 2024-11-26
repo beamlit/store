@@ -6,20 +6,24 @@ ARG UV_VERSION="latest"
 # Install uv.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
+WORKDIR /beamlit
+
+# Install the application dependencies.
+COPY src/agents/${AGENT}/pyproject.toml /beamlit/pyproject.toml
+RUN uv sync --no-cache
+
 # Copy the application into the container.
-COPY src/apps/app-agent /beamlit/app
+COPY src/apps/app-agent /beamlit
 COPY src/common /beamlit/common
 COPY README.md /beamlit/README.md
 COPY LICENSE /beamlit/LICENSE
 
-COPY src/agents/${AGENT} /beamlit/app/agents/
-COPY src/agents/${AGENT}/pyproject.toml /beamlit/pyproject.toml
+COPY src/agents/${AGENT} /beamlit/agents/${AGENT}
 
-# Install the application dependencies.
-WORKDIR /beamlit
-
-RUN uv sync --no-cache
-
+# Clean app init file.
+RUN rm /beamlit/__init__.py
 # Run the application.
+ENV AGENT=${AGENT}
 ENV PATH="/beamlit/.venv/bin:$PATH"
-CMD ["/beamlit/.venv/bin/fastapi", "run", "app/main.py", "--port", "80", "--host", "0.0.0.0"]
+
+CMD ["/beamlit/.venv/bin/fastapi", "run", "main.py", "--port", "80", "--host", "0.0.0.0"]

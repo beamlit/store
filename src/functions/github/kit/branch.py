@@ -1,8 +1,7 @@
 from github import Github
 from pydantic import Field
 
-from functions.github.utils.models import (RepositoryBranchInput,
-                                           RepositoryInput)
+from functions.github.models import RepositoryBranchInput, RepositoryInput
 
 
 async def search_code(gh: Github, **kwargs):

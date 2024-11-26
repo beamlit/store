@@ -1,12 +1,9 @@
-import json
-
-import requests
 import tiktoken
 from github import Github, PullRequest
 from pydantic import Field
 from pydash import pick
 
-from ..utils.models import RepositoryInput
+from functions.github.models import RepositoryInput
 
 
 def _format_pull_request(pr: PullRequest):

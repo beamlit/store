@@ -1,5 +1,6 @@
 import json
 import os
+from logging import getLogger
 from typing import Dict, List
 
 import requests
@@ -9,6 +10,10 @@ global BL_CONFIG
 BL_CONFIG = {}
 
 def init_agent():
+    from common.bl_generate import generate
+
+    logger = getLogger(__name__)
+
     # Init configuration from environment variables
     if BL_CONFIG.get("agent_functions") or BL_CONFIG.get("agent_chain"):
         if BL_CONFIG.get("agent_functions"):
@@ -37,8 +42,21 @@ def init_agent():
     BL_CONFIG['agent_functions'] = agent_config['functions']
     BL_CONFIG['agent_chain'] = agent_config['agent_chain']
 
+
+    destination = f"{os.path.dirname(__file__)}/../agents/beamlit.py"
+
+
+    content_generate = generate(destination, dry_run=True)
+    compared_content = None
+    if os.path.exists(destination):
+        compared_content = open(destination, "r").read()
+
+    if not os.path.exists(destination) or (compared_content and content_generate != compared_content):
+        logger.info("Generating agent code")
+        generate(destination)
+
 def init(directory: str = os.path.dirname(__file__)) -> List[Dict]:
-    """Parse the beamlit.yaml file to get function configurations."""
+    """Parse the beamlit.yaml file to get configurations."""
     global BL_CONFIG
     yaml_path = os.path.join(directory, "beamlit.yaml")
 

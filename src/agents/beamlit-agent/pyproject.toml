@@ -9,6 +9,7 @@ requires-python = ">=3.10,<=3.13"
 dependencies = [
     "fastapi[standard]==0.115.4",
     "asgi-correlation-id==4.3.4",
+    "asgi-correlation-id==4.3.4",
     "langchain-community==0.3.3",
     "langchain-openai==0.2.4",
     "langchain-core==0.3.13",

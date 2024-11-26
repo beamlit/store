@@ -101,14 +101,14 @@ class BeamlitChain{name}(BaseTool):
             return repr(e), {{}}
 ''', f'BeamlitChain{name},'
 
-def run(destination: str):
-    imports = '''from typing import Dict, List, Literal, Optional, Tuple, Type, Union
+def generate(destination: str, dry_run: bool = False):
+    imports = '''from logging import getLogger
+from typing import Dict, List, Literal, Optional, Tuple, Type, Union
+
+import requests
 from langchain_core.callbacks import CallbackManagerForToolRun
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
-from logging import getLogger
-import requests
-from common.bl_config import BL_CONFIG
 
 logger = getLogger(__name__)
 '''
@@ -137,5 +137,8 @@ logger = getLogger(__name__)
     if BL_CONFIG.get('agent_chain') and len(BL_CONFIG['agent_chain']) > 0:
         export_chain = export_chain[:-1]
     export_chain += ']'
-    with open(destination, "w") as f:
-        f.write(code + export_code + export_chain)
+    content = code + export_code + export_chain
+    if not dry_run:
+        with open(destination, "w") as f:
+            f.write(content)
+    return content
