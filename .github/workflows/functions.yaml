@@ -109,8 +109,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install uv
+          cp src/functions/${{ matrix.functions }}/pyproject.toml .
           uv sync
-          . .venv/bin/activate
       - name: Push function
         env:
           STORE_URL: ${{ vars.STORE_URL }}
@@ -120,4 +120,5 @@ jobs:
           PACKAGE_TYPE: functions
           PACKAGE_NAME: ${{ matrix.functions }}
         run: |
+          . .venv/bin/activate
           python scripts/push_to_store.py
