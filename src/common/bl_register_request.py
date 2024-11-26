@@ -48,6 +48,8 @@ def handle_chunk_tools(chunk, start_dt, end_dt):
         # that means this is a request to send calls
         if message.content != "":
             event = get_event(message.tool_call_id)
+            if "start" not in event:
+                event["start"] = start_dt
             event["end"] = end_dt
             event_status = "failed" if message.status == "error" else "success"
             if event_status == "failed":
@@ -107,7 +109,7 @@ async def send(debug=False):
     rhistory = history[request_id]
     for _, event in rhistory["tmp_events"].items():
         rhistory["events"].append(event)
-    rhistory["events"].sort(key=lambda x: x["start"])
+    rhistory["events"].sort(key=lambda x: x.get("start"))
     rhistory["end"] = get_date_from_time(time.time())
     status = "success" if all(event["status"] == "success" for event in rhistory["events"]) else "failed"
     if len(rhistory["events"]) > 0:

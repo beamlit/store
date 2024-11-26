@@ -136,8 +136,7 @@ def run():
         print(f"Could not parse value from docstring, {e}")
 
     print(f"Pushing {type} {resource} to store")
-    # push_store(type, value)
-    # print(json.dumps(value, indent=2))
+    push_store(type, value)
     print(f"Pushed {type} {resource} to store")
 
 if __name__ == "__main__":

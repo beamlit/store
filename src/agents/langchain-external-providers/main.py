@@ -22,7 +22,6 @@ global model
 model = None
 
 def get_chat_model():
-    print(BL_CONFIG)
     if "provider" not in BL_CONFIG:
         raise ValueError("Provider not found in configuration")
     if BL_CONFIG['provider'] == 'openai':
