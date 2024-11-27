@@ -26,4 +26,4 @@ RUN rm /beamlit/__init__.py
 ENV AGENT=${AGENT}
 ENV PATH="/beamlit/.venv/bin:$PATH"
 
-CMD ["/beamlit/.venv/bin/fastapi", "run", "main.py", "--port", "80", "--host", "0.0.0.0"]
+CMD ["python", "main.py"]

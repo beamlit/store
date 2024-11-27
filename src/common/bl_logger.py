@@ -1,6 +1,8 @@
 import logging
 import os
 
+from common.bl_config import BL_CONFIG
+
 
 class ColoredFormatter(logging.Formatter):
     COLORS = {
@@ -17,7 +19,9 @@ class ColoredFormatter(logging.Formatter):
         return super().format(record)
 
 def init():
-    level = os.getenv('LOG_LEVEL', os.getenv('BL_LOG_LEVEL', logging.DEBUG))
+    logging.getLogger("uvicorn.access").handlers.clear()
+    logging.getLogger("uvicorn.access").propagate = False
+    level = BL_CONFIG["log_level"]
     handler = logging.StreamHandler()
     handler.setFormatter(ColoredFormatter('%(levelname)s:\t  %(name)s - %(message)s'))
     logging.basicConfig(

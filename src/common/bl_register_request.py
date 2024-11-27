@@ -120,7 +120,7 @@ async def send(debug=False):
     if debug is True:
         send_to_beamlit(request_id, rhistory)
     else:
-        logger.info(f"Skipping sending history to beamlit for request: {request_id}")
+        logger.debug(f"Skipping sending history to beamlit for request: {request_id}")
 
 async def register(start: float, debug=False):
     global history

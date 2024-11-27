@@ -74,7 +74,9 @@ def init(directory: str = os.path.dirname(__file__)) -> List[Dict]:
     BL_CONFIG['run_url'] = BL_CONFIG.get('run_url', "https://run.beamlit.dev")
     BL_CONFIG['workspace'] = BL_CONFIG.get('workspace')
     BL_CONFIG['type'] = BL_CONFIG.get('type')
-
+    BL_CONFIG['port'] = BL_CONFIG.get('port', 80)
+    BL_CONFIG['host'] = BL_CONFIG.get('host', '0.0.0.0')
+    BL_CONFIG['log_level'] = os.getenv('LOG_LEVEL', BL_CONFIG.get('log_level', 'INFO'))
     if not BL_CONFIG['workspace']:
         raise Exception("Workspace is required")
     if not BL_CONFIG['environment']:
