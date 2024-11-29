@@ -41,8 +41,7 @@ def init_agent():
     agent_config = response.json()
     BL_CONFIG['agent_functions'] = agent_config['functions']
     BL_CONFIG['agent_chain'] = agent_config['agent_chain']
-
-
+    BL_CONFIG['agent_model'] = agent_config['model']
     destination = f"{os.path.dirname(__file__)}/../agents/beamlit.py"
 
 

@@ -64,9 +64,6 @@ async def root(request: Request, background_tasks: BackgroundTasks):
     try:
         chain = BL_CONFIG.get('agent_chain') or []
         functions = BL_CONFIG.get('agent_functions') or []
-        if len(chain) == 0 and len(functions) == 0:
-            content = {"error": "No agent chain or functions configured"}
-            return JSONResponse(status_code=400, content=content)
         return await main_agent.main(request, background_tasks)
     except ValueError as e:
         content = {"error": str(e)}
