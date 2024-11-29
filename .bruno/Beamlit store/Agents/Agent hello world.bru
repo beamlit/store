@@ -1,7 +1,7 @@
 meta {
-  name: Agent math
+  name: Agent hello world
   type: http
-  seq: 5
+  seq: 2
 }
 
 post {
@@ -14,12 +14,8 @@ params:query {
   debug: true
 }
 
-headers {
-  ~X-Request-Id: d532b7ab-cef8-4cff-a40e-d8b2cac51e52
-}
-
 body:json {
   {
-    "inputs": "Calculate 2+2"
+    "inputs": "List me my PR"
   }
 }

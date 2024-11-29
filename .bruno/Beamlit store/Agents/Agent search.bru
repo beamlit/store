@@ -1,7 +1,7 @@
 meta {
-  name: Agent github PR
+  name: Agent search
   type: http
-  seq: 3
+  seq: 4
 }
 
 post {
@@ -14,8 +14,12 @@ params:query {
   debug: true
 }
 
+headers {
+  ~X-Request-Id: d532b7ab-cef8-4cff-a40e-d8b2cac51e52
+}
+
 body:json {
   {
-    "inputs": "List me my PR"
+    "inputs": "What's the weather in san francisco ?"
   }
 }
