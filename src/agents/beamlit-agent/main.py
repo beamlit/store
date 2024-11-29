@@ -31,10 +31,21 @@ def get_base_url():
 def get_chat_model():
     headers = {"X-Beamlit-Authorization": f"Bearer {BL_CONFIG['jwt']}", "X-Beamlit-Environment": BL_CONFIG["environment"]}
     params = {"environment": BL_CONFIG["environment"]}
-    chat_class = {
-        "openai": ChatOpenAI,
-        "anthropic": ChatAnthropic,
-        "mistral": ChatMistralAI,
+    chat_classes = {
+        "openai": {
+            "class": ChatOpenAI,
+            "kwargs": {}
+        },
+        "anthropic": {
+            "class": ChatAnthropic,
+            "kwargs": {}
+        },
+        "mistral": {
+            "class": ChatMistralAI,
+            "kwargs": {
+                "api_key": BL_CONFIG['jwt']
+            }
+        }
     }
     agent_model = BL_CONFIG["agent_model"]
     provider = agent_model["runtime"]["type"]
@@ -49,10 +60,13 @@ def get_chat_model():
         "api_key": "fake_api_key",
         "temperature": 0
     }
-    if provider not in chat_class:
+    chat_class = chat_classes.get(provider)
+    if not chat_class:
         logger.warning(f"Provider {provider} not currently supported, defaulting to OpenAI")
-        return chat_class["openai"](**kwargs)
-    return chat_class[provider](**kwargs)
+        chat_class = chat_classes["openai"]
+    if "kwargs" in chat_class:
+        kwargs.update(chat_class["kwargs"])
+    return chat_class["class"](**kwargs)
 
 async def ask_agent(body, tools, agent_config, background_tasks: BackgroundTasks, debug=False):
     global chat_model
