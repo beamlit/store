@@ -1,24 +1,23 @@
 from typing import Any, Dict
 
+import functions.github.kit as kit
+from common.bl_config import BL_CONFIG
 from fastapi import BackgroundTasks, Request
 from github import Auth, Github
 from langchain_community.utilities.github import GitHubAPIWrapper
 
-import functions.github.kit as kit
-from common.bl_config import BL_CONFIG
-
 
 async def main(request: Request, body: Dict[str, Any], background_tasks: BackgroundTasks):
     """
-    display_name: Github
+    displayName: Github
     description: This function kit is used to perform actions on Github.
     configuration:
     - name: github_token
-      display_name: Github Token
+      displayName: Github Token
       description: Github token
       required: true
     - name: github_repository
-      display_name: Repository
+      displayName: Repository
       description: Github repository name
       required: false
     """

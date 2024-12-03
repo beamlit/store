@@ -2,7 +2,11 @@ import logging
 import time
 import uuid
 
+# this is dynamically generated, so ignore linting
+from agents.beamlit import chains, functions  # type: ignore
 from asgi_correlation_id import correlation_id
+from common.bl_config import BL_CONFIG
+from common.bl_register_request import handle_chunk, register, send
 from fastapi import BackgroundTasks, Request, Response
 from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import AIMessage
@@ -10,11 +14,6 @@ from langchain_mistralai.chat_models import ChatMistralAI
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import create_react_agent
-
-# this is dynamically generated, so ignore linting
-from agents.beamlit import chains, functions  # type: ignore
-from common.bl_config import BL_CONFIG
-from common.bl_register_request import handle_chunk, register, send
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +42,7 @@ def get_chat_model():
         "mistral": {
             "class": ChatMistralAI,
             "kwargs": {
-                "api_key": BL_CONFIG['jwt']
+                "apiKey": BL_CONFIG['jwt']
             }
         }
     }
@@ -57,7 +56,7 @@ def get_chat_model():
         "max_tokens": 100,
         "default_query": params,
         "default_headers": headers,
-        "api_key": "fake_api_key",
+        "apiKey": "fake_api_key",
         "temperature": 0
     }
     chat_class = chat_classes.get(provider)
@@ -85,7 +84,7 @@ async def ask_agent(body, tools, agent_config, background_tasks: BackgroundTasks
     if BL_CONFIG.get('jwt'):
         headers["x-beamlit-authorization"] = f"Bearer {BL_CONFIG['jwt']}"
     else:
-        headers["x-beamlit-api-key"] = BL_CONFIG['api_key']
+        headers["x-beamlit-api-key"] = BL_CONFIG['apiKey']
     metadata = {"params": {"debug": str(debug).lower()}, "headers": headers}
     instantiated_tools = [tool(metadata=metadata) for tool in tools]
 
@@ -112,7 +111,7 @@ async def ask_agent(body, tools, agent_config, background_tasks: BackgroundTasks
 async def main(request: Request, background_tasks: BackgroundTasks):
     """
         name: langchain-external-providers
-        display_name: AI Providers Agent
+        displayName: AI Providers Agent
         description: A chat agent using AI providers like OpenAI, Anthropic, and Mistral to handle your tasks.
         type: agent
         framework: langchain

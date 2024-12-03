@@ -62,7 +62,7 @@ async def health():
 async def root(request: Request, background_tasks: BackgroundTasks):
     logger = getLogger(__name__)
     try:
-        chain = BL_CONFIG.get('agent_chain') or []
+        chain = BL_CONFIG.get('agentChain') or []
         functions = BL_CONFIG.get('agent_functions') or []
         return await main_agent.main(request, background_tasks)
     except ValueError as e:

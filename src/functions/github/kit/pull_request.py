@@ -1,9 +1,8 @@
 import tiktoken
+from functions.github.models import RepositoryInput
 from github import Github, PullRequest
 from pydantic import Field
 from pydash import pick
-
-from functions.github.models import RepositoryInput
 
 
 def _format_pull_request(pr: PullRequest):
@@ -28,8 +27,8 @@ def _format_pull_request(pr: PullRequest):
         "user.login",
         "assignees",
         "reviewers",
-        "created_at",
-        "updated_at"
+        "createdAt",
+        "updatedAt"
     ])
 
 async def create_pull_request(gh: Github, **kwargs):
