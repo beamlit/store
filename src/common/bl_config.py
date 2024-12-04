@@ -15,15 +15,15 @@ def init_agent():
     logger = getLogger(__name__)
 
     # Init configuration from environment variables
-    if BL_CONFIG.get("agent_functions") or BL_CONFIG.get("agent_chain"):
+    if BL_CONFIG.get("agent_functions") or BL_CONFIG.get("agentChain"):
         if BL_CONFIG.get("agent_functions"):
             BL_CONFIG['agent_functions'] = json.loads(BL_CONFIG["agent_functions"])
         else:
             BL_CONFIG['agent_functions'] = []
-        if BL_CONFIG.get("agent_chain"):
-            BL_CONFIG['agent_chain'] = json.loads(BL_CONFIG["agent_chain"])
+        if BL_CONFIG.get("agentChain"):
+            BL_CONFIG['agentChain'] = json.loads(BL_CONFIG["agentChain"])
         else:
-            BL_CONFIG['agent_chain'] = []
+            BL_CONFIG['agentChain'] = []
         return
 
     # Init configuration from beamlit control plane
@@ -31,8 +31,8 @@ def init_agent():
     env = BL_CONFIG['environment']
     headers = {"X-Beamlit-Workspace": BL_CONFIG['workspace'], "X-Beamlit-Environment": env}
 
-    if BL_CONFIG.get('api_key'):
-        headers["Api-Key"] = BL_CONFIG['api_key']
+    if BL_CONFIG.get('apiKey'):
+        headers["Api-Key"] = BL_CONFIG['apiKey']
     elif BL_CONFIG.get('jwt'):
         headers["X-Beamlit-Authorization"] = f"Bearer {BL_CONFIG['jwt']}"
 
@@ -40,7 +40,7 @@ def init_agent():
     response.raise_for_status()
     agent_config = response.json()
     BL_CONFIG['agent_functions'] = agent_config['functions']
-    BL_CONFIG['agent_chain'] = agent_config['agent_chain']
+    BL_CONFIG['agentChain'] = agent_config['agentChain']
     BL_CONFIG['agent_model'] = agent_config['model']
     destination = f"{os.path.dirname(__file__)}/../agents/beamlit.py"
 

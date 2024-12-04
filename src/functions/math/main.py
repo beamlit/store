@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 
 async def main(request: Request, body: Dict[str, Any], background_tasks: BackgroundTasks):
     """
-        display_name: Math
+        displayName: Math
         description: A function for performing mathematical calculations.
     """
     class MathInput(BaseModel):

@@ -5,7 +5,6 @@ from logging import getLogger
 
 import requests
 from asgi_correlation_id import correlation_id
-
 from common.bl_config import BL_CONFIG
 
 history = {}
@@ -20,15 +19,15 @@ def get_date_from_time(time: float):
 def set_event(id, event):
     global history
 
-    request_id = correlation_id.get() or ""
-    rhistory = history[request_id]
+    requestId = correlation_id.get() or ""
+    rhistory = history[requestId]
     rhistory["tmp_events"][id] = event
 
 def get_event(id):
     global history
 
-    request_id = correlation_id.get() or ""
-    rhistory = history[request_id]
+    requestId = correlation_id.get() or ""
+    rhistory = history[requestId]
     return rhistory["tmp_events"].get(id) or {}
 
 def find_function_name(function_name: str) -> str:
@@ -73,7 +72,7 @@ def handle_chunk_agent(chunk, start_dt, end_dt):
                     tool_name = tool["name"].replace("beamlit_", "", 1)
                     event["name"] = find_function_name(tool_name)
                     if event["name"] != tool_name:
-                        event["sub_function"] = tool_name
+                        event["subFunction"] = tool_name
                 event["type"] = event_type
                 event["parameters"] = tool.get("args")
                 event["status"] = "running"
@@ -89,24 +88,24 @@ async def handle_chunk(chunk, start: float, end: float, debug=False):
     elif "tools" in chunk:
         handle_chunk_tools(chunk, start_dt, end_dt)
 
-def send_to_beamlit(request_id, rhistory):
+def send_to_beamlit(requestId, rhistory):
     name = BL_CONFIG['name']
     env = BL_CONFIG['environment']
     headers = {"X-Beamlit-Workspace": BL_CONFIG['workspace'], "X-Beamlit-Environment": env}
 
-    if BL_CONFIG.get('api_key'):
-        headers["Api-Key"] = BL_CONFIG['api_key']
+    if BL_CONFIG.get('apiKey'):
+        headers["Api-Key"] = BL_CONFIG['apiKey']
     elif BL_CONFIG.get('jwt'):
         headers["X-Beamlit-Authorization"] = f"Bearer {BL_CONFIG['jwt']}"
-    url = f"{BL_CONFIG['base_url']}/agents/{name}/deployments/{env}/history/{request_id}"
+    url = f"{BL_CONFIG['base_url']}/agents/{name}/deployments/{env}/history/{requestId}"
 
     response = requests.put(url, headers=headers, json=rhistory)
     if response.status_code != 200:
         logger.error(f"Failed to send history to beamlit: {response.status_code}:{response.text}")
 
 async def send(debug=False):
-    request_id = correlation_id.get() or ""
-    rhistory = history[request_id]
+    requestId = correlation_id.get() or ""
+    rhistory = history[requestId]
     for _, event in rhistory["tmp_events"].items():
         rhistory["events"].append(event)
     rhistory["events"].sort(key=lambda x: x.get("start"))
@@ -118,15 +117,15 @@ async def send(debug=False):
         status = "success"
     rhistory["status"] = status
     if debug is True:
-        send_to_beamlit(request_id, rhistory)
+        send_to_beamlit(requestId, rhistory)
     else:
-        logger.debug(f"Skipping sending history to beamlit for request: {request_id}")
+        logger.debug(f"Skipping sending history to beamlit for request: {requestId}")
 
 async def register(start: float, debug=False):
     global history
 
-    request_id = correlation_id.get() or ""
-    history[request_id] = {
+    requestId = correlation_id.get() or ""
+    history[requestId] = {
         "status": "running",
         "environment": BL_CONFIG["environment"],
         "agent": BL_CONFIG["name"],

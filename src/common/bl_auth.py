@@ -14,14 +14,14 @@ def retrieve_jwt():
     response = requests.post(f"{BL_CONFIG['base_url']}/oauth/token", headers=headers, json=body)
     if response.status_code == 200:
         content = response.json()
-        BL_CONFIG['jwt'] = content.get('access_token')
-        BL_CONFIG['jwt_expires_in'] = content.get('expires_in')
+        BL_CONFIG['jwt'] = content.get('accessToken')
+        BL_CONFIG['jwt_expires_in'] = content.get('expiresIn')
     else:
         raise Exception(f"Failed to retrieve JWT, {response.text}")
 
 def auth():
-    # If jwt or api_key is set, we don't need to retrieve jwt dynamically
-    if BL_CONFIG.get('jwt') or BL_CONFIG.get('api_key'):
+    # If jwt or apiKey is set, we don't need to retrieve jwt dynamically
+    if BL_CONFIG.get('jwt') or BL_CONFIG.get('apiKey'):
         return
     if BL_CONFIG.get('client_credentials'):
         retrieve_jwt()

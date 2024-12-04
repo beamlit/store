@@ -1,5 +1,5 @@
 name: beamlit-agent
-display_name: AI Beamlit Agent
+displayName: AI Beamlit Agent
 description: A chat agent using a compatible Beamlit Model to handle your tasks.
 type: agent
 framework: langchain

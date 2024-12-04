@@ -1,8 +1,7 @@
+from functions.github.models import RepositoryInput
 from github import Github
 from pydantic import BaseModel, Field, field_validator
 from pydash import pick
-
-from functions.github.models import RepositoryInput
 
 
 async def get_issues(gh: Github, **kwargs):
@@ -28,7 +27,7 @@ async def get_issue(gh: Github, **kwargs):
     input = GetIssueInput(**kwargs)
     repo = gh.get_repo(input.repository)
     issue = repo.get_issue(input.issue_number)
-    comments = [pick(comment.raw_data, ["body", "url", "user.login", "created_at"]) for comment in issue.get_comments()]
+    comments = [pick(comment.raw_data, ["body", "url", "user.login", "createdAt"]) for comment in issue.get_comments()]
     return {"title": issue.title, "body": issue.body, "comments": comments}
 
 async def comment_on_issue(gh: Github, **kwargs):

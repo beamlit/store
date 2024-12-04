@@ -126,15 +126,15 @@ logger = getLogger(__name__)
                 new_code, export = generate_function_code(function_config)
                 code += new_code
                 export_code += export
-    if BL_CONFIG.get('agent_chain') and len(BL_CONFIG['agent_chain']) > 0:
-        for agent in BL_CONFIG['agent_chain']:
+    if BL_CONFIG.get('agentChain') and len(BL_CONFIG['agentChain']) > 0:
+        for agent in BL_CONFIG['agentChain']:
             new_code, export = generate_chain_code(agent)
             code += new_code
             export_chain += export
     if BL_CONFIG.get('agent_functions') and len(BL_CONFIG['agent_functions']) > 0:
         export_code = export_code[:-1]
     export_code += ']'
-    if BL_CONFIG.get('agent_chain') and len(BL_CONFIG['agent_chain']) > 0:
+    if BL_CONFIG.get('agentChain') and len(BL_CONFIG['agentChain']) > 0:
         export_chain = export_chain[:-1]
     export_chain += ']'
     content = code + export_code + export_chain
