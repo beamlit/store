@@ -21,6 +21,7 @@ class ColoredFormatter(logging.Formatter):
 def init():
     logging.getLogger("uvicorn.access").handlers.clear()
     logging.getLogger("uvicorn.access").propagate = False
+
     level = BL_CONFIG["log_level"]
     handler = logging.StreamHandler()
     handler.setFormatter(ColoredFormatter('%(levelname)s:\t  %(name)s - %(message)s'))

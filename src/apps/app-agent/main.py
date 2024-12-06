@@ -7,7 +7,6 @@ from contextlib import asynccontextmanager
 from logging import getLogger
 from uuid import uuid4
 
-import openlit
 import uvicorn
 from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import BackgroundTasks, FastAPI, Request
@@ -21,7 +20,6 @@ from common.middlewares import AccessLogMiddleware, AddProcessTimeHeader
 RUN_MODE = 'prod' if len(sys.argv) > 1 and sys.argv[1] == 'run' else 'dev'
 BL_CONFIG["type"] = "agent"
 agent = os.getenv("AGENT", "beamlit-agent")
-openlit.init()
 
 main_agent = None
 

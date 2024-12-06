@@ -18,5 +18,4 @@ dependencies = [
     "requests==2.32.3",
     "tiktoken==0.7.0",
     "transformers[agents]==4.46.3",
-    "openlit==1.26.0",
 ]
