@@ -9,6 +9,6 @@ dependencies = [
     "asgi-correlation-id==4.3.4",
     "langchain-community==0.3.3",
     "pygithub==2.5.0",
-    "tiktoken==0.8.0",
+    "tiktoken==0.7.0",
     "pydash==8.0.4",
 ]

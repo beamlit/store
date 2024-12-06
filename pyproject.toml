@@ -16,6 +16,7 @@ dependencies = [
     "pydash==8.0.4",
     "pygithub==2.5.0",
     "requests==2.32.3",
-    "tiktoken==0.8.0",
-    "transformers[agents]==4.46.3"
+    "tiktoken==0.7.0",
+    "transformers[agents]==4.46.3",
+    "openlit==1.26.0",
 ]
