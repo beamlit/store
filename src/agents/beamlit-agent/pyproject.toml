@@ -15,4 +15,5 @@ dependencies = [
     "langchain-mistralai==0.2.0",
     "langchain-core==0.3.13",
     "langgraph==0.2.40",
+    "openlit==1.32.8",
 ]

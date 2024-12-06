@@ -5,17 +5,17 @@ meta {
 }
 
 post {
-  url: http://localhost:1338?debug=true
+  url: http://localhost:1338
   body: json
   auth: none
 }
 
 params:query {
-  debug: true
+  ~debug: true
 }
 
 body:json {
   {
-    "inputs": "List me my PR"
+    "inputs": "List all PR on beamlit/controlplane repository and generate a changelog for each one"
   }
 }

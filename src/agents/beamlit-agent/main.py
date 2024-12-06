@@ -54,7 +54,6 @@ def get_chat_model():
     kwargs = {
         "model": model,
         "base_url": get_base_url(),
-        "max_tokens": 100,
         "default_query": params,
         "default_headers": headers,
         "api_key": "fake_api_key",
