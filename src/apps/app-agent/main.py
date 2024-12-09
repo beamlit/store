@@ -9,16 +9,16 @@ from uuid import uuid4
 
 import uvicorn
 from asgi_correlation_id import CorrelationIdMiddleware
+from beamlit.authentication import (RunClientWithCredentials,
+                                    load_credentials_from_settings,
+                                    new_client_with_credentials)
+from beamlit.common.settings import get_settings, init, init_agent
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from common.bl_auth import auth, auth_loop
-from common.bl_config import BL_CONFIG, init, init_agent
-from common.bl_logger import init as logger_init
 from common.middlewares import AccessLogMiddleware, AddProcessTimeHeader
 
 RUN_MODE = 'prod' if len(sys.argv) > 1 and sys.argv[1] == 'run' else 'dev'
-BL_CONFIG["type"] = "agent"
 agent = os.getenv("AGENT", "beamlit-agent")
 
 main_agent = None
@@ -27,25 +27,26 @@ main_agent = None
 async def lifespan(app: FastAPI):
     is_main = __name__ == "main"
     if not is_main:
-        init(os.path.dirname(__file__))
-        logger_init()
-        auth()
+        init()
 
+    settings = get_settings()
+    credentials = load_credentials_from_settings(settings)
+    client_config = RunClientWithCredentials(
+        credentials=credentials,
+        workspace=settings.workspace,
+    )
+    client = new_client_with_credentials(client_config)
     logger = getLogger(__name__)
 
     # Initialize the agent
-    init_agent()
+    init_agent(client, destination=f"{os.getcwd()}/src/agents/beamlit.py")
 
     # Import the agent
     global main_agent
     main_agent = importlib.import_module(f"agents.{agent}.main")
-
-    # Start the auth loop, that should retrieve JWT with client credentials
-    asyncio.create_task(auth_loop())
-
     # Log the server is running
     if is_main:
-        logger.info(f"Server running on http://{BL_CONFIG['host']}:{BL_CONFIG['port']}")
+        logger.info(f"Server running on http://{settings.host}:{settings.port}")
     yield
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
@@ -75,10 +76,9 @@ async def root(request: Request, background_tasks: BackgroundTasks):
         return JSONResponse(status_code=500, content=content)
 
 def main():
-    init(os.path.dirname(__file__))
-    logger_init()
-    auth()
-    uvicorn.run("main:app", host=BL_CONFIG["host"], port=BL_CONFIG["port"], log_level="critical")
+    init()
+    settings = get_settings()
+    uvicorn.run("main:app", host=settings.host, port=settings.port, log_level="critical")
 
 if __name__ == "__main__":
     main()

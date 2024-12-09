@@ -3,6 +3,10 @@ import time
 import uuid
 
 from asgi_correlation_id import correlation_id
+from beamlit.authentication import (get_authentication_headers,
+                                    new_client_from_settings)
+# this is dynamically generated, so ignore linting
+from beamlit.common.settings import get_settings
 from fastapi import BackgroundTasks, Request, Response
 from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import AIMessage
@@ -11,12 +15,10 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import create_react_agent
 
-# this is dynamically generated, so ignore linting
 from agents.beamlit import chains, functions  # type: ignore
-from common.bl_config import BL_CONFIG
-from common.bl_register_request import handle_chunk, register, send
 
 logger = logging.getLogger(__name__)
+settings = get_settings()
 
 global chat_model
 
@@ -24,17 +26,22 @@ chat_model = None
 
 
 def get_base_url():
-    if "agent_model" not in BL_CONFIG:
-        raise ValueError("agent_model not found in configuration")
-    return f'{BL_CONFIG["run_url"]}/{BL_CONFIG["workspace"]}/models/{BL_CONFIG["agent_model"]["model"]}/v1'
+    return f'{settings.run_url}/{settings.workspace}/models/{settings.agent_model.model}/v1'
 
 def get_chat_model():
-    headers = {"X-Beamlit-Authorization": f"Bearer {BL_CONFIG['jwt']}", "X-Beamlit-Environment": BL_CONFIG["environment"]}
-    params = {"environment": BL_CONFIG["environment"]}
+    client = new_client_from_settings(settings)
+
+    headers = get_authentication_headers(settings)
+    headers["X-Beamlit-Environment"] = settings.environment
+
+    jwt = headers.pop("X-Beamlit-Authorization").replace("Bearer ", "")
+    params = {"environment": settings.environment}
     chat_classes = {
         "openai": {
             "class": ChatOpenAI,
-            "kwargs": {}
+            "kwargs": {
+                "http_client": client.get_httpx_client()
+            }
         },
         "anthropic": {
             "class": ChatAnthropic,
@@ -43,13 +50,22 @@ def get_chat_model():
         "mistral": {
             "class": ChatMistralAI,
             "kwargs": {
-                "api_key": BL_CONFIG['jwt']
+                "api_key": jwt
             }
         }
     }
-    agent_model = BL_CONFIG["agent_model"]
-    provider = agent_model["runtime"]["type"]
-    model = agent_model["runtime"]["model"]
+
+    if settings.agent_model is None:
+        raise ValueError("agent_model not found in configuration")
+    if settings.agent_model.runtime is None:
+        raise ValueError("runtime not found in agent model")
+    if settings.agent_model.runtime.type is None:
+        raise ValueError("type not found in runtime")
+    if settings.agent_model.runtime.model is None:
+        raise ValueError("model not found in runtime")
+
+    provider = settings.agent_model.runtime.type
+    model = settings.agent_model.runtime.model
 
     kwargs = {
         "model": model,
@@ -71,20 +87,13 @@ async def ask_agent(body, tools, agent_config, background_tasks: BackgroundTasks
     global chat_model
     if chat_model is None:
         chat_model = get_chat_model()
-        agent_model = BL_CONFIG["agent_model"]
-        provider = agent_model["runtime"]["type"]
-        model = agent_model["runtime"]["model"]
-        logger.info(f"Chat model configured, using: {provider}:{model}")
+        logger.info(f"Chat model configured, using: {settings.agent_model.runtime.type}:{settings.agent_model.runtime.model}")
 
 
     # instantiate tools with headers and params
     headers = {
         "x-beamlit-request-id": correlation_id.get() or "",
     }
-    if BL_CONFIG.get('jwt'):
-        headers["x-beamlit-authorization"] = f"Bearer {BL_CONFIG['jwt']}"
-    else:
-        headers["x-beamlit-api-key"] = BL_CONFIG['api_key']
     metadata = {"params": {"debug": str(debug).lower()}, "headers": headers}
     instantiated_tools = [tool(metadata=metadata) for tool in tools]
 
@@ -95,17 +104,13 @@ async def ask_agent(body, tools, agent_config, background_tasks: BackgroundTasks
     else:
         agent = chat_model
     all_responses = []
-    start = time.time()
     if not use_tools:
         response = agent.invoke(body["input"])
         return [response]
 
     agent_body = {"messages": [("user", body["input"])]}
     for chunk in agent.stream(agent_body, config=agent_config):
-        end = time.time()
-        background_tasks.add_task(handle_chunk, chunk, start, end)
         all_responses.append(chunk)
-        start = end
     return all_responses
 
 async def main(request: Request, background_tasks: BackgroundTasks):
@@ -123,9 +128,7 @@ async def main(request: Request, background_tasks: BackgroundTasks):
         body["input"] = body["inputs"]
 
     debug = request.query_params.get('debug') in ["true", "True", "TRUE"]
-    background_tasks.add_task(register, time.time(), debug=debug)
     responses = await ask_agent(body, chains + functions, agent_config, background_tasks, debug=debug)
-    background_tasks.add_task(send, debug=debug)
     if debug:
         return responses
     else:
