@@ -23,6 +23,7 @@ from common.bl_instrumentation import (
     get_span_exporter,
     get_metrics_exporter,
     get_resource_attributes,
+    get_logging_exporter,
 )
 
 
@@ -33,7 +34,9 @@ Traceloop.init(
     app_name=BL_CONFIG["name"],
     exporter=get_span_exporter(),
     metrics_exporter=get_metrics_exporter(),
+    logging_exporter=get_logging_exporter(),
     resource_attributes=get_resource_attributes(),
+    should_enrich_metrics=os.getenv("ENRICHED_METRICS", "false") == "true",
 )
 agent = os.getenv("AGENT", "beamlit-agent")
 

@@ -1,5 +1,6 @@
 from typing import Any
 from fastapi import FastAPI
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from typing_extensions import Dict
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
@@ -33,10 +34,11 @@ def get_resource_attributes() -> Dict[str, Any]:
 def get_metrics_exporter() -> OTLPMetricExporter:
     return OTLPMetricExporter()
 
-
 def get_span_exporter() -> OTLPSpanExporter:
     return OTLPSpanExporter()
 
+def get_logging_exporter() -> OTLPLogExporter:
+    return OTLPLogExporter()
 
 def instrument_fast_api(app: FastAPI):
     global tracer
@@ -52,5 +54,5 @@ def instrument_fast_api(app: FastAPI):
     tracer = provider.get_tracer(__name__)
     span_processor = BatchSpanProcessor(get_span_exporter())
     provider.add_span_processor(span_processor)
-    FastAPIInstrumentor.instrument_app(app=app, tracer_provider=provider)  # type: ignore
+    FastAPIInstrumentor.instrument_app(app=app, tracer_provider=provider, meter_provider=None)  # type: ignore
     HTTPXClientInstrumentor().instrument()  # type: ignore
