@@ -10,27 +10,14 @@ from langchain_mistralai.chat_models import ChatMistralAI
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import create_react_agent
-from traceloop.sdk import Traceloop
 
 # this is dynamically generated, so ignore linting
 from agents.beamlit import chains, functions  # type: ignore
 from common.bl_config import BL_CONFIG
-from common.bl_instrumentation import (
-    get_span_exporter,
-    get_metrics_exporter,
-    get_resource_attributes,
-)
 from common.bl_context import Context
 from common.bl_register_request import handle_chunk, register, send
 
 logger = logging.getLogger(__name__)
-resource_attributes = get_resource_attributes()
-Traceloop.init(
-    app_name=resource_attributes["service.name"],
-    exporter=get_span_exporter(),
-    metrics_exporter=get_metrics_exporter(),
-    resource_attributes=resource_attributes,
-)
 
 global chat_model
 

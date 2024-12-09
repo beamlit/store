@@ -11,6 +11,7 @@ import uvicorn
 from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse
+from traceloop.sdk import Traceloop
 
 from common.bl_auth import auth, auth_loop
 from common.bl_config import BL_CONFIG, init, init_agent
@@ -18,10 +19,22 @@ from common.bl_instrumentation import instrument_fast_api, get_tracer
 from common.bl_logger import init as logger_init
 from common.middlewares import AccessLogMiddleware, AddProcessTimeHeader
 from common.bl_context import Context
+from common.bl_instrumentation import (
+    get_span_exporter,
+    get_metrics_exporter,
+    get_resource_attributes,
+)
+
 
 RUN_MODE = "prod" if len(sys.argv) > 1 and sys.argv[1] == "run" else "dev"
 BL_CONFIG["type"] = "agent"
 init(os.path.dirname(__file__))
+Traceloop.init(
+    app_name=BL_CONFIG["name"],
+    exporter=get_span_exporter(),
+    metrics_exporter=get_metrics_exporter(),
+    resource_attributes=get_resource_attributes(),
+)
 agent = os.getenv("AGENT", "beamlit-agent")
 
 main_agent = None

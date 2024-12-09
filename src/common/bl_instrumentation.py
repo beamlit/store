@@ -43,7 +43,8 @@ def instrument_fast_api(app: FastAPI):
     resource = Resource.create(
         {
             "service.name": BL_CONFIG["name"],
-            "workspace": BL_CONFIG["workspace"],
+            "service.namespace": BL_CONFIG["workspace"],
+            "service.workspace": BL_CONFIG["workspace"],
         }
     )
     # Set up the TracerProvider
@@ -51,5 +52,5 @@ def instrument_fast_api(app: FastAPI):
     tracer = provider.get_tracer(__name__)
     span_processor = BatchSpanProcessor(get_span_exporter())
     provider.add_span_processor(span_processor)
-    FastAPIInstrumentor.instrument_app(app=app, tracer_provider=provider)
-    HTTPXClientInstrumentor().instrument()
+    FastAPIInstrumentor.instrument_app(app=app, tracer_provider=provider)  # type: ignore
+    HTTPXClientInstrumentor().instrument()  # type: ignore
