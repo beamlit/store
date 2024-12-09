@@ -9,9 +9,7 @@ from uuid import uuid4
 
 import uvicorn
 from asgi_correlation_id import CorrelationIdMiddleware
-from beamlit.authentication import (RunClientWithCredentials,
-                                    load_credentials_from_settings,
-                                    new_client_with_credentials)
+from beamlit.authentication import new_client_from_settings
 from beamlit.common.settings import get_settings, init, init_agent
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -25,29 +23,33 @@ main_agent = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    is_main = __name__ == "main"
-    if not is_main:
-        init()
+    try:
+        is_main = __name__ == "main"
+        if not is_main:
+            init()
 
-    settings = get_settings()
-    credentials = load_credentials_from_settings(settings)
-    client_config = RunClientWithCredentials(
-        credentials=credentials,
-        workspace=settings.workspace,
-    )
-    client = new_client_with_credentials(client_config)
-    logger = getLogger(__name__)
+        logger = getLogger(__name__)
+        settings = get_settings()
+        client = new_client_from_settings(settings)
 
-    # Initialize the agent
-    init_agent(client, destination=f"{os.getcwd()}/src/agents/beamlit.py")
+        destination = f"{os.getcwd()}/agents/beamlit.py"
+        if __name__ != "main":
+            destination = f"{os.getcwd()}/src/agents/beamlit.py"
 
-    # Import the agent
-    global main_agent
-    main_agent = importlib.import_module(f"agents.{agent}.main")
-    # Log the server is running
-    if is_main:
-        logger.info(f"Server running on http://{settings.host}:{settings.port}")
-    yield
+        init_agent(client, destination=destination)
+
+        # Import the agent
+        global main_agent
+
+        main_agent = importlib.import_module(f"agents.{agent}.main")
+        # Log the server is running
+        if is_main:
+            logger.info(f"Server running on http://{settings.host}:{settings.port}")
+        yield
+    except Exception as e:
+        logger = getLogger(__name__)
+        logger.error(f"Error initializing agent: {e}")
+        raise e
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
 app.add_middleware(CorrelationIdMiddleware, header_name="x-beamlit-request-id", generator=lambda: str(uuid4()))
@@ -76,8 +78,7 @@ async def root(request: Request, background_tasks: BackgroundTasks):
         return JSONResponse(status_code=500, content=content)
 
 def main():
-    init()
-    settings = get_settings()
+    settings = init()
     uvicorn.run("main:app", host=settings.host, port=settings.port, log_level="critical")
 
 if __name__ == "__main__":

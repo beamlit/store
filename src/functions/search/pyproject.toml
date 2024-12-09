@@ -8,4 +8,5 @@ dependencies = [
     "fastapi[standard]==0.115.4",
     "asgi-correlation-id==4.3.4",
     "langchain-community==0.3.3",
+    "beamlit==0.0.20rc5",
 ]

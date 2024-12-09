@@ -1,11 +1,12 @@
+import os
+
 from pydantic import BaseModel, Field, field_validator
 
-from common.bl_config import BL_CONFIG
-
+repository = os.getenv("GITHUB_REPOSITORY", os.getenv("BL_GITHUB_REPOSITORY"))
 
 class RepositoryInput(BaseModel):
     repository: str = Field(
-        default=BL_CONFIG.get("github_repository"),
+        default=repository,
         description="The name of the repository to fetch issues from.",
         validate_default=True
     )

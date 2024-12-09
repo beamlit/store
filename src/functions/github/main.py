@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict
 
 from fastapi import BackgroundTasks, Request
@@ -5,7 +6,6 @@ from github import Auth, Github
 from langchain_community.utilities.github import GitHubAPIWrapper
 
 import functions.github.kit as kit
-from common.bl_config import BL_CONFIG
 
 
 async def main(request: Request, body: Dict[str, Any], background_tasks: BackgroundTasks):
@@ -22,7 +22,8 @@ async def main(request: Request, body: Dict[str, Any], background_tasks: Backgro
       description: Github repository name
       required: false
     """
-    if "github_token" not in BL_CONFIG:
+    github_token = os.getenv("GITHUB_TOKEN", os.getenv("BL_GITHUB_TOKEN_DEV"))
+    if not github_token:
         raise ValueError("github_token missing from configuration.")
 
     mode = body.pop("name")
@@ -31,7 +32,7 @@ async def main(request: Request, body: Dict[str, Any], background_tasks: Backgro
     for func_name in dir(kit):
         if not func_name.startswith('_'):
             modes[func_name] = getattr(kit, func_name)
-    auth = Auth.Token(BL_CONFIG["github_token"])
+    auth = Auth.Token(github_token)
     gh = Github(auth=auth)
     if mode not in modes:
         raise ValueError(f"Invalid mode: {mode}")

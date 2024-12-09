@@ -5,8 +5,6 @@ from fastapi import BackgroundTasks, Request
 from langchain_community.tools.tavily_search.tool import TavilySearchResults
 from pydantic import BaseModel, Field
 
-from common.bl_config import BL_CONFIG
-
 
 async def main(request: Request, body: Dict[str, Any], background_tasks: BackgroundTasks):
     """
@@ -22,9 +20,10 @@ async def main(request: Request, body: Dict[str, Any], background_tasks: Backgro
     class SearchInput(BaseModel):
         query: str = Field(description="Query to search the web with.")
 
-    api_key = BL_CONFIG.get('tavily_api_key')
+    api_key = os.getenv('TAVILY_API_KEY', os.getenv('BL_TAVILY_API_KEY'))
     if not api_key:
         raise Exception("Tavily Key must be set to use this function")
+
     os.environ['TAVILY_API_KEY'] = api_key
     input = SearchInput(**body)
     tavily = TavilySearchResults(api_key=api_key, max_results=2)
