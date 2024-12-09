@@ -2,13 +2,18 @@ from typing import Any, Dict
 
 from fastapi import BackgroundTasks, Request
 from github import Auth, Github
-from langchain_community.utilities.github import GitHubAPIWrapper
 
 import functions.github.kit as kit
 from common.bl_config import BL_CONFIG
+from common.bl_context import Context
 
 
-async def main(request: Request, body: Dict[str, Any], background_tasks: BackgroundTasks):
+async def main(
+    context: Context,
+    request: Request,
+    body: Dict[str, Any],
+    background_tasks: BackgroundTasks,
+):
     """
     display_name: Github
     description: This function kit is used to perform actions on Github.
@@ -29,7 +34,7 @@ async def main(request: Request, body: Dict[str, Any], background_tasks: Backgro
     modes = {}
 
     for func_name in dir(kit):
-        if not func_name.startswith('_'):
+        if not func_name.startswith("_"):
             modes[func_name] = getattr(kit, func_name)
     auth = Auth.Token(BL_CONFIG["github_token"])
     gh = Github(auth=auth)

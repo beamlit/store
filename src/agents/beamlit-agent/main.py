@@ -10,13 +10,27 @@ from langchain_mistralai.chat_models import ChatMistralAI
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import create_react_agent
+from traceloop.sdk import Traceloop
 
 # this is dynamically generated, so ignore linting
 from agents.beamlit import chains, functions  # type: ignore
 from common.bl_config import BL_CONFIG
+from common.bl_instrumentation import (
+    get_span_exporter,
+    get_metrics_exporter,
+    get_resource_attributes,
+)
+from common.bl_context import Context
 from common.bl_register_request import handle_chunk, register, send
 
 logger = logging.getLogger(__name__)
+resource_attributes = get_resource_attributes()
+Traceloop.init(
+    app_name=resource_attributes["service.name"],
+    exporter=get_span_exporter(),
+    metrics_exporter=get_metrics_exporter(),
+    resource_attributes=resource_attributes,
+)
 
 global chat_model
 
@@ -28,24 +42,17 @@ def get_base_url():
         raise ValueError("agent_model not found in configuration")
     return f'{BL_CONFIG["run_url"]}/{BL_CONFIG["workspace"]}/models/{BL_CONFIG["agent_model"]["model"]}/v1'
 
+
 def get_chat_model():
-    headers = {"X-Beamlit-Authorization": f"Bearer {BL_CONFIG['jwt']}", "X-Beamlit-Environment": BL_CONFIG["environment"]}
+    headers = {
+        "X-Beamlit-Authorization": f"Bearer {BL_CONFIG['jwt']}",
+        "X-Beamlit-Environment": BL_CONFIG["environment"],
+    }
     params = {"environment": BL_CONFIG["environment"]}
     chat_classes = {
-        "openai": {
-            "class": ChatOpenAI,
-            "kwargs": {}
-        },
-        "anthropic": {
-            "class": ChatAnthropic,
-            "kwargs": {}
-        },
-        "mistral": {
-            "class": ChatMistralAI,
-            "kwargs": {
-                "api_key": BL_CONFIG['jwt']
-            }
-        }
+        "openai": {"class": ChatOpenAI, "kwargs": {}},
+        "anthropic": {"class": ChatAnthropic, "kwargs": {}},
+        "mistral": {"class": ChatMistralAI, "kwargs": {"api_key": BL_CONFIG["jwt"]}},
     }
     agent_model = BL_CONFIG["agent_model"]
     provider = agent_model["runtime"]["type"]
@@ -57,17 +64,22 @@ def get_chat_model():
         "default_query": params,
         "default_headers": headers,
         "api_key": "fake_api_key",
-        "temperature": 0
+        "temperature": 0,
     }
     chat_class = chat_classes.get(provider)
     if not chat_class:
-        logger.warning(f"Provider {provider} not currently supported, defaulting to OpenAI")
+        logger.warning(
+            f"Provider {provider} not currently supported, defaulting to OpenAI"
+        )
         chat_class = chat_classes["openai"]
     if "kwargs" in chat_class:
         kwargs.update(chat_class["kwargs"])
     return chat_class["class"](**kwargs)
 
-async def ask_agent(body, tools, agent_config, background_tasks: BackgroundTasks, debug=False):
+
+async def ask_agent(
+    body, tools, agent_config, background_tasks: BackgroundTasks, debug=False
+):
     global chat_model
     if chat_model is None:
         chat_model = get_chat_model()
@@ -76,15 +88,14 @@ async def ask_agent(body, tools, agent_config, background_tasks: BackgroundTasks
         model = agent_model["runtime"]["model"]
         logger.info(f"Chat model configured, using: {provider}:{model}")
 
-
     # instantiate tools with headers and params
     headers = {
         "x-beamlit-request-id": correlation_id.get() or "",
     }
-    if BL_CONFIG.get('jwt'):
+    if BL_CONFIG.get("jwt"):
         headers["x-beamlit-authorization"] = f"Bearer {BL_CONFIG['jwt']}"
     else:
-        headers["x-beamlit-api-key"] = BL_CONFIG['api_key']
+        headers["x-beamlit-api-key"] = BL_CONFIG["api_key"]
     metadata = {"params": {"debug": str(debug).lower()}, "headers": headers}
     instantiated_tools = [tool(metadata=metadata) for tool in tools]
 
@@ -108,13 +119,14 @@ async def ask_agent(body, tools, agent_config, background_tasks: BackgroundTasks
         start = end
     return all_responses
 
-async def main(request: Request, background_tasks: BackgroundTasks):
+
+async def main(context: Context, request: Request, background_tasks: BackgroundTasks):
     """
-        name: langchain-external-providers
-        display_name: AI Providers Agent
-        description: A chat agent using AI providers like OpenAI, Anthropic, and Mistral to handle your tasks.
-        type: agent
-        framework: langchain
+    name: langchain-external-providers
+    display_name: AI Providers Agent
+    description: A chat agent using AI providers like OpenAI, Anthropic, and Mistral to handle your tasks.
+    type: agent
+    framework: langchain
     """
     sub = request.headers.get("X-Beamlit-Sub", str(uuid.uuid4()))
     agent_config = {"configurable": {"thread_id": sub}}
@@ -122,17 +134,28 @@ async def main(request: Request, background_tasks: BackgroundTasks):
     if body.get("inputs"):
         body["input"] = body["inputs"]
 
-    debug = request.query_params.get('debug') in ["true", "True", "TRUE"]
+    debug = request.query_params.get("debug") in ["true", "True", "TRUE"]
     background_tasks.add_task(register, time.time(), debug=debug)
-    responses = await ask_agent(body, chains + functions, agent_config, background_tasks, debug=debug)
+    responses = await ask_agent(
+        body, chains + functions, agent_config, background_tasks, debug=debug
+    )
     background_tasks.add_task(send, debug=debug)
     if debug:
         return responses
     else:
         content = responses[-1]
         if isinstance(content, AIMessage):
-            return Response(content=content.content, headers={"Content-Type": "text/plain"}, status_code=200)
-        return Response(content=content["agent"]["messages"][-1].content, headers={"Content-Type": "text/plain"}, status_code=200)
+            return Response(
+                content=content.content,
+                headers={"Content-Type": "text/plain"},
+                status_code=200,
+            )
+        return Response(
+            content=content["agent"]["messages"][-1].content,
+            headers={"Content-Type": "text/plain"},
+            status_code=200,
+        )
+
 
 if __name__ == "__main__":
     main()
