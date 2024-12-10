@@ -15,7 +15,7 @@ from traceloop.sdk import Traceloop
 
 from common.bl_auth import auth, auth_loop
 from common.bl_config import BL_CONFIG, init, init_agent
-from common.bl_instrumentation import instrument_fast_api, get_tracer
+from common.bl_instrumentation import instrument_app, get_tracer
 from common.bl_logger import init as logger_init
 from common.middlewares import AccessLogMiddleware, AddProcessTimeHeader
 from common.bl_context import Context
@@ -23,7 +23,6 @@ from common.bl_instrumentation import (
     get_span_exporter,
     get_metrics_exporter,
     get_resource_attributes,
-    get_logging_exporter,
 )
 
 
@@ -34,7 +33,6 @@ Traceloop.init(
     app_name=BL_CONFIG["name"],
     exporter=get_span_exporter(),
     metrics_exporter=get_metrics_exporter(),
-    logging_exporter=get_logging_exporter(),
     resource_attributes=get_resource_attributes(),
     should_enrich_metrics=os.getenv("ENRICHED_METRICS", "false") == "true",
 )
@@ -69,14 +67,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
-instrument_fast_api(app)
-app.add_middleware(
-    CorrelationIdMiddleware,
-    header_name="x-beamlit-request-id",
-    generator=lambda: str(uuid4()),
-)
 app.add_middleware(AddProcessTimeHeader)
 app.add_middleware(AccessLogMiddleware)
+instrument_app(app) # Need to be called after the middleware
 
 
 @app.get("/health")

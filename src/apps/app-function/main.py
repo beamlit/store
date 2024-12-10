@@ -15,7 +15,7 @@ from fastapi.responses import JSONResponse
 from common.bl_auth import auth, auth_loop
 from common.bl_config import BL_CONFIG, init
 from common.bl_context import Context
-from common.bl_instrumentation import instrument_fast_api, get_tracer
+from common.bl_instrumentation import instrument_app, get_tracer
 from common.bl_logger import init as logger_init
 from common.middlewares import AccessLogMiddleware, AddProcessTimeHeader
 
@@ -51,14 +51,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
-instrument_fast_api(app)
-app.add_middleware(
-    CorrelationIdMiddleware,
-    header_name="x-beamlit-request-id",
-    generator=lambda: str(uuid4()),
-)
 app.add_middleware(AddProcessTimeHeader)
 app.add_middleware(AccessLogMiddleware)
+instrument_app(app) # Need to be called after the middlewares are added
 
 
 @app.get("/health")

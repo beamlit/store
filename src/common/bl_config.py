@@ -61,7 +61,7 @@ def init_agent():
         compared_content and content_generate != compared_content
     ):
         logger.info("Generating agent code")
-        generate(destination)
+        #generate(destination)
 
 
 def init(directory: str = os.path.dirname(__file__)) -> List[Dict]:
