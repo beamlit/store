@@ -7,6 +7,7 @@ async def set_star(gh: Github, **kwargs):
     """
     Stars a GitHub repository.
     """
+
     class StarInput(RepositoryInput):
         pass
 
@@ -20,6 +21,7 @@ async def get_star(gh: Github, **kwargs):
     """
     Get the star count for a GitHub repository.
     """
+
     class StarInput(RepositoryInput):
         pass
 

@@ -1,0 +1,10 @@
+name: Ruff - Format and Lint
+
+on: pull_request
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v1
