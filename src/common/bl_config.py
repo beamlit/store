@@ -64,6 +64,7 @@ def init_agent():
         # generate(destination)
 
 
+
 def init(directory: str = os.path.dirname(__file__)) -> List[Dict]:
     """Parse the beamlit.yaml file to get configurations."""
     global BL_CONFIG

@@ -70,6 +70,7 @@ app.add_middleware(AccessLogMiddleware)
 instrument_app(app)  # Need to be called after the middleware
 
 
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
