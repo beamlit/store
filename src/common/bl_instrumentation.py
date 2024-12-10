@@ -1,6 +1,5 @@
 from typing import Any
 from fastapi import FastAPI
-from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from typing_extensions import Dict
@@ -27,10 +26,11 @@ def get_tracer() -> trace.Tracer:
         raise Exception("Tracer is not initialized")
     return tracer
 
+
 def get_meter() -> metrics.Meter:
-  if meter is None:
-    raise Exception("Meter is not initialized")
-  return meter
+    if meter is None:
+        raise Exception("Meter is not initialized")
+    return meter
 
 
 def get_resource_attributes() -> Dict[str, Any]:
@@ -46,8 +46,10 @@ def get_resource_attributes() -> Dict[str, Any]:
 def get_metrics_exporter() -> OTLPMetricExporter:
     return OTLPMetricExporter()
 
+
 def get_span_exporter() -> OTLPSpanExporter:
     return OTLPSpanExporter()
+
 
 def instrument_app(app: FastAPI):
     global tracer
@@ -71,6 +73,10 @@ def instrument_app(app: FastAPI):
     metrics.set_meter_provider(meter_provider)
     meter = meter_provider.get_meter(__name__)
 
-    FastAPIInstrumentor.instrument_app(app=app, tracer_provider=trace_provider, meter_provider=meter_provider) # type: ignore
+    FastAPIInstrumentor.instrument_app(
+        app=app, tracer_provider=trace_provider, meter_provider=meter_provider
+    )  # type: ignore
     HTTPXClientInstrumentor().instrument(meter_provider=meter_provider)  # type: ignore
-    LoggingInstrumentor(tracer_provider=trace_provider).instrument(set_logging_format=True)  # type: ignore
+    LoggingInstrumentor(tracer_provider=trace_provider).instrument(
+        set_logging_format=True
+    )  # type: ignore

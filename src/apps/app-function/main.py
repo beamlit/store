@@ -5,10 +5,8 @@ import sys
 import traceback
 from contextlib import asynccontextmanager
 from logging import getLogger
-from uuid import uuid4
 
 import uvicorn
-from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse
 
@@ -53,7 +51,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
 app.add_middleware(AddProcessTimeHeader)
 app.add_middleware(AccessLogMiddleware)
-instrument_app(app) # Need to be called after the middlewares are added
+instrument_app(app)  # Need to be called after the middlewares are added
 
 
 @app.get("/health")
