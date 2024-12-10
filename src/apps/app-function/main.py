@@ -5,20 +5,20 @@ import sys
 import traceback
 from contextlib import asynccontextmanager
 from logging import getLogger
-from uuid import uuid4
 
 import uvicorn
-from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from common.bl_auth import auth, auth_loop
 from common.bl_config import BL_CONFIG, init
+from common.bl_instrumentation import instrument_app
 from common.bl_logger import init as logger_init
 from common.middlewares import AccessLogMiddleware, AddProcessTimeHeader
 
 RUN_MODE = "prod" if len(sys.argv) > 1 and sys.argv[1] == "run" else "dev"
 BL_CONFIG["type"] = "function"
+init(os.path.dirname(__file__))
 function = os.getenv("FUNCTION", "math")
 
 
@@ -29,7 +29,6 @@ main_function = importlib.import_module(f"functions.{function}.main")
 async def lifespan(app: FastAPI):
     is_main = __name__ == "main"
     if not is_main:
-        init(os.path.dirname(__file__))
         logger_init()
         auth()
 
@@ -49,13 +48,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
-app.add_middleware(
-    CorrelationIdMiddleware,
-    header_name="x-beamlit-request-id",
-    generator=lambda: str(uuid4()),
-)
 app.add_middleware(AddProcessTimeHeader)
 app.add_middleware(AccessLogMiddleware)
+instrument_app(app)  # Need to be called after the middlewares are added
 
 
 @app.get("/health")
@@ -69,7 +64,9 @@ async def root(request: Request, background_tasks: BackgroundTasks):
     try:
         body = await request.json()
         return await main_function.main(
-            request, body, background_tasks=background_tasks
+            request,
+            body,
+            background_tasks=background_tasks,
         )
     except ValueError as e:
         content = {"error": str(e)}
@@ -85,11 +82,13 @@ async def root(request: Request, background_tasks: BackgroundTasks):
 
 
 def main():
-    init(os.path.dirname(__file__))
     logger_init()
     auth()
     uvicorn.run(
-        "main:app", host=BL_CONFIG["host"], port=BL_CONFIG["port"], log_level="critical"
+        "main:app",
+        host=BL_CONFIG["host"],
+        port=BL_CONFIG["port"],
+        log_level="critical",
     )
 
 

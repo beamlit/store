@@ -5,10 +5,13 @@ from github import Auth, Github
 
 import functions.github.kit as kit
 from common.bl_config import BL_CONFIG
+from common.bl_instrumentation import get_tracer
 
 
 async def main(
-    request: Request, body: Dict[str, Any], background_tasks: BackgroundTasks
+    request: Request,
+    body: Dict[str, Any],
+    background_tasks: BackgroundTasks,
 ):
     """
     display_name: Github
@@ -23,17 +26,19 @@ async def main(
       description: Github repository name
       required: false
     """
-    if "github_token" not in BL_CONFIG:
-        raise ValueError("github_token missing from configuration.")
+    with get_tracer().start_as_current_span("github") as span:
+        span.set_attribute("mode", body["name"])
+        if "github_token" not in BL_CONFIG:
+            raise ValueError("github_token missing from configuration.")
 
-    mode = body.pop("name")
-    modes = {}
+        mode = body.pop("name")
+        modes = {}
 
-    for func_name in dir(kit):
-        if not func_name.startswith("_"):
-            modes[func_name] = getattr(kit, func_name)
-    auth = Auth.Token(BL_CONFIG["github_token"])
-    gh = Github(auth=auth)
-    if mode not in modes:
-        raise ValueError(f"Invalid mode: {mode}")
-    return await modes[mode](gh, **body)
+        for func_name in dir(kit):
+            if not func_name.startswith("_"):
+                modes[func_name] = getattr(kit, func_name)
+        auth = Auth.Token(BL_CONFIG["github_token"])
+        gh = Github(auth=auth)
+        if mode not in modes:
+            raise ValueError(f"Invalid mode: {mode}")
+        return await modes[mode](gh, **body)

@@ -18,6 +18,13 @@ dependencies = [
     "requests==2.32.3",
     "tiktoken==0.7.0",
     "transformers[agents]==4.46.3",
+    "traceloop-sdk>=0.33.12",
+    "opentelemetry-sdk>=1.28.2",
+    "opentelemetry-exporter-otlp>=1.28.2",
+    "opentelemetry-api>=1.28.2",
+    "opentelemetry-instrumentation-fastapi>=0.49b2",
+    "opentelemetry-instrumentation-httpx>=0.49b2",
+    "opentelemetry-instrumentation-logging>=0.49b2",
 ]
 
 [tool.ruff]

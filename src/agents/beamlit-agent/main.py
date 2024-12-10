@@ -38,7 +38,10 @@ def get_chat_model():
     chat_classes = {
         "openai": {"class": ChatOpenAI, "kwargs": {}},
         "anthropic": {"class": ChatAnthropic, "kwargs": {}},
-        "mistral": {"class": ChatMistralAI, "kwargs": {"api_key": BL_CONFIG["jwt"]}},
+        "mistral": {
+            "class": ChatMistralAI,
+            "kwargs": {"api_key": BL_CONFIG["jwt"]},
+        },
     }
     agent_model = BL_CONFIG["agent_model"]
     provider = agent_model["runtime"]["type"]
