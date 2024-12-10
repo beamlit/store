@@ -1,4 +1,3 @@
-import json
 import time
 from datetime import datetime, timezone
 from logging import getLogger
@@ -12,10 +11,12 @@ history = {}
 
 logger = getLogger(__name__)
 
+
 def get_date_from_time(time: float):
     local_dt = datetime.now()
     tz = timezone(local_dt.astimezone().utcoffset())
     return datetime.fromtimestamp(time, tz=tz).isoformat()
+
 
 def set_event(id, event):
     global history
@@ -24,6 +25,7 @@ def set_event(id, event):
     rhistory = history[request_id]
     rhistory["tmp_events"][id] = event
 
+
 def get_event(id):
     global history
 
@@ -31,16 +33,18 @@ def get_event(id):
     rhistory = history[request_id]
     return rhistory["tmp_events"].get(id) or {}
 
+
 def find_function_name(function_name: str) -> str:
-    for function_config in BL_CONFIG['agent_functions']:
-        if function_config['function'] == function_name:
-            return function_config['function'].replace("_", "")
-    for function_config in BL_CONFIG['agent_functions']:
+    for function_config in BL_CONFIG["agent_functions"]:
+        if function_config["function"] == function_name:
+            return function_config["function"].replace("_", "")
+    for function_config in BL_CONFIG["agent_functions"]:
         if function_config.get("kit") and len(function_config["kit"]) > 0:
             for kit in function_config["kit"]:
                 if kit["name"] == function_name:
-                    return function_config['function'].replace("_", "")
+                    return function_config["function"].replace("_", "")
     return function_name
+
 
 def handle_chunk_tools(chunk, start_dt, end_dt):
     messages = chunk["tools"]["messages"]
@@ -57,6 +61,7 @@ def handle_chunk_tools(chunk, start_dt, end_dt):
             event["status"] = event_status
             set_event(message.tool_call_id, event)
 
+
 def handle_chunk_agent(chunk, start_dt, end_dt):
     messages = chunk["agent"]["messages"]
     for message in messages:
@@ -68,7 +73,9 @@ def handle_chunk_agent(chunk, start_dt, end_dt):
                 event_type = "agent" if "beamlit_chain_" in tool["name"] else "function"
                 event["start"] = start_dt
                 if event_type == "agent":
-                    event["name"] = tool["name"].replace("beamlit_chain_", "", 1).replace("_", "-")
+                    event["name"] = (
+                        tool["name"].replace("beamlit_chain_", "", 1).replace("_", "-")
+                    )
                 else:
                     tool_name = tool["name"].replace("beamlit_", "", 1)
                     event["name"] = find_function_name(tool_name)
@@ -78,6 +85,7 @@ def handle_chunk_agent(chunk, start_dt, end_dt):
                 event["parameters"] = tool.get("args")
                 event["status"] = "running"
                 set_event(tool["id"], event)
+
 
 async def handle_chunk(chunk, start: float, end: float, debug=False):
     global history
@@ -89,20 +97,29 @@ async def handle_chunk(chunk, start: float, end: float, debug=False):
     elif "tools" in chunk:
         handle_chunk_tools(chunk, start_dt, end_dt)
 
-def send_to_beamlit(request_id, rhistory):
-    name = BL_CONFIG['name']
-    env = BL_CONFIG['environment']
-    headers = {"X-Beamlit-Workspace": BL_CONFIG['workspace'], "X-Beamlit-Environment": env}
 
-    if BL_CONFIG.get('api_key'):
-        headers["Api-Key"] = BL_CONFIG['api_key']
-    elif BL_CONFIG.get('jwt'):
+def send_to_beamlit(request_id, rhistory):
+    name = BL_CONFIG["name"]
+    env = BL_CONFIG["environment"]
+    headers = {
+        "X-Beamlit-Workspace": BL_CONFIG["workspace"],
+        "X-Beamlit-Environment": env,
+    }
+
+    if BL_CONFIG.get("api_key"):
+        headers["Api-Key"] = BL_CONFIG["api_key"]
+    elif BL_CONFIG.get("jwt"):
         headers["X-Beamlit-Authorization"] = f"Bearer {BL_CONFIG['jwt']}"
-    url = f"{BL_CONFIG['base_url']}/agents/{name}/deployments/{env}/history/{request_id}"
+    url = (
+        f"{BL_CONFIG['base_url']}/agents/{name}/deployments/{env}/history/{request_id}"
+    )
 
     response = requests.put(url, headers=headers, json=rhistory)
     if response.status_code != 200:
-        logger.error(f"Failed to send history to beamlit: {response.status_code}:{response.text}")
+        logger.error(
+            f"Failed to send history to beamlit: {response.status_code}:{response.text}"
+        )
+
 
 async def send(debug=False):
     request_id = correlation_id.get() or ""
@@ -111,7 +128,11 @@ async def send(debug=False):
         rhistory["events"].append(event)
     rhistory["events"].sort(key=lambda x: x.get("start"))
     rhistory["end"] = get_date_from_time(time.time())
-    status = "success" if all(event["status"] == "success" for event in rhistory["events"]) else "failed"
+    status = (
+        "success"
+        if all(event["status"] == "success" for event in rhistory["events"])
+        else "failed"
+    )
     if len(rhistory["events"]) > 0:
         status = rhistory["events"][-1]["status"]
     else:
@@ -121,6 +142,7 @@ async def send(debug=False):
         send_to_beamlit(request_id, rhistory)
     else:
         logger.debug(f"Skipping sending history to beamlit for request: {request_id}")
+
 
 async def register(start: float, debug=False):
     global history
@@ -133,5 +155,5 @@ async def register(start: float, debug=False):
         "workspace": BL_CONFIG["workspace"],
         "start": get_date_from_time(start),
         "events": [],
-        "tmp_events": {}
+        "tmp_events": {},
     }

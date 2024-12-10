@@ -1,5 +1,4 @@
 import time
-from logging import getLogger
 
 from starlette.middleware.base import BaseHTTPMiddleware
 
