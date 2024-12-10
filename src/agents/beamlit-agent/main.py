@@ -14,7 +14,6 @@ from langgraph.prebuilt import create_react_agent
 # this is dynamically generated, so ignore linting
 from agents.beamlit import chains, functions  # type: ignore
 from common.bl_config import BL_CONFIG
-from common.bl_context import Context
 from common.bl_register_request import handle_chunk, register, send
 
 logger = logging.getLogger(__name__)
@@ -39,7 +38,10 @@ def get_chat_model():
     chat_classes = {
         "openai": {"class": ChatOpenAI, "kwargs": {}},
         "anthropic": {"class": ChatAnthropic, "kwargs": {}},
-        "mistral": {"class": ChatMistralAI, "kwargs": {"api_key": BL_CONFIG["jwt"]}},
+        "mistral": {
+            "class": ChatMistralAI,
+            "kwargs": {"api_key": BL_CONFIG["jwt"]},
+        },
     }
     agent_model = BL_CONFIG["agent_model"]
     provider = agent_model["runtime"]["type"]
@@ -107,7 +109,7 @@ async def ask_agent(
     return all_responses
 
 
-async def main(context: Context, request: Request, background_tasks: BackgroundTasks):
+async def main(request: Request, background_tasks: BackgroundTasks):
     """
     name: langchain-external-providers
     display_name: AI Providers Agent

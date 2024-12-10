@@ -5,11 +5,10 @@ from typing import Any, Dict
 from fastapi import BackgroundTasks, Request
 from pydantic import BaseModel, Field
 
-from common.bl_context import Context
+from common.bl_instrumentation import get_tracer
 
 
 async def main(
-    context: Context,
     request: Request,
     body: Dict[str, Any],
     background_tasks: BackgroundTasks,
@@ -18,7 +17,7 @@ async def main(
     display_name: Math
     description: A function for performing mathematical calculations.
     """
-    with context.get_tracer().start_as_current_span("math.main") as span:
+    with get_tracer().start_as_current_span("search") as span:
         span.set_attribute("query", body["query"])
 
         class MathInput(BaseModel):

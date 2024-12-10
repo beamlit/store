@@ -13,16 +13,14 @@ from traceloop.sdk import Traceloop
 
 from common.bl_auth import auth, auth_loop
 from common.bl_config import BL_CONFIG, init, init_agent
-from common.bl_instrumentation import instrument_app, get_tracer
-from common.bl_logger import init as logger_init
-from common.middlewares import AccessLogMiddleware, AddProcessTimeHeader
-from common.bl_context import Context
 from common.bl_instrumentation import (
-    get_span_exporter,
     get_metrics_exporter,
     get_resource_attributes,
+    get_span_exporter,
+    instrument_app,
 )
-
+from common.bl_logger import init as logger_init
+from common.middlewares import AccessLogMiddleware, AddProcessTimeHeader
 
 RUN_MODE = "prod" if len(sys.argv) > 1 and sys.argv[1] == "run" else "dev"
 BL_CONFIG["type"] = "agent"
@@ -70,7 +68,6 @@ app.add_middleware(AccessLogMiddleware)
 instrument_app(app)  # Need to be called after the middleware
 
 
-
 @app.get("/health")
 async def health():
     return {"status": "ok"}
@@ -80,9 +77,7 @@ async def health():
 async def root(request: Request, background_tasks: BackgroundTasks):
     logger = getLogger(__name__)
     try:
-        return await main_agent.main(
-            Context(tracer=get_tracer()), request, background_tasks
-        )
+        return await main_agent.main(request, background_tasks)
     except ValueError as e:
         content = {"error": str(e)}
         if RUN_MODE == "dev":
@@ -100,7 +95,10 @@ def main():
     logger_init()
     auth()
     uvicorn.run(
-        "main:app", host=BL_CONFIG["host"], port=BL_CONFIG["port"], log_level="critical"
+        "main:app",
+        host=BL_CONFIG["host"],
+        port=BL_CONFIG["port"],
+        log_level="critical",
     )
 
 

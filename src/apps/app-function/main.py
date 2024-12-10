@@ -12,8 +12,7 @@ from fastapi.responses import JSONResponse
 
 from common.bl_auth import auth, auth_loop
 from common.bl_config import BL_CONFIG, init
-from common.bl_context import Context
-from common.bl_instrumentation import instrument_app, get_tracer
+from common.bl_instrumentation import instrument_app
 from common.bl_logger import init as logger_init
 from common.middlewares import AccessLogMiddleware, AddProcessTimeHeader
 
@@ -54,7 +53,6 @@ app.add_middleware(AccessLogMiddleware)
 instrument_app(app)  # Need to be called after the middlewares are added
 
 
-
 @app.get("/health")
 async def health():
     return {"status": "ok"}
@@ -66,7 +64,6 @@ async def root(request: Request, background_tasks: BackgroundTasks):
     try:
         body = await request.json()
         return await main_function.main(
-            Context(tracer=get_tracer()),
             request,
             body,
             background_tasks=background_tasks,
@@ -88,7 +85,10 @@ def main():
     logger_init()
     auth()
     uvicorn.run(
-        "main:app", host=BL_CONFIG["host"], port=BL_CONFIG["port"], log_level="critical"
+        "main:app",
+        host=BL_CONFIG["host"],
+        port=BL_CONFIG["port"],
+        log_level="critical",
     )
 
 
