@@ -5,9 +5,11 @@ import uuid
 from asgi_correlation_id import correlation_id
 from fastapi import BackgroundTasks, Request, Response
 from langchain_anthropic import ChatAnthropic
+from langchain_cohere import ChatCohere
 from langchain_core.messages import AIMessage
 from langchain_mistralai.chat_models import ChatMistralAI
 from langchain_openai import ChatOpenAI
+from langchain_xai import ChatXAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import create_react_agent
 
@@ -42,6 +44,18 @@ def get_chat_model():
             "class": ChatMistralAI,
             "kwargs": {"api_key": BL_CONFIG["jwt"]},
         },
+        "xai": {
+            "class": ChatXAI,
+            "kwargs": {
+                "api_key": BL_CONFIG["jwt"],
+                "xai_api_base": get_base_url(),
+            },
+            "remove_kwargs": ["base_url"],
+        },
+        "cohere": {
+            "class": ChatCohere,
+            "kwargs": {"cohere_api_key": BL_CONFIG["jwt"]},
+        },
     }
     agent_model = BL_CONFIG["agent_model"]
     provider = agent_model["runtime"]["type"]
@@ -63,6 +77,9 @@ def get_chat_model():
         chat_class = chat_classes["openai"]
     if "kwargs" in chat_class:
         kwargs.update(chat_class["kwargs"])
+    if "remove_kwargs" in chat_class:
+        for key in chat_class["remove_kwargs"]:
+            kwargs.pop(key, None)
     return chat_class["class"](**kwargs)
 
 
