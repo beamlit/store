@@ -15,11 +15,11 @@ async def main(
     background_tasks: BackgroundTasks,
 ):
     """
-    display_name: Search
+    displayName: Search
     description: A search engine optimized for comprehensive, accurate, and trusted results. Useful for when you need to answer questions about current events. Input should be a search query.
     configuration:
     - name: tavily_api_key
-      display_name: Tavily API Key
+      displayName: Tavily API Key
       description: Tavily API key
       required: true
       secret: true

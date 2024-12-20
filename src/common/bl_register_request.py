@@ -80,7 +80,7 @@ def handle_chunk_agent(chunk, start_dt, end_dt):
                     tool_name = tool["name"].replace("beamlit_", "", 1)
                     event["name"] = find_function_name(tool_name)
                     if event["name"] != tool_name:
-                        event["sub_function"] = tool_name
+                        event["subFunction"] = tool_name
                 event["type"] = event_type
                 event["parameters"] = tool.get("args")
                 event["status"] = "running"
@@ -106,8 +106,8 @@ def send_to_beamlit(request_id, rhistory):
         "X-Beamlit-Environment": env,
     }
 
-    if BL_CONFIG.get("api_key"):
-        headers["Api-Key"] = BL_CONFIG["api_key"]
+    if BL_CONFIG.get("apiKey"):
+        headers["Api-Key"] = BL_CONFIG["apiKey"]
     elif BL_CONFIG.get("jwt"):
         headers["X-Beamlit-Authorization"] = f"Bearer {BL_CONFIG['jwt']}"
     url = (

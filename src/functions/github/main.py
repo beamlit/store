@@ -14,15 +14,15 @@ async def main(
     background_tasks: BackgroundTasks,
 ):
     """
-    display_name: Github
+    displayName: Github
     description: This function kit is used to perform actions on Github.
     configuration:
     - name: github_token
-      display_name: Github Token
+      displayName: Github Token
       description: Github token
       required: true
     - name: github_repository
-      display_name: Repository
+      displayName: Repository
       description: Github repository name
       required: false
     """

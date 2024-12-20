@@ -14,7 +14,7 @@ async def main(
     background_tasks: BackgroundTasks,
 ):
     """
-    display_name: Math
+    displayName: Math
     description: A function for performing mathematical calculations.
     """
     with get_tracer().start_as_current_span("search") as span:
