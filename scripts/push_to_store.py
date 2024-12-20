@@ -70,7 +70,6 @@ def get_parameters(func):
                         # Get fields from parent class if it's a Pydantic model
                         if hasattr(parent_class, "model_fields"):
                             for key, value in parent_class.model_fields.items():
-                                print(value.annotation.__name__)
                                 parameters.append(
                                     {
                                         "name": key,
