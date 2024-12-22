@@ -19,6 +19,7 @@ mapping = {
     "bool": "boolean",
 }
 
+
 def get_parameters(func):
     parameters = []
     source = inspect.getsource(func)
@@ -31,18 +32,35 @@ def get_parameters(func):
                 if isinstance(class_node, ast.AnnAssign):
                     # Get field description from model_fields if it exists
 
-                    if hasattr(class_node, 'value'):
+                    if hasattr(class_node, "value"):
                         field_name = class_node.target.id
                         field_type = mapping.get(class_node.annotation.id, "string")
-                        field_description = [kw.value.value for kw in class_node.value.keywords if kw.arg == "description"]
-                        field_required = len([kw.value.value for kw in class_node.value.keywords if kw.arg == "default"]) > 0
-                        field_description = len(field_description) > 0 and field_description[0] or ""
-                        parameters.append({
-                            "name": field_name,
-                            "type": field_type,
-                            "description": field_description,
-                            "required": field_required
-                        })
+                        field_description = [
+                            kw.value.value
+                            for kw in class_node.value.keywords
+                            if kw.arg == "description"
+                        ]
+                        field_required = (
+                            len(
+                                [
+                                    kw.value.value
+                                    for kw in class_node.value.keywords
+                                    if kw.arg == "default"
+                                ]
+                            )
+                            > 0
+                        )
+                        field_description = (
+                            len(field_description) > 0 and field_description[0] or ""
+                        )
+                        parameters.append(
+                            {
+                                "name": field_name,
+                                "type": field_type,
+                                "description": field_description,
+                                "required": field_required,
+                            }
+                        )
             # Get fields from parent classes
             for base in node.bases:
                 if isinstance(base, ast.Name):
@@ -50,18 +68,22 @@ def get_parameters(func):
                         # Try to get the parent class from the module
                         parent_class = getattr(sys.modules[func.__module__], base.id)
                         # Get fields from parent class if it's a Pydantic model
-                        if hasattr(parent_class, 'model_fields'):
+                        if hasattr(parent_class, "model_fields"):
                             for key, value in parent_class.model_fields.items():
-                                print(value.annotation.__name__)
-                                parameters.append({
-                                    "name": key,
-                                    "type": mapping.get(value.annotation.__name__, "string"),
-                                    "description": value.description,
-                                    "required": not hasattr(value, "default")
-                                })
+                                parameters.append(
+                                    {
+                                        "name": key,
+                                        "type": mapping.get(
+                                            value.annotation.__name__, "string"
+                                        ),
+                                        "description": value.description,
+                                        "required": not hasattr(value, "default"),
+                                    }
+                                )
                     except (AttributeError, KeyError):
                         pass
     return parameters
+
 
 def handle_kit(kit_path):
     # Change to src directory to allow proper imports
@@ -69,20 +91,23 @@ def handle_kit(kit_path):
 
     kit_definitions = []
     for func_name in dir(kit):
-        if func_name.startswith('_') or not callable(getattr(kit, func_name)):
+        if func_name.startswith("_") or not callable(getattr(kit, func_name)):
             continue
 
         func = getattr(kit, func_name)
         # Replace \n and any number of consecutive spaces with a single space
         description = func.__doc__.strip().replace("\n", " ")
-        description = ' '.join(description.split())
+        description = " ".join(description.split())
         parameters = get_parameters(func)
-        kit_definitions.append({
-            "name": func_name,
-            "description": description,
-            "parameters": parameters,
-        })
+        kit_definitions.append(
+            {
+                "name": func_name,
+                "description": description,
+                "parameters": parameters,
+            }
+        )
     return kit_definitions
+
 
 def push_store(type, package):
     store_url = os.environ.get("STORE_URL", "https://api.beamlit.dev/v0")
@@ -94,22 +119,20 @@ def push_store(type, package):
     response = requests.put(
         f"{store_url}/admin/store/{type}/{package['name']}",
         json=package,
-        headers={
-            "Authorization": f"Basic {auth}",
-                "Content-Type": "application/json"
-            },
-        timeout=30
+        headers={"Authorization": f"Basic {auth}", "Content-Type": "application/json"},
+        timeout=30,
     )
     if response.status_code != 200:
         error_text = response.text
-        raise Exception(f"Failed to push {package['name']} to store, cause {error_text}")
+        raise Exception(
+            f"Failed to push {package['name']} to store, cause {error_text}"
+        )
+
 
 def run():
     type = os.environ["PACKAGE_TYPE"]
     resource = os.environ["PACKAGE_NAME"]
     print(f"Handling {type} {resource}")
-
-
 
     base_path = Path(f"src/{type}/{resource}")
     kit_path = base_path / "kit"
@@ -117,9 +140,16 @@ def run():
     if kit_path.exists():
         kit = handle_kit(kit_path)
 
-    mod = importlib.import_module(str(base_path).replace("/", ".").replace("src.", "") + ".main")
+    mod = importlib.import_module(
+        str(base_path).replace("/", ".").replace("src.", "") + ".main"
+    )
     func = getattr(mod, "main")
-    value = {"name": resource, "image": os.environ.get("IMAGE"), "description": "", "parameters": []}
+    value = {
+        "name": resource,
+        "image": os.environ.get("IMAGE"),
+        "description": "",
+        "parameters": [],
+    }
     if kit:
         value["kit"] = kit
     try:
@@ -138,6 +168,7 @@ def run():
     print(f"Pushing {type} {resource} to store")
     push_store(type, value)
     print(f"Pushed {type} {resource} to store")
+
 
 if __name__ == "__main__":
     run()

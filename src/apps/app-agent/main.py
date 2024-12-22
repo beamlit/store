@@ -5,7 +5,6 @@ import sys
 import traceback
 from contextlib import asynccontextmanager
 from logging import getLogger
-from uuid import uuid4
 
 import uvicorn
 from asgi_correlation_id import CorrelationIdMiddleware
@@ -13,6 +12,7 @@ from beamlit.authentication import new_client_from_settings
 from beamlit.common.settings import get_settings, init, init_agent
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse
+from traceloop.sdk import Traceloop
 
 from common.middlewares import AccessLogMiddleware, AddProcessTimeHeader
 
@@ -20,6 +20,7 @@ RUN_MODE = 'prod' if len(sys.argv) > 1 and sys.argv[1] == 'run' else 'dev'
 agent = os.getenv("AGENT", "beamlit-agent")
 
 main_agent = None
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -51,14 +52,17 @@ async def lifespan(app: FastAPI):
         logger.error(f"Error initializing agent: {e}")
         raise e
 
+
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
-app.add_middleware(CorrelationIdMiddleware, header_name="x-beamlit-request-id", generator=lambda: str(uuid4()))
 app.add_middleware(AddProcessTimeHeader)
 app.add_middleware(AccessLogMiddleware)
+instrument_app(app)  # Need to be called after the middleware
+
 
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
 
 @app.post("/")
 async def root(request: Request, background_tasks: BackgroundTasks):
@@ -67,19 +71,21 @@ async def root(request: Request, background_tasks: BackgroundTasks):
         return await main_agent.main(request, background_tasks)
     except ValueError as e:
         content = {"error": str(e)}
-        if RUN_MODE == 'dev':
+        if RUN_MODE == "dev":
             content["traceback"] = str(traceback.format_exc())
         logger.error(f"{content}")
         return JSONResponse(status_code=400, content=content)
     except Exception as e:
         content = {"error": f"Internal server error, {e}"}
-        if RUN_MODE == 'dev':
+        if RUN_MODE == "dev":
             content["traceback"] = str(traceback.format_exc())
         return JSONResponse(status_code=500, content=content)
+
 
 def main():
     settings = init()
     uvicorn.run("main:app", host=settings.host, port=settings.port, log_level="critical")
+
 
 if __name__ == "__main__":
     main()

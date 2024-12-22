@@ -8,48 +8,66 @@ from functions.github.models import RepositoryInput
 
 def _format_pull_request(pr: PullRequest):
     raw_data = pr.raw_data
-    raw_data["reviewers"] = [reviewer["login"] for reviewer in raw_data["requested_reviewers"]]
+    raw_data["reviewers"] = [
+        reviewer["login"] for reviewer in raw_data["requested_reviewers"]
+    ]
     raw_data["assignees"] = [assignee["login"] for assignee in raw_data["assignees"]]
 
-    return pick(raw_data, [
-        "id",
-        "title",
-        "labels",
-        "number",
-        "html_url",
-        "diff_url",
-        "patch_url",
-        "commits",
-        "additions",
-        "deletions",
-        "changed_files",
-        "comments",
-        "state",
-        "user.login",
-        "assignees",
-        "reviewers",
-        "created_at",
-        "updated_at"
-    ])
+    return pick(
+        raw_data,
+        [
+            "id",
+            "title",
+            "labels",
+            "number",
+            "html_url",
+            "diff_url",
+            "patch_url",
+            "commits",
+            "additions",
+            "deletions",
+            "changed_files",
+            "comments",
+            "state",
+            "user.login",
+            "assignees",
+            "reviewers",
+            "created_at",
+            "updated_at",
+        ],
+    )
+
 
 async def create_pull_request(gh: Github, **kwargs):
     """
-        This function is useful when you need to create a new pull request in a GitHub repository.
+    This function is useful when you need to create a new pull request in a GitHub repository.
     """
+
     class CreatePullRequestInput(RepositoryInput):
         title: str = Field(description="The title of the pull request.")
-        source_branch: str = Field(description="The source branch to create the pull request from, e.g. `main`")
-        destination_branch: str = Field(description="The destination branch to create the pull request to, e.g. `main`")
+        source_branch: str = Field(
+            description="The source branch to create the pull request from, e.g. `main`"
+        )
+        destination_branch: str = Field(
+            description="The destination branch to create the pull request to, e.g. `main`"
+        )
         input: str = Field(description="The body or description of the pull request.")
 
     input = CreatePullRequestInput(**kwargs)
     repo = gh.get_repo(input.repository)
-    repo.create_pull(input.destination_branch, input.source_branch, title=input.title, body=input.input)
+    repo.create_pull(
+        input.destination_branch,
+        input.source_branch,
+        title=input.title,
+        body=input.input,
+    )
+
 
 async def close_pull_request(gh: Github, **kwargs):
     """
     This function will close a pull request in the repository.
     """
+
     class ClosePullRequestInput(RepositoryInput):
         pr_number: int = Field(description="The PR number as an integer, e.g. `12`")
 
@@ -59,10 +77,12 @@ async def close_pull_request(gh: Github, **kwargs):
     pr.edit(state="closed")
     return f"Closed PR #{input.pr_number}"
 
+
 async def open_pull_request(gh: Github, **kwargs):
     """
     This function will open a pull request in the repository.
     """
+
     class OpenPullRequestInput(RepositoryInput):
         pr_number: int = Field(description="The PR number as an integer, e.g. `12`")
 
@@ -72,11 +92,13 @@ async def open_pull_request(gh: Github, **kwargs):
     pr.edit(state="open")
     return f"Opened PR #{input.pr_number}"
 
+
 async def list_open_pull_requests(gh: Github, **kwargs):
     """
-      This function will fetch a list of the repository's Pull Requests (PRs). It will return the title,
-      and PR number of 5 PRs.
+    This function will fetch a list of the repository's Pull Requests (PRs). It will return the title,
+    and PR number of 5 PRs.
     """
+
     class ListOpenPullRequestsInput(RepositoryInput):
         pass
 
@@ -84,11 +106,13 @@ async def list_open_pull_requests(gh: Github, **kwargs):
     repo = gh.get_repo(input.repository)
     return [_format_pull_request(pr) for pr in repo.get_pulls(state="open")[:5]]
 
+
 async def get_pull_request(gh: Github, **kwargs):
     """
-      This function will fetch the title, body, comment thread and commit history of a specific Pull
-      Request (by PR number).
+    This function will fetch the title, body, comment thread and commit history of a specific Pull
+    Request (by PR number).
     """
+
     class GetPullRequestInput(RepositoryInput):
         pr_number: int = Field(description="The PR number as an integer, e.g. `12`")
 
@@ -96,11 +120,13 @@ async def get_pull_request(gh: Github, **kwargs):
     repo = gh.get_repo(input.repository)
     return _format_pull_request(repo.get_pull(input.pr_number))
 
+
 async def list_pull_request_files(gh: Github, **kwargs):
     """
-      This function will fetch the full text of all files in a pull request (PR) given the PR number as
-      an input. This is useful for understanding the code changes in a PR or contributing to it.
+    This function will fetch the full text of all files in a pull request (PR) given the PR number as
+    an input. This is useful for understanding the code changes in a PR or contributing to it.
     """
+
     class ListPullRequestFilesInput(RepositoryInput):
         pr_number: int = Field(description="The PR number as an integer, e.g. `12`")
 
@@ -121,9 +147,13 @@ async def list_pull_request_files(gh: Github, **kwargs):
         for file in files:
             if total_tokens <= MAX_TOKENS_FOR_FILES:
                 try:
-                    content = repo.get_contents(file.filename, ref=pr.head.sha).decoded_content.decode("utf-8")
-                except Exception as e:
-                    print(f"Failed downloading file content (Error {file.filename}). Skipping")
+                    content = repo.get_contents(
+                        file.filename, ref=pr.head.sha
+                    ).decoded_content.decode("utf-8")
+                except Exception:
+                    print(
+                        f"Failed downloading file content (Error {file.filename}). Skipping"
+                    )
                     continue
 
                 file_tokens = len(
@@ -153,14 +183,18 @@ async def list_pull_request_files(gh: Github, **kwargs):
 
     return pr_files
 
+
 async def search_issues_and_prs(gh: Github, **kwargs):
     """
-      This function will search for issues and pull requests in the repository. **VERY IMPORTANT**: You
-      must specify the search query as a string input parameter. It will return the five last
-      issues or PRs that match the search query.
+    This function will search for issues and pull requests in the repository. **VERY IMPORTANT**: You
+    must specify the search query as a string input parameter. It will return the five last
+    issues or PRs that match the search query.
     """
+
     class SearchIssuesAndPRsInput(RepositoryInput):
-        search_query: str = Field(description="The search query as a string, e.g. `My issue title or topic`")
+        search_query: str = Field(
+            description="The search query as a string, e.g. `My issue title or topic`"
+        )
 
     input = SearchIssuesAndPRsInput(**kwargs)
     search_result = gh.search_issues(input.search_query, repo=input.repository)
@@ -172,13 +206,17 @@ async def search_issues_and_prs(gh: Github, **kwargs):
         )
     return "\n".join(results)
 
+
 async def create_review_request(gh: Github, **kwargs):
     """
-      This function will create a review request on the open pull request that matches the current active
-      branch.
+    This function will create a review request on the open pull request that matches the current active
+    branch.
     """
+
     class CreateReviewRequestInput(RepositoryInput):
-        username: str = Field(description="The GitHub username of the user being requested, e.g. `my_username`")
+        username: str = Field(
+            description="The GitHub username of the user being requested, e.g. `my_username`"
+        )
         pr_number: int = Field(description="The PR number as an integer, e.g. `12`")
 
     input = CreateReviewRequestInput(**kwargs)

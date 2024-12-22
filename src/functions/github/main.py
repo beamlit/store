@@ -3,22 +3,25 @@ from typing import Any, Dict
 
 from fastapi import BackgroundTasks, Request
 from github import Auth, Github
-from langchain_community.utilities.github import GitHubAPIWrapper
 
 import functions.github.kit as kit
 
 
-async def main(request: Request, body: Dict[str, Any], background_tasks: BackgroundTasks):
+async def main(
+    request: Request,
+    body: Dict[str, Any],
+    background_tasks: BackgroundTasks,
+):
     """
-    display_name: Github
+    displayName: Github
     description: This function kit is used to perform actions on Github.
     configuration:
     - name: github_token
-      display_name: Github Token
+      displayName: Github Token
       description: Github token
       required: true
     - name: github_repository
-      display_name: Repository
+      displayName: Repository
       description: Github repository name
       required: false
     """
@@ -26,8 +29,8 @@ async def main(request: Request, body: Dict[str, Any], background_tasks: Backgro
     if not github_token:
         raise ValueError("github_token missing from configuration.")
 
-    mode = body.pop("name")
-    modes = {}
+        mode = body.pop("name")
+        modes = {}
 
     for func_name in dir(kit):
         if not func_name.startswith('_'):

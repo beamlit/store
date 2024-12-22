@@ -1,4 +1,3 @@
-import time
 from logging import getLogger
 
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -9,6 +8,7 @@ class AccessLogMiddleware(BaseHTTPMiddleware):
         logger = getLogger(__name__)
         response = await call_next(request)
         process_time = response.headers.get("X-Process-Time")
-        request_id = response.headers.get("X-Request-Id") or response.headers.get("X-Beamlit-Request-Id")
-        logger.info(f"{request.method} {request.url.path} {response.status_code} {process_time}ms rid={request_id}")
+        logger.info(
+            f"{request.method} {request.url.path} {response.status_code} {process_time}ms"
+        )
         return response

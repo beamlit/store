@@ -8,5 +8,12 @@ dependencies = [
     "fastapi[standard]==0.115.4",
     "asgi-correlation-id==4.3.4",
     "requests==2.32.3",
-    "beamlit==0.0.20rc5",
+    "traceloop-sdk>=0.33.12",
+    "opentelemetry-sdk>=1.28.2",
+    "opentelemetry-exporter-otlp>=1.28.2",
+    "opentelemetry-api>=1.28.2",
+    "opentelemetry-instrumentation-fastapi>=0.49b2",
+    "opentelemetry-instrumentation-httpx>=0.49b2",
+    "opentelemetry-instrumentation-logging>=0.49b2",
+    "beamlit>=0.0.26rc",
 ]

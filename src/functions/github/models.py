@@ -8,7 +8,7 @@ class RepositoryInput(BaseModel):
     repository: str = Field(
         default=repository,
         description="The name of the repository to fetch issues from.",
-        validate_default=True
+        validate_default=True,
     )
 
     @field_validator("repository", mode="before")
@@ -17,6 +17,7 @@ class RepositoryInput(BaseModel):
         if not v:
             raise ValueError("Repository is required")
         return v
+
 
 class RepositoryBranchInput(RepositoryInput):
     branch: str = Field(

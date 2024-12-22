@@ -5,7 +5,6 @@ import sys
 import traceback
 from contextlib import asynccontextmanager
 from logging import getLogger
-from uuid import uuid4
 
 import uvicorn
 from asgi_correlation_id import CorrelationIdMiddleware
@@ -21,6 +20,7 @@ function = os.getenv("FUNCTION", "math")
 
 
 main_function = importlib.import_module(f"functions.{function}.main")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -46,35 +46,43 @@ async def lifespan(app: FastAPI):
         raise e
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
-app.add_middleware(CorrelationIdMiddleware, header_name="x-beamlit-request-id", generator=lambda: str(uuid4()))
 app.add_middleware(AddProcessTimeHeader)
 app.add_middleware(AccessLogMiddleware)
+instrument_app(app)  # Need to be called after the middlewares are added
+
 
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
 
 @app.post("/")
 async def root(request: Request, background_tasks: BackgroundTasks):
     logger = getLogger(__name__)
     try:
         body = await request.json()
-        return await main_function.main(request, body, background_tasks=background_tasks)
+        return await main_function.main(
+            request,
+            body,
+            background_tasks=background_tasks,
+        )
     except ValueError as e:
         content = {"error": str(e)}
-        if RUN_MODE == 'dev':
+        if RUN_MODE == "dev":
             content["traceback"] = str(traceback.format_exc())
         logger.error(f"{content}")
         return JSONResponse(status_code=400, content=content)
     except Exception as e:
         content = {"error": f"Internal server error, {e}"}
-        if RUN_MODE == 'dev':
+        if RUN_MODE == "dev":
             content["traceback"] = str(traceback.format_exc())
         return JSONResponse(status_code=500, content=content)
+
 
 def main():
     settings = init()
     uvicorn.run("main:app", host=settings.host, port=settings.port, log_level="critical")
+
 
 if __name__ == "__main__":
     main()
