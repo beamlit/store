@@ -18,7 +18,7 @@ const parseYaml = async (type, func) => {
 const pushStore = async (type, resource) => {
   const content = await parseYaml(type, resource);
   content.image = IMAGE;
-  const response = await fetch(
+  let response = await fetch(
     `${STORE_URL}/admin/store/${type}/${content.name}`,
     {
       method: "PUT",
