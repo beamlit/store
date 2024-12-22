@@ -122,6 +122,13 @@ def push_store(type, package):
         headers={"Authorization": f"Basic {auth}", "Content-Type": "application/json"},
         timeout=30,
     )
+    if response.status_code == 404:
+        response = requests.post(
+            f"{store_url}/admin/store/{type}",
+            json={"name": package["name"]},
+            headers={"Authorization": f"Basic {auth}", "Content-Type": "application/json"},
+            timeout=30,
+        )
     if response.status_code != 200:
         error_text = response.text
         raise Exception(

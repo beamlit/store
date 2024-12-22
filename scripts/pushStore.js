@@ -32,6 +32,18 @@ const pushStore = async (type, resource) => {
       timeout: 30000, // 30 seconds
     }
   );
+  if (response.status === 404) {
+    response = await fetch(`${STORE_URL}/admin/store/${type}`, {
+      method: "POST",
+      body: JSON.stringify({ name: resource }),
+      headers: {
+        Authorization: `Basic ${Buffer.from(
+          ADMIN_USERNAME + ":" + ADMIN_PASSWORD
+        ).toString("base64")}`,
+        "Content-Type": "application/json",
+      },
+    });
+  }
   if (response.status !== 200) {
     throw new Error(
       `Failed to push ${type} ${resource} to store, cause ${await response.text()}`
