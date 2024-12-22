@@ -128,9 +128,9 @@ async def ask_agent(
 
 async def main(request: Request, background_tasks: BackgroundTasks):
     """
-    name: langchain-external-providers
-    displayName: AI Providers Agent
-    description: A chat agent using AI providers like OpenAI, Anthropic, and Mistral to handle your tasks.
+    name: beamlit-agent
+    displayName: AI Beamlit Agent
+    description: A chat agent using a compatible Beamlit Model to handle your tasks.
     type: agent
     framework: langchain
     """
