@@ -5,7 +5,7 @@ description = "Beamlit langchain agents for providers"
 authors = [
     { name = "cploujoux", email = "cploujoux@beamlit.com" },
 ]
-requires-python = ">=3.10,<=3.13"
+requires-python = ">=3.12,<=3.13"
 dependencies = [
     "fastapi[standard]==0.115.4",
     "asgi-correlation-id==4.3.4",
@@ -22,4 +22,5 @@ dependencies = [
     "opentelemetry-instrumentation-fastapi>=0.49b2",
     "opentelemetry-instrumentation-httpx>=0.49b2",
     "opentelemetry-instrumentation-logging>=0.49b2",
+    "beamlit>=0.0.26rc",
 ]

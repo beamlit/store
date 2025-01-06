@@ -7,31 +7,16 @@ from contextlib import asynccontextmanager
 from logging import getLogger
 
 import uvicorn
+from asgi_correlation_id import CorrelationIdMiddleware
+from beamlit.authentication import new_client_from_settings
+from beamlit.common.settings import get_settings, init, init_agent
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse
 from traceloop.sdk import Traceloop
 
-from common.bl_auth import auth, auth_loop
-from common.bl_config import BL_CONFIG, init, init_agent
-from common.bl_instrumentation import (
-    get_metrics_exporter,
-    get_resource_attributes,
-    get_span_exporter,
-    instrument_app,
-)
-from common.bl_logger import init as logger_init
 from common.middlewares import AccessLogMiddleware, AddProcessTimeHeader
 
-RUN_MODE = "prod" if len(sys.argv) > 1 and sys.argv[1] == "run" else "dev"
-BL_CONFIG["type"] = "agent"
-init(os.path.dirname(__file__))
-Traceloop.init(
-    app_name=BL_CONFIG["name"],
-    exporter=get_span_exporter(),
-    metrics_exporter=get_metrics_exporter(),
-    resource_attributes=get_resource_attributes(),
-    should_enrich_metrics=os.getenv("ENRICHED_METRICS", "false") == "true",
-)
+RUN_MODE = 'prod' if len(sys.argv) > 1 and sys.argv[1] == 'run' else 'dev'
 agent = os.getenv("AGENT", "beamlit-agent")
 
 main_agent = None
@@ -39,27 +24,33 @@ main_agent = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    is_main = __name__ == "main"
-    if not is_main:
-        logger_init()
-        auth()
+    try:
+        is_main = __name__ == "main"
+        if not is_main:
+            init()
 
-    logger = getLogger(__name__)
+        logger = getLogger(__name__)
+        settings = get_settings()
+        client = new_client_from_settings(settings)
 
-    # Initialize the agent
-    init_agent()
+        destination = f"{os.getcwd()}/agents/beamlit.py"
+        if __name__ != "main":
+            destination = f"{os.getcwd()}/src/agents/beamlit.py"
 
-    # Import the agent
-    global main_agent
-    main_agent = importlib.import_module(f"agents.{agent}.main")
+        init_agent(client, destination=destination)
 
-    # Start the auth loop, that should retrieve JWT with client credentials
-    asyncio.create_task(auth_loop())
+        # Import the agent
+        global main_agent
 
-    # Log the server is running
-    if is_main:
-        logger.info(f"Server running on http://{BL_CONFIG['host']}:{BL_CONFIG['port']}")
-    yield
+        main_agent = importlib.import_module(f"agents.{agent}.main")
+        # Log the server is running
+        if is_main:
+            logger.info(f"Server running on http://{settings.host}:{settings.port}")
+        yield
+    except Exception as e:
+        logger = getLogger(__name__)
+        logger.error(f"Error initializing agent: {e}")
+        raise e
 
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
@@ -92,14 +83,8 @@ async def root(request: Request, background_tasks: BackgroundTasks):
 
 
 def main():
-    logger_init()
-    auth()
-    uvicorn.run(
-        "main:app",
-        host=BL_CONFIG["host"],
-        port=BL_CONFIG["port"],
-        log_level="critical",
-    )
+    settings = init()
+    uvicorn.run("main:app", host=settings.host, port=settings.port, log_level="critical")
 
 
 if __name__ == "__main__":
