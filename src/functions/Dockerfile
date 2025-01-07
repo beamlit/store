@@ -1,29 +1,21 @@
 FROM python:3.12-slim
 
-ARG FUNCTION="search"
+ARG FUNCTION_FOLDER="math"
 ARG UV_VERSION="latest"
+RUN apt update && apt install -y curl
 
 # Install uv.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-
+RUN curl -fsSL https://raw.githubusercontent.com/beamlit/toolkit/main/install.sh | BINDIR=/bin sh
 WORKDIR /beamlit
 
 # Install the application dependencies.
-COPY src/functions/${FUNCTION}/pyproject.toml /beamlit/pyproject.toml
+COPY src/functions/${FUNCTION_FOLDER}/ /beamlit
 RUN uv sync --no-cache
 
-# Copy the application into the container.
-COPY src/apps/app-function /beamlit
-COPY src/common /beamlit/common
-COPY README.md /beamlit/README.md
-COPY LICENSE /beamlit/LICENSE
+COPY README.m[d] /beamlit/README.md
+COPY LICENS[E] /beamlit/LICENSE
 
-COPY src/functions/${FUNCTION} /beamlit/functions/${FUNCTION}
-
-# Clean app init file.
-RUN rm /beamlit/__init__.py
-# Run the application.
-ENV FUNCTION=${FUNCTION}
 ENV PATH="/beamlit/.venv/bin:$PATH"
 
-CMD ["python", "main.py"]
+ENTRYPOINT ["bl", "serve", "--module", "main.main", "--port", "80"]

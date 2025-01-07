@@ -1,25 +1,25 @@
 ARGS:= $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 run-function-dev:
-	FUNCTION=$(ARGS) uv run fastapi dev --port 1337 src/apps/app-function
+	bl serve --hotreload --module src.functions.$(ARGS).main.main --port 1337
 
 run-function:
-	FUNCTION=$(ARGS) uv run fastapi run --port 1337 src/apps/app-function
+	bl serve --module src.functions.$(ARGS).main.main --port 1337
 
 build-function:
-	docker build --build-arg FUNCTION=$(ARGS) -t functions:$(ARGS) -f src/functions/Dockerfile .
+	docker build --no-cache --build-arg FUNCTION_FOLDER=$(ARGS) -t functions:$(ARGS) -f src/functions/Dockerfile .
 
 run-docker-function:
 	docker run --rm -p 1337:80 functions:$(ARGS)
 
 run-agent-dev:
-	AGENT=$(ARGS) uv run fastapi dev --port 1338 src/apps/app-agent
+	bl serve --hotreload --module src.agents.$(ARGS).main.main
 
 run-agent:
-	AGENT=$(ARGS) uv run fastapi run --port 1338 src/apps/app-agent
+	bl serve --hotreload --module src.agents.$(ARGS).main.main
 
 build-agent:
-	docker build --build-arg AGENT=$(ARGS) -t agents:$(ARGS) -f src/agents/Dockerfile .
+	docker build --no-cache --build-arg AGENT_FOLDER=$(ARGS) -t agents:$(ARGS) -f src/agents/Dockerfile .
 
 run-docker-agent:
 	docker run --rm -p 1338:80 agents:$(ARGS)

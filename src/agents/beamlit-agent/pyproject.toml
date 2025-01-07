@@ -7,20 +7,9 @@ authors = [
 ]
 requires-python = ">=3.12,<=3.13"
 dependencies = [
-    "fastapi[standard]==0.115.4",
-    "asgi-correlation-id==4.3.4",
     "langchain-community==0.3.3",
     "langchain-openai==0.2.4",
     "langchain-anthropic==0.2.3",
     "langchain-mistralai==0.2.0",
-    "langchain-core==0.3.13",
-    "langgraph==0.2.40",
-    "traceloop-sdk>=0.33.12",
-    "opentelemetry-sdk>=1.28.2",
-    "opentelemetry-exporter-otlp>=1.28.2",
-    "opentelemetry-api>=1.28.2",
-    "opentelemetry-instrumentation-fastapi>=0.49b2",
-    "opentelemetry-instrumentation-httpx>=0.49b2",
-    "opentelemetry-instrumentation-logging>=0.49b2",
-    "beamlit>=0.0.26rc",
+    "beamlit>=0.0.29rc",
 ]
