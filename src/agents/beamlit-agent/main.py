@@ -1,12 +1,11 @@
 import uuid
 
 from beamlit.agents import agent
-from beamlit.api.agents import get_agent, list_agents
+from beamlit.api.agents import get_agent
 from beamlit.authentication import new_client_from_settings
 from beamlit.common.settings import get_settings
 
 settings = get_settings()
-
 client = new_client_from_settings(settings)
 bl_agent = get_agent.sync_detailed(
     agent_name=settings.name,

@@ -2830,7 +2830,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "asgi-correlation-id", specifier = "==4.3.4" },
-    { name = "beamlit", specifier = ">=0.0.28rc0" },
+    { name = "beamlit", specifier = ">=0.0.29rc0" },
     { name = "fastapi", extras = ["standard"], specifier = "==0.115.4" },
     { name = "langchain-anthropic", specifier = ">=0.2.3" },
     { name = "langchain-cohere", specifier = ">=0.3.3" },
