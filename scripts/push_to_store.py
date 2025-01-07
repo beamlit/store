@@ -11,6 +11,9 @@ from pathlib import Path
 
 import requests
 import yaml
+from beamlit.common.settings import init
+
+init()
 
 mapping = {
     "str": "string",
@@ -141,36 +144,37 @@ def run():
     resource = os.environ["PACKAGE_NAME"]
     print(f"Handling {type} {resource}")
 
-    base_path = Path(f"src/{type}/{resource}")
-    kit_path = base_path / "kit"
-    kit = None
-    if kit_path.exists():
-        kit = handle_kit(kit_path)
 
-    mod = importlib.import_module(
-        str(base_path).replace("/", ".").replace("src.", "") + ".main"
-    )
-    func = getattr(mod, "main")
     value = {
         "name": resource,
         "image": os.environ.get("IMAGE"),
         "description": "",
-        "parameters": [],
     }
-    if kit:
-        value["kit"] = kit
-    try:
-        tmp_value = yaml.safe_load(func.__doc__ or "")
-        if isinstance(tmp_value, dict):
-            for key, val in tmp_value.items():
-                value[key] = val
-        else:
-            value["description"] = tmp_value
-            value["configuration"] = {}
-        parameters = get_parameters(func)
-        value["parameters"] = parameters
-    except Exception as e:
-        print(f"Could not parse value from docstring, {e}")
+    if type == "functions":
+        base_path = Path(f"src/{type}/{resource}")
+        kit_path = base_path / "kit"
+        kit = None
+        if kit_path.exists():
+            kit = handle_kit(kit_path)
+        mod = importlib.import_module(
+            str(base_path).replace("/", ".").replace("src.", "") + ".main"
+        )
+        func = getattr(mod, "main")
+
+        if kit:
+            value["kit"] = kit
+        try:
+            tmp_value = yaml.safe_load(func.__doc__ or "")
+            if isinstance(tmp_value, dict):
+                for key, val in tmp_value.items():
+                    value[key] = val
+            else:
+                value["description"] = tmp_value
+                value["configuration"] = {}
+            parameters = get_parameters(func)
+            value["parameters"] = parameters
+        except Exception as e:
+            print(f"Could not parse value from docstring, {e}")
 
     print(f"Pushing {type} {resource} to store")
     push_store(type, value)
