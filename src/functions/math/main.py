@@ -2,16 +2,15 @@ import math
 import operator
 from typing import Any, Dict
 
-from fastapi import BackgroundTasks, Request
+from beamlit.common.instrumentation import get_tracer
 from pydantic import BaseModel, Field
-
-from common.bl_instrumentation import get_tracer
 
 
 async def main(
-    request: Request,
     body: Dict[str, Any],
-    background_tasks: BackgroundTasks,
+    headers=None,
+    query_params=None,
+    **_
 ):
     """
     displayName: Math
