@@ -13,6 +13,8 @@ import requests
 import yaml
 from beamlit.common.settings import init
 
+os.environ["BL_WORKSPACE"] = "main"
+
 init()
 
 mapping = {
