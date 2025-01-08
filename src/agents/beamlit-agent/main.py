@@ -2,11 +2,11 @@ import uuid
 
 from beamlit.agents import agent
 from beamlit.api.agents import get_agent
-from beamlit.authentication import new_client_from_settings
+from beamlit.authentication import new_client
 from beamlit.common.settings import get_settings
 
 settings = get_settings()
-client = new_client_from_settings(settings)
+client = new_client()
 bl_agent = get_agent.sync_detailed(
     agent_name=settings.name,
     environment=settings.environment,
@@ -31,7 +31,6 @@ async def main(agent, chat_model, tools, body, headers=None, query_params=None, 
     agent_config = {"configurable": {"thread_id": str(uuid.uuid4())}}
     if body.get("inputs"):
         body["input"] = body["inputs"]
-
     agent_body = {"messages": [("user", body["input"])]}
     responses = []
 

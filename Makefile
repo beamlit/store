@@ -24,6 +24,9 @@ build-agent:
 run-docker-agent:
 	docker run --rm -p 1338:80 agents:$(ARGS)
 
+install-beamlit:
+	uv pip install --force-reinstall ../toolkit/sdk-python
+
 %:
 	@:
 
