@@ -1,0 +1,21 @@
+meta {
+  name: Agent cursor rule
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+params:query {
+  ~debug: true
+}
+
+body:json {
+  {
+    "inputs": "I am developing a NextJs project, generate my IDE cursor rules"
+  }
+}
