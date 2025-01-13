@@ -4,6 +4,7 @@ from beamlit.agents import agent
 from beamlit.api.agents import get_agent
 from beamlit.authentication import new_client
 from beamlit.common.settings import get_settings
+from fastapi import Request
 
 settings = get_settings()
 client = new_client()
@@ -27,7 +28,8 @@ bl_agent = get_agent.sync_detailed(
     },
     remote_functions=bl_agent.spec.functions,
 )
-async def main(agent, chat_model, tools, body, headers=None, query_params=None, **_):
+async def main(agent, chat_model, tools, request: Request, headers=None, query_params=None, **_):
+    body = await request.json()
     agent_config = {"configurable": {"thread_id": str(uuid.uuid4())}}
     if body.get("inputs"):
         body["input"] = body["inputs"]
