@@ -2,10 +2,11 @@ import math
 import operator
 from typing import Any, Dict
 
+from fastapi.requests import Request
 from pydantic import BaseModel, Field
 
 
-async def main(body: Dict[str, Any], headers=None, query_params=None, **_):
+async def main(request: Request):
     """
     displayName: Math
     description: A function for performing mathematical calculations.
@@ -13,6 +14,8 @@ async def main(body: Dict[str, Any], headers=None, query_params=None, **_):
 
     class MathInput(BaseModel):
         query: str = Field(description="The expression to evaluate.")
+
+    body: Dict[str, Any] = await request.json()
 
     expr = MathInput(**body)
     safe_dict = {

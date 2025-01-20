@@ -1,11 +1,11 @@
 import os
-from typing import Any, Dict
 
+from fastapi.requests import Request
 from langchain_community.tools.tavily_search.tool import TavilySearchResults
 from pydantic import BaseModel, Field
 
 
-async def main(body: Dict[str, Any], headers=None, query_params=None, **_):
+async def main(request: Request):
     """
     displayName: Search
     description: A search engine optimized for comprehensive, accurate, and trusted results. Useful for when you need to answer questions about current events. Input should be a search query.
@@ -19,6 +19,8 @@ async def main(body: Dict[str, Any], headers=None, query_params=None, **_):
 
     class SearchInput(BaseModel):
         query: str = Field(description="Search query.")
+
+    body = await request.json()
 
     api_key = os.getenv("TAVILY_API_KEY", os.getenv("BL_TAVILY_API_KEY"))
     if not api_key:
