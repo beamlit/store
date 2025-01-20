@@ -1,12 +1,12 @@
 import os
-from typing import Any, Dict
 
+from fastapi.requests import Request
 from github import Auth, Github
 
 import functions.github.kit as kit
 
 
-async def main(body: Dict[str, Any], headers=None, query_params=None, **_):
+async def main(request: Request):
     """
     displayName: Github
     description: This function kit is used to perform actions on Github.
@@ -20,6 +20,7 @@ async def main(body: Dict[str, Any], headers=None, query_params=None, **_):
       description: Github repository name
       required: false
     """
+    body = await request.json()
     mode = body.pop("name")
     modes = {}
 
