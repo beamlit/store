@@ -5,29 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "asgi-correlation-id==4.3.4",
-    "fastapi[standard]==0.115.4",
-    "langchain-anthropic>=0.2.3",
-    "langchain-xai>=0.1.0",
-    "langchain-mistralai>=0.2.0",
-    "langchain-openai>=0.2.4",
-    "langchain-community>=0.3.3",
-    "langchain-core>=0.3.13",
-    "langgraph>=0.2.40",
-    "pydash==8.0.4",
-    "pygithub==2.5.0",
-    "requests==2.32.3",
-    "tiktoken==0.7.0",
-    "transformers[agents]==4.46.3",
-    "traceloop-sdk>=0.33.12",
-    "opentelemetry-sdk>=1.28.2",
-    "opentelemetry-exporter-otlp>=1.28.2",
-    "opentelemetry-api>=1.28.2",
-    "opentelemetry-instrumentation-fastapi>=0.49b2",
-    "opentelemetry-instrumentation-httpx>=0.49b2",
-    "opentelemetry-instrumentation-logging>=0.49b2",
-    "langchain-cohere>=0.3.3",
-    "beamlit>=0.0.29rc",
+    "beamlit>=0.0.34rc75",
 ]
 
 [tool.ruff]

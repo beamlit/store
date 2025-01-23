@@ -5,6 +5,5 @@ description = "A function for performing mathematical calculations."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "requests==2.32.3",
-    "beamlit>=0.0.29rc",
+    "beamlit>=0.0.34rc75",
 ]

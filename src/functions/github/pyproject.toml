@@ -5,18 +5,9 @@ description = "A function for performing mathematical calculations."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi[standard]==0.115.4",
-    "asgi-correlation-id==4.3.4",
     "langchain-community==0.3.3",
     "pygithub==2.5.0",
     "tiktoken==0.7.0",
     "pydash==8.0.4",
-    "beamlit>=0.0.26rc",
-    "traceloop-sdk>=0.33.12",
-    "opentelemetry-sdk>=1.28.2",
-    "opentelemetry-exporter-otlp>=1.28.2",
-    "opentelemetry-api>=1.28.2",
-    "opentelemetry-instrumentation-fastapi>=0.49b2",
-    "opentelemetry-instrumentation-httpx>=0.49b2",
-    "opentelemetry-instrumentation-logging>=0.49b2",
+    "beamlit>=0.0.34rc75",
 ]

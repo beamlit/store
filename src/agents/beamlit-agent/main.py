@@ -28,7 +28,7 @@ bl_agent = get_agent.sync_detailed(
     },
     remote_functions=bl_agent.spec.functions,
 )
-async def main(agent, chat_model, tools, request: Request, headers=None, query_params=None, **_):
+async def main(request: Request, agent):
     body = await request.json()
     agent_config = {"configurable": {"thread_id": str(uuid.uuid4())}}
     if body.get("inputs"):
