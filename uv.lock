@@ -159,7 +159,7 @@ wheels = [
 
 [[package]]
 name = "beamlit"
-version = "0.0.34rc75"
+version = "0.0.34rc76"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgi-correlation-id" },
@@ -185,9 +185,9 @@ dependencies = [
     { name = "requests" },
     { name = "traceloop-sdk" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0c/65/ba5f5800d250994e3f98d7897c2f4219f7ba38c8c771bfa6f981b93b2fc7/beamlit-0.0.34rc75.tar.gz", hash = "sha256:117f57f24c8e5662b4e85733aa52ea3c3a56c578adaa98be7a732bbe7e589f69", size = 247761 }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/1b/ec5d56e9c92f80b970ada75a5fa6311860d2d6e1d3ae0840e2491c761bd7/beamlit-0.0.34rc76.tar.gz", hash = "sha256:f7a06eb56079fe1d73e41e0e98c9f64de82c9c40c63498d9aac800a4796a822f", size = 247849 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/88/01/b1b08492c79208e38cca660595317869ec1eabc9f726cf9719d0ac446044/beamlit-0.0.34rc75-py3-none-any.whl", hash = "sha256:7cafef88c04a8448608f773fb68a2282500b4e8c3bbc6dc09b4bcadd1d4c95ee", size = 268541 },
+    { url = "https://files.pythonhosted.org/packages/58/d4/a5e5ed17ce6eec474bc57b6b091e0b006a302c035a68a652eeb905ef29b7/beamlit-0.0.34rc76-py3-none-any.whl", hash = "sha256:8e880ec79c4bbfff804ad3fd615891e2c1d4af964d53cbb05f46f12877cff25e", size = 268542 },
 ]
 
 [[package]]
@@ -2163,7 +2163,7 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "beamlit", specifier = ">=0.0.34rc75" }]
+requires-dist = [{ name = "beamlit", specifier = ">=0.0.34rc76" }]
 
 [[package]]
 name = "tenacity"
