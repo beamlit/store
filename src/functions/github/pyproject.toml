@@ -9,5 +9,5 @@ dependencies = [
     "pygithub==2.5.0",
     "tiktoken==0.7.0",
     "pydash==8.0.4",
-    "beamlit>=0.0.39",
+    "beamlit>=0.0.40",
 ]
