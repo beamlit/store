@@ -11,5 +11,5 @@ dependencies = [
     "langchain-openai==0.2.4",
     "langchain-anthropic==0.2.3",
     "langchain-mistralai==0.2.0",
-    "beamlit>=0.0.34rc76",
+    "beamlit>=0.0.38",
 ]
