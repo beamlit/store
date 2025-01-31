@@ -1,0 +1,21 @@
+meta {
+  name: Agent dalle + search
+  type: http
+  seq: 7
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+params:query {
+  ~debug: true
+}
+
+body:json {
+  {
+    "inputs": "Find me the location of Emporium in San francisco"
+  }
+}
