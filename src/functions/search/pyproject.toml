@@ -5,5 +5,5 @@ description = "A search engine optimized for comprehensive, accurate, and truste
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "beamlit>=0.0.42",
+    "beamlit>=0.0.44",
 ]

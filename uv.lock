@@ -5,9 +5,6 @@ resolution-markers = [
     "python_full_version >= '3.12.4'",
 ]
 
-[options]
-prerelease-mode = "allow"
-
 [[package]]
 name = "aiohappyeyeballs"
 version = "2.4.4"
@@ -150,7 +147,7 @@ wheels = [
 
 [[package]]
 name = "beamlit"
-version = "0.0.42"
+version = "0.0.44"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgi-correlation-id" },
@@ -198,18 +195,18 @@ dependencies = [
     { name = "pyyaml" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/83/d8/2595592a8346411db06f65b604f3476e8c0a511ae360b5153011a13a76ec/beamlit-0.0.42.tar.gz", hash = "sha256:c7db0d6904acfaa450e4fa269f3c67586beac7c8b26fe6c37d9bd95d48c2c6b1", size = 259786 }
+sdist = { url = "https://files.pythonhosted.org/packages/9e/0e/9915f30eeecc1ab9ef84bf30c31f052cb4f3cf3d30288c1a0d3b7dbc26cc/beamlit-0.0.44.tar.gz", hash = "sha256:92f2cd251dc5fa56b09ba1f51cdf90d63a1e0ad1ff66d2ef0a1467d7a2e9948e", size = 261177 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/cd/fa97449233eea7599e45f6e91001a302dac67233502a4f65167f30e84477/beamlit-0.0.42-py3-none-any.whl", hash = "sha256:e1b1a69d5b34773b8770020176212684a13e175220085196d6da0c31aa3452a3", size = 267814 },
+    { url = "https://files.pythonhosted.org/packages/b8/94/e5298998513550979b887a09c6681483a7945be09ca8453a57390ec9cfbb/beamlit-0.0.44-py3-none-any.whl", hash = "sha256:cfec52bf125ce1880caee7f3238702e5b10dc93ea2899f576cd6478655e0d66f", size = 269329 },
 ]
 
 [[package]]
 name = "certifi"
-version = "2024.12.14"
+version = "2025.1.31"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/0f/bd/1d41ee578ce09523c81a15426705dd20969f5abf006d1afe8aeff0dd776a/certifi-2024.12.14.tar.gz", hash = "sha256:b650d30f370c2b724812bee08008be0c4163b163ddaec3f2546c1caf65f191db", size = 166010 }
+sdist = { url = "https://files.pythonhosted.org/packages/1c/ab/c9f1e32b7b1bf505bf26f0ef697775960db7932abeb7b516de930ba2705f/certifi-2025.1.31.tar.gz", hash = "sha256:3d5da6925056f6f18f119200434a4780a94263f10d1c21d032a6f6b2baa20651", size = 167577 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a5/32/8f6669fc4798494966bf446c8c4a162e0b5d893dff088afddf76414f70e1/certifi-2024.12.14-py3-none-any.whl", hash = "sha256:1275f7a45be9464efc1173084eaa30f866fe2e47d389406136d332ed4967ec56", size = 164927 },
+    { url = "https://files.pythonhosted.org/packages/38/fc/bce832fd4fd99766c04d1ee0eead6b0ec6486fb100ae5e74c1d91292b982/certifi-2025.1.31-py3-none-any.whl", hash = "sha256:ca78db4565a652026a4db2bcdf68f2fb589ea80d0be70e03929ed730746b84fe", size = 166393 },
 ]
 
 [[package]]
@@ -927,16 +924,16 @@ wheels = [
 
 [[package]]
 name = "langgraph"
-version = "0.2.68"
+version = "0.2.69"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "langchain-core" },
     { name = "langgraph-checkpoint" },
     { name = "langgraph-sdk" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7c/19/766473a91b670c76d0fffbcb1e6a7e954edb8b39b76892b7f0bf223f2d78/langgraph-0.2.68.tar.gz", hash = "sha256:decbeaa889590c69d47be9631a3b727f60c66360810beb9784eca0f211255612", size = 126086 }
+sdist = { url = "https://files.pythonhosted.org/packages/9b/36/d75836c6c1b4a817bb22f591137dc533be02fdba171df4d80eac49e22043/langgraph-0.2.69.tar.gz", hash = "sha256:77bd6efd967b4f092ec31d2148b3e6ba3c31e202b4f3a975dbb082b19b5bb057", size = 128593 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/89/6b/2a97cd8593c45298156f220741297238f9726b2cb9c690d2ce01a1e0fb52/langgraph-0.2.68-py3-none-any.whl", hash = "sha256:abd0e163aa9fa3228d742ae83cd74ee68ccdd169528a29132a96e526abd4ed01", size = 145837 },
+    { url = "https://files.pythonhosted.org/packages/4d/be/f3489ee7a67bb5bb3dc256b9e95d19a44c31e337f0345a38b443018355e3/langgraph-0.2.69-py3-none-any.whl", hash = "sha256:b64a5755fa2c7f2f67608ff4ce0ef8c168b30a0fb551a6c1d2e19bf1d2268ce4", size = 148716 },
 ]
 
 [[package]]
@@ -2131,7 +2128,7 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "beamlit", specifier = ">=0.0.42" }]
+requires-dist = [{ name = "beamlit", specifier = ">=0.0.44" }]
 
 [[package]]
 name = "tenacity"
