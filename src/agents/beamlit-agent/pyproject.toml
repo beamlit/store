@@ -7,7 +7,7 @@ authors = [
 ]
 requires-python = ">=3.12,<=3.13"
 dependencies = [
-    "beamlit>=0.0.46",
+    "beamlit>=0.0.47",
     "langchain-openai>=0.3.0,<0.4.0",
     "langchain-cohere>=0.4.2",
     "langchain-xai>=0.2.0",
