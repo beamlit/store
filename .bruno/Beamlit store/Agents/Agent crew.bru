@@ -1,0 +1,21 @@
+meta {
+  name: Agent crew
+  type: http
+  seq: 8
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+params:query {
+  ~debug: true
+}
+
+body:json {
+  {
+    "inputs": "Hello world"
+  }
+}
