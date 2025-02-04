@@ -1,0 +1,32 @@
+meta {
+  name: Agent crew
+  type: http
+  seq: 8
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+params:query {
+  ~debug: true
+}
+
+body:json {
+  {
+    "company_info": {
+        "name": "beamlit",
+        "product_name": "beamlit",
+        "website": "www.beamlit.com",
+        "sales_rep_name": "Nicolas Lecomte",
+        "sales_rep_contact": "contact@beamlit.com"
+    },
+    "lead_info": {
+        "name": "corentin",
+        "company": "orka",
+        "industry": "software"
+    }
+  }
+}

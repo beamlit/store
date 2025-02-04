@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "beamlit>=0.0.41",
+    "beamlit>=0.0.45",
 ]
 
 [tool.ruff]
