@@ -1,0 +1,26 @@
+meta {
+  name: Agent memory check
+  type: http
+  seq: 10
+}
+
+post {
+  url: http://localhost:1338?debug=true
+  body: json
+  auth: none
+}
+
+params:query {
+  debug: true
+}
+
+headers {
+  X-Beamlit-Sub: 1
+  ~X-Request-Id: d532b7ab-cef8-4cff-a40e-d8b2cac51e52
+}
+
+body:json {
+  {
+    "inputs": "What's my name ?"
+  }
+}

@@ -13,7 +13,7 @@ run-docker-function:
 	docker run --rm -p 1337:80 functions:$(ARGS)
 
 run-agent-dev:
-	bl serve --hotreload --module src.agents.$(ARGS).main.main
+	cd src/agents/$(ARGS) && bl serve --hotreload --module src.agent.agent
 
 run-agent:
 	bl serve --hotreload --module src.agents.$(ARGS).main.main
