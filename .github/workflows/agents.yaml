@@ -127,7 +127,6 @@ jobs:
       - name: Install dependencies
         run: |
           pip install uv
-          cp src/agents/${{ matrix.agents }}/pyproject.toml .
           uv sync
       - name: Push agent
         env:
