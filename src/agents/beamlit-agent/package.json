@@ -12,7 +12,14 @@
   "author": "beamlit",
   "license": "MIT",
   "dependencies": {
-    "@beamlit/sdk": "0.0.50-alpha.41"
+    "@beamlit/sdk": "0.0.54",
+    "@langchain/anthropic": "^0.3.12",
+    "@langchain/cohere": "^0.3.2",
+    "@langchain/deepseek": "^0.0.1",
+    "@langchain/langgraph": "^0.2.41",
+    "@langchain/mistralai": "^0.2.0",
+    "@langchain/openai": "^0.3.17",
+    "@langchain/xai": "^0.0.1"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
