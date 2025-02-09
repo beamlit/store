@@ -70,6 +70,7 @@ export const agent = async () => {
       },
       spec: {
         description: agent?.spec?.description,
+        prompt: agent?.spec?.prompt,
         model: agent?.spec?.model,
         agentChain: agent?.spec?.agentChain,
       },
