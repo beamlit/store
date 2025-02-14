@@ -1,0 +1,21 @@
+meta {
+  name: Amazon information
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+params:query {
+  ~debug: true
+}
+
+body:json {
+  {
+    "inputs": "How can I boost Amazon listings"
+  }
+}
