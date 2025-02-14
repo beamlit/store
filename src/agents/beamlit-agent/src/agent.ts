@@ -51,34 +51,48 @@ const requestHandler = async (request: FastifyRequest, args: any) => {
   return content.agent.messages[content.agent.messages.length - 1].content;
 };
 
-export const agent = async () => {
-  const settings = await getSettings();
-  const client = await newClient();
-  const { data: agent } = await getAgent({
-    client,
-    path: { agentName: settings.name },
-  });
-  if (!agent) {
-    throw new Error("Agent not found");
-  }
-  const chat = await getChatModel(agent?.spec?.model || "");
+async function runAgent(retry: number = 0) {
+  try {
+    const settings = await getSettings();
+    const client = await newClient();
+    const { data: agent } = await getAgent({
+      client,
+      path: { agentName: settings.name },
+    });
+    if (!agent) {
+      throw new Error("Agent not found");
+    }
+    const chat = await getChatModel(agent?.spec?.model || "");
 
-  const config = {
-    agent: {
-      metadata: {
-        name: agent?.metadata?.name,
+    const config = {
+      agent: {
+        metadata: {
+          name: agent?.metadata?.name,
+        },
+        spec: {
+          description: agent?.spec?.description,
+          prompt: agent?.spec?.prompt,
+          model: agent?.spec?.model,
+          agentChain: agent?.spec?.agentChain,
+        },
       },
-      spec: {
-        description: agent?.spec?.description,
-        prompt: agent?.spec?.prompt,
-        model: agent?.spec?.model,
-        agentChain: agent?.spec?.agentChain,
-      },
-    },
-    remoteFunctions: agent?.spec?.functions,
-  };
-  if (chat instanceof OpenAIVoiceReactAgent) {
-    return wrapAgent(websocketHandler, config);
+      remoteFunctions: agent?.spec?.functions,
+    };
+    if (chat instanceof OpenAIVoiceReactAgent) {
+      return wrapAgent(websocketHandler, config);
+    }
+    return wrapAgent(requestHandler, config);
+  } catch (error) {
+    if (retry > 10) {
+      throw error;
+    }
+    const stackTrace = error instanceof Error ? error.stack : String(error);
+    logger.error(`Error running agent: ${stackTrace}`);
+    logger.info(`Retrying agent... Retry number:${retry}`);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return runAgent(retry + 1);
   }
-  return wrapAgent(requestHandler, config);
+}
+export const agent = async () => {
+  return runAgent();
 };
