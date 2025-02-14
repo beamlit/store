@@ -83,13 +83,14 @@ async function runAgent(retry: number = 0) {
     }
     return wrapAgent(requestHandler, config);
   } catch (error) {
-    const stackTrace = error instanceof Error ? error.stack : String(error);
-    logger.error(`Error running agent: ${stackTrace}`);
-    logger.info(`Retrying agent... Retry number:${retry}`);
-    setTimeout(() => runAgent(retry + 1), 500);
     if (retry > 10) {
       throw error;
     }
+    const stackTrace = error instanceof Error ? error.stack : String(error);
+    logger.error(`Error running agent: ${stackTrace}`);
+    logger.info(`Retrying agent... Retry number:${retry}`);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return runAgent(retry + 1);
   }
 }
 export const agent = async () => {
