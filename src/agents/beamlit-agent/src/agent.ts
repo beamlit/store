@@ -85,8 +85,10 @@ async function runAgent(retry: number = 0) {
   } catch (error) {
     logger.error("Error running agent: ", error);
     logger.info(`Retrying agent... Retry number:${retry}`);
-    setTimeout(() => runAgent(retry + 1), 2000);
-    throw error;
+    setTimeout(() => runAgent(retry + 1), 500);
+    if (retry > 10) {
+      throw error;
+    }
   }
 }
 export const agent = async () => {
