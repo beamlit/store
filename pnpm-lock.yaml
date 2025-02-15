@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@beamlit/sdk':
         specifier: 0.0.57
-        version: 0.0.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/credential-provider-node@3.749.0)(@browserbasehq/sdk@2.3.0(encoding@0.1.12))(@browserbasehq/stagehand@1.12.0(@playwright/test@1.50.1)(deepmerge@4.3.1)(dotenv@16.4.7)(encoding@0.1.12)(openai@4.85.1(encoding@0.1.12)(ws@8.18.0)(zod@3.24.2))(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.5.0(@langchain/core@0.3.40(openai@4.85.1(encoding@0.1.12)(ws@8.18.0)(zod@3.24.2))))(@langchain/deepseek@0.0.1(@langchain/core@0.3.40(openai@4.85.1(encoding@0.1.12)(ws@8.18.0)(zod@3.24.2)))(encoding@0.1.12)(ws@8.18.0))(@pinecone-database/pinecone@4.1.0)(@qdrant/js-client-rest@1.13.0(typescript@5.7.3))(@smithy/util-utf8@2.3.0)(chromadb@1.10.4(@google/generative-ai@0.21.0)(cohere-ai@7.15.4(encoding@0.1.12))(encoding@0.1.12)(openai@4.85.1(encoding@0.1.12)(ws@8.18.0)(zod@3.24.2)))(encoding@0.1.12)(fast-xml-parser@4.4.1)(ibm-cloud-sdk-core@5.1.2)(ignore@5.3.2)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.85.1(encoding@0.1.12)(ws@8.18.0)(zod@3.24.2))(playwright@1.50.1)(react@19.0.0)
+        version: link:../toolkit/sdk-ts
       '@fastify/cors':
         specifier: ^10.0.2
         version: 10.0.2
@@ -546,10 +546,6 @@ packages:
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
-
-  '@beamlit/sdk@0.0.57':
-    resolution: {integrity: sha512-qaYL5lUd9ZzYpECWt5ZaJiQxijUxt0DK4GFnlR7aV4VQoM92b+vYv6E1VDTdwjdobuP/ZkEeTzkj09y82lMRyQ==}
-    engines: {node: '>=18'}
 
   '@browserbasehq/sdk@2.3.0':
     resolution: {integrity: sha512-H2nu46C6ydWgHY+7yqaP8qpfRJMJFVGxVIgsuHe1cx9HkfJHqzkuIqaK/k8mU4ZeavQgV5ZrJa0UX6MDGYiT4w==}
@@ -4811,199 +4807,6 @@ snapshots:
       '@babel/helper-validator-identifier': 7.25.9
 
   '@bcoe/v8-coverage@0.2.3': {}
-
-  '@beamlit/sdk@0.0.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/credential-provider-node@3.749.0)(@browserbasehq/sdk@2.3.0(encoding@0.1.12))(@browserbasehq/stagehand@1.12.0(@playwright/test@1.50.1)(deepmerge@4.3.1)(dotenv@16.4.7)(encoding@0.1.12)(openai@4.85.1(encoding@0.1.12)(ws@8.18.0)(zod@3.24.2))(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.5.0(@langchain/core@0.3.40(openai@4.85.1(encoding@0.1.12)(ws@8.18.0)(zod@3.24.2))))(@langchain/deepseek@0.0.1(@langchain/core@0.3.40(openai@4.85.1(encoding@0.1.12)(ws@8.18.0)(zod@3.24.2)))(encoding@0.1.12)(ws@8.18.0))(@pinecone-database/pinecone@4.1.0)(@qdrant/js-client-rest@1.13.0(typescript@5.7.3))(@smithy/util-utf8@2.3.0)(chromadb@1.10.4(@google/generative-ai@0.21.0)(cohere-ai@7.15.4(encoding@0.1.12))(encoding@0.1.12)(openai@4.85.1(encoding@0.1.12)(ws@8.18.0)(zod@3.24.2)))(encoding@0.1.12)(fast-xml-parser@4.4.1)(ibm-cloud-sdk-core@5.1.2)(ignore@5.3.2)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.85.1(encoding@0.1.12)(ws@8.18.0)(zod@3.24.2))(playwright@1.50.1)(react@19.0.0)':
-    dependencies:
-      '@fastify/cors': 10.0.2
-      '@fastify/websocket': 11.0.2
-      '@hey-api/client-fetch': 0.5.7
-      '@langchain/community': 0.3.30(azyi76rypvklrwizwjv5gslrl4)
-      '@langchain/core': 0.3.40(openai@4.85.1(encoding@0.1.12)(ws@8.18.0)(zod@3.24.2))
-      '@langchain/langgraph': 0.2.46(@langchain/core@0.3.40(openai@4.85.1(encoding@0.1.12)(ws@8.18.0)(zod@3.24.2)))(react@19.0.0)
-      '@modelcontextprotocol/sdk': 1.5.0
-      '@opentelemetry/api': 1.9.0
-      '@opentelemetry/api-logs': 0.57.2
-      '@opentelemetry/exporter-logs-otlp-http': 0.57.2(@opentelemetry/api@1.9.0)
-      '@opentelemetry/exporter-metrics-otlp-http': 0.57.2(@opentelemetry/api@1.9.0)
-      '@opentelemetry/exporter-trace-otlp-http': 0.57.2(@opentelemetry/api@1.9.0)
-      '@opentelemetry/instrumentation': 0.57.2(@opentelemetry/api@1.9.0)
-      '@opentelemetry/instrumentation-fastify': 0.44.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/instrumentation-http': 0.57.2(@opentelemetry/api@1.9.0)
-      '@opentelemetry/instrumentation-pino': 0.46.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/resources': 1.30.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-logs': 0.57.2(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-metrics': 1.30.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-trace-base': 1.30.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-trace-node': 1.30.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/semantic-conventions': 1.30.0
-      '@traceloop/instrumentation-anthropic': 0.12.0(@opentelemetry/api@1.9.0)
-      '@traceloop/instrumentation-azure': 0.12.0(@opentelemetry/api@1.9.0)
-      '@traceloop/instrumentation-bedrock': 0.12.0(@opentelemetry/api@1.9.0)
-      '@traceloop/instrumentation-chromadb': 0.12.0(@opentelemetry/api@1.9.0)
-      '@traceloop/instrumentation-cohere': 0.12.0(@opentelemetry/api@1.9.0)
-      '@traceloop/instrumentation-langchain': 0.12.0(@opentelemetry/api@1.9.0)
-      '@traceloop/instrumentation-llamaindex': 0.12.0(@opentelemetry/api@1.9.0)
-      '@traceloop/instrumentation-openai': 0.12.0(@opentelemetry/api@1.9.0)
-      '@traceloop/instrumentation-pinecone': 0.12.0(@opentelemetry/api@1.9.0)
-      '@traceloop/instrumentation-qdrant': 0.12.0(@opentelemetry/api@1.9.0)
-      '@traceloop/instrumentation-vertexai': 0.12.0(@opentelemetry/api@1.9.0)
-      axios: 1.7.9(debug@4.4.0)
-      cohere-ai: 7.15.4(encoding@0.1.12)
-      fastify: 5.2.1
-      js-yaml: 4.1.0
-      jwt-decode: 4.0.0
-      pino: 9.6.0
-      pino-opentelemetry-transport: 1.0.1(@opentelemetry/api@1.9.0)(pino@9.6.0)
-      pino-pretty: 13.0.0
-      uuid: 11.0.5
-      ws: 8.18.0
-      yaml: 2.7.0
-      zod: 3.24.2
-      zod-to-json-schema: 3.24.1(zod@3.24.2)
-    transitivePeerDependencies:
-      - '@arcjet/redact'
-      - '@aws-crypto/sha256-js'
-      - '@aws-sdk/client-bedrock-agent-runtime'
-      - '@aws-sdk/client-bedrock-runtime'
-      - '@aws-sdk/client-dynamodb'
-      - '@aws-sdk/client-kendra'
-      - '@aws-sdk/client-lambda'
-      - '@aws-sdk/client-s3'
-      - '@aws-sdk/client-sagemaker-runtime'
-      - '@aws-sdk/client-sfn'
-      - '@aws-sdk/credential-provider-node'
-      - '@azure/search-documents'
-      - '@azure/storage-blob'
-      - '@browserbasehq/sdk'
-      - '@browserbasehq/stagehand'
-      - '@clickhouse/client'
-      - '@cloudflare/ai'
-      - '@datastax/astra-db-ts'
-      - '@elastic/elasticsearch'
-      - '@getmetal/metal-sdk'
-      - '@getzep/zep-cloud'
-      - '@getzep/zep-js'
-      - '@gomomento/sdk'
-      - '@gomomento/sdk-core'
-      - '@google-ai/generativelanguage'
-      - '@google-cloud/storage'
-      - '@gradientai/nodejs-sdk'
-      - '@huggingface/inference'
-      - '@huggingface/transformers'
-      - '@ibm-cloud/watsonx-ai'
-      - '@lancedb/lancedb'
-      - '@langchain/anthropic'
-      - '@langchain/aws'
-      - '@langchain/cerebras'
-      - '@langchain/cohere'
-      - '@langchain/deepseek'
-      - '@langchain/google-genai'
-      - '@langchain/google-vertexai'
-      - '@langchain/google-vertexai-web'
-      - '@langchain/groq'
-      - '@langchain/mistralai'
-      - '@langchain/ollama'
-      - '@layerup/layerup-security'
-      - '@libsql/client'
-      - '@mendable/firecrawl-js'
-      - '@mlc-ai/web-llm'
-      - '@mozilla/readability'
-      - '@neondatabase/serverless'
-      - '@notionhq/client'
-      - '@opensearch-project/opensearch'
-      - '@pinecone-database/pinecone'
-      - '@planetscale/database'
-      - '@premai/prem-sdk'
-      - '@qdrant/js-client-rest'
-      - '@raycast/api'
-      - '@rockset/client'
-      - '@smithy/eventstream-codec'
-      - '@smithy/protocol-http'
-      - '@smithy/signature-v4'
-      - '@smithy/util-utf8'
-      - '@spider-cloud/spider-client'
-      - '@supabase/supabase-js'
-      - '@tensorflow-models/universal-sentence-encoder'
-      - '@tensorflow/tfjs-converter'
-      - '@tensorflow/tfjs-core'
-      - '@upstash/ratelimit'
-      - '@upstash/redis'
-      - '@upstash/vector'
-      - '@vercel/kv'
-      - '@vercel/postgres'
-      - '@writerai/writer-sdk'
-      - '@xata.io/client'
-      - '@zilliz/milvus2-sdk-node'
-      - apify-client
-      - assemblyai
-      - aws-crt
-      - better-sqlite3
-      - bufferutil
-      - cassandra-driver
-      - cborg
-      - cheerio
-      - chromadb
-      - closevector-common
-      - closevector-node
-      - closevector-web
-      - convex
-      - crypto-js
-      - d3-dsv
-      - debug
-      - discord.js
-      - dria
-      - duck-duck-scrape
-      - encoding
-      - epub2
-      - faiss-node
-      - fast-xml-parser
-      - firebase-admin
-      - google-auth-library
-      - googleapis
-      - handlebars
-      - hnswlib-node
-      - html-to-text
-      - ibm-cloud-sdk-core
-      - ignore
-      - interface-datastore
-      - ioredis
-      - it-all
-      - jsdom
-      - jsonwebtoken
-      - llmonitor
-      - lodash
-      - lunary
-      - mammoth
-      - mongodb
-      - mysql2
-      - neo4j-driver
-      - notion-to-md
-      - officeparser
-      - openai
-      - pdf-parse
-      - peggy
-      - pg
-      - pg-copy-streams
-      - pickleparser
-      - playwright
-      - portkey-ai
-      - puppeteer
-      - pyodide
-      - react
-      - redis
-      - replicate
-      - sonix-speech-recognition
-      - srt-parser-2
-      - supports-color
-      - typeorm
-      - typesense
-      - usearch
-      - utf-8-validate
-      - voy-search
-      - weaviate-ts-client
-      - web-auth-library
-      - word-extractor
-      - youtubei.js
 
   '@browserbasehq/sdk@2.3.0(encoding@0.1.12)':
     dependencies:
