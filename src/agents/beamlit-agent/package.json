@@ -12,7 +12,7 @@
   "author": "beamlit",
   "license": "MIT",
   "dependencies": {
-    "@beamlit/sdk": "0.0.60",
+    "@beamlit/sdk": "0.0.61",
     "@langchain/anthropic": "^0.3.12",
     "@langchain/cohere": "^0.3.2",
     "@langchain/deepseek": "^0.0.1",
