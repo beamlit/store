@@ -7,7 +7,7 @@ import {
   newClient,
   OpenAIVoiceReactAgent,
   wrapAgent,
-} from "@beamlit/sdk";
+} from "@blaxel/sdk";
 import { HumanMessage } from "@langchain/core/messages";
 import { FastifyRequest } from "fastify";
 import { v4 as uuidv4 } from "uuid";

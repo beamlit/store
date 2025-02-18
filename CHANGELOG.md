@@ -3,7 +3,8 @@
 ## [Unreleased]
 
 ### Added
-- Initial changelog entry for the beamlit/store repository.
+
+- Initial changelog entry for the blaxel/store repository.
 
 ### Changed
 

@@ -5,7 +5,7 @@ __pycache__/
 .ruff_cache
 node_modules
 tmp
-src/agents/beamlit.py
+src/agents/blaxel.py
 # C extensions
 *.so
 
