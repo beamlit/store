@@ -1,5 +1,5 @@
 {
-  "name": "beamlit-agent",
+  "name": "blaxel-agent",
   "version": "1.0.0",
   "description": "descr",
   "main": "index.ts",
@@ -9,10 +9,10 @@
     "build": "tsc"
   },
   "keywords": [],
-  "author": "beamlit",
+  "author": "blaxel",
   "license": "MIT",
   "dependencies": {
-    "@beamlit/sdk": "0.0.62",
+    "@blaxel/sdk": "0.0.63",
     "@langchain/anthropic": "^0.3.12",
     "@langchain/cohere": "^0.3.2",
     "@langchain/deepseek": "^0.0.1",

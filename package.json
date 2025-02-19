@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@beamlit/sdk": "0.0.57",
+    "@blaxel/sdk": "0.0.57",
     "fetch": "^1.1.0",
     "node-fetch": "^2.7.0",
     "@fastify/cors": "^10.0.2",
