@@ -5,7 +5,7 @@ ARG UV_VERSION="latest"
 
 RUN apt update && apt install -y curl
 
-RUN curl -fsSL https://raw.githubusercontent.com/blaxel/toolkit/main/install.sh | BINDIR=/bin sh
+RUN curl -fsSL https://raw.githubusercontent.com/beamlit/toolkit/main/install.sh | BINDIR=/bin sh
 WORKDIR /blaxel
 
 # Install dependencies
