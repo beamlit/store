@@ -1,0 +1,21 @@
+meta {
+  name: Agent github PR
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+params:query {
+  ~debug: true
+}
+
+body:json {
+  {
+    "inputs": "List all PR on blaxel/controlplane repository and generate a changelog for each one"
+  }
+}

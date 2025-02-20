@@ -1,0 +1,25 @@
+meta {
+  name: Agent hello world
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+params:query {
+  ~debug: true
+}
+
+headers {
+  x-blaxel-sub: 1
+}
+
+body:json {
+  {
+    "inputs": "Hello world"
+  }
+}

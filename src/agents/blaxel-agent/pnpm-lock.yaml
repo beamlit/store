@@ -1,0 +1,12 @@
+lockfileVersion: "9.0"
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+  .:
+    dependencies:
+      "@blaxel/sdk":
+        specifier: 0.0.57
+        version: link:../../../../toolkit/sdk-ts

@@ -1,0 +1,21 @@
+meta {
+  name: Retrieve KPI
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+params:query {
+  ~debug: true
+}
+
+body:json {
+  {
+    "inputs": "List my KPI"
+  }
+}

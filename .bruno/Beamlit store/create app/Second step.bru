@@ -1,0 +1,25 @@
+meta {
+  name: Second step
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+params:query {
+  ~debug: true
+}
+
+headers {
+  x-blaxel-sub: 1
+}
+
+body:json {
+  {
+    "inputs": "Sound's good, I'd like tools that can do research on the web"
+  }
+}

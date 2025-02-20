@@ -1,0 +1,25 @@
+meta {
+  name: All step
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+params:query {
+  ~debug: true
+}
+
+headers {
+  x-blaxel-sub: 1
+}
+
+body:json {
+  {
+    "inputs": "Workspace = test, I'd like to use python, plug it with Brave search tools"
+  }
+}

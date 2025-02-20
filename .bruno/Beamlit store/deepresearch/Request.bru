@@ -1,0 +1,25 @@
+meta {
+  name: Request
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:1338?debug=true
+  body: json
+  auth: none
+}
+
+params:query {
+  debug: true
+}
+
+headers {
+  ~X-Request-Id: d532b7ab-cef8-4cff-a40e-d8b2cac51e52
+}
+
+body:json {
+  {
+    "inputs": "What's the weather in san francisco ?"
+  }
+}

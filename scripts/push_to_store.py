@@ -11,7 +11,7 @@ from pathlib import Path
 
 import requests
 import yaml
-from beamlit.common.settings import init
+from blaxel.common.settings import init
 
 os.environ["BL_WORKSPACE"] = "main"
 
@@ -115,7 +115,7 @@ def handle_kit(kit_path):
 
 
 def push_store(type, package):
-    store_url = os.environ.get("STORE_URL", "https://api.beamlit.dev/v0")
+    store_url = os.environ.get("STORE_URL", "https://api.blaxel.dev/v0")
     admin_username = os.environ.get("ADMIN_USERNAME")
     admin_password = os.environ.get("ADMIN_PASSWORD")
 
