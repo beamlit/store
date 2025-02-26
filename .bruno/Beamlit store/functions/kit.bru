@@ -1,0 +1,22 @@
+meta {
+  name: kit
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:1338
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "vital_get_user_vitals",
+    "arguments": {
+      "user_id": "9dc1ae20-cd64-43ae-999d-1b2d47bd63f2",
+      "start_date": "2025-02-17",
+      "end_date": "2025-02-23"
+    }
+  }
+}
