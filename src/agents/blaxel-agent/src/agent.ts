@@ -71,7 +71,7 @@ async function runAgent(retry: number = 0) {
         },
         spec: {
           description: agent?.spec?.description,
-          prompt: agent?.spec?.prompt,
+          prompt: process.env.BL_PROMPT || agent?.spec?.prompt,
           model: agent?.spec?.model,
           agentChain: agent?.spec?.agentChain,
         },
