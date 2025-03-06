@@ -64,6 +64,11 @@ async function runAgent(retry: number = 0) {
     }
     const chat = await getChatModel(agent?.spec?.model || "");
 
+    let prompt = agent?.spec?.prompt;
+    if (typeof process.env.BL_PROMPT === "string") {
+      prompt = process.env.BL_PROMPT;
+    }
+
     const config = {
       agent: {
         metadata: {
@@ -71,7 +76,7 @@ async function runAgent(retry: number = 0) {
         },
         spec: {
           description: agent?.spec?.description,
-          prompt: agent?.spec?.prompt,
+          prompt,
           model: agent?.spec?.model,
           agentChain: agent?.spec?.agentChain,
         },
