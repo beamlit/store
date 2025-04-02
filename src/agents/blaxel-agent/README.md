@@ -1,1 +1,1 @@
-# Beamlit Agent - voice-agent
+# Beamlit Agent
