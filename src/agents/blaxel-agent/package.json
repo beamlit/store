@@ -1,34 +1,28 @@
 {
   "name": "blaxel-agent",
   "version": "1.0.0",
-  "description": "descr",
-  "main": "index.ts",
+  "description": "Agent available without build on blaxel UI",
+  "main": "src/index.ts",
+  "keywords": [],
+  "license": "MIT",
+  "author": "blaxel",
   "scripts": {
-    "start": "npx tsx --tsconfig=tsconfig.json index.ts",
-    "dev": "npx tsx --tsconfig=tsconfig.json --watch index.ts",
+    "start": "tsx src/index.ts",
+    "prod": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
     "build": "tsc"
   },
-  "keywords": [],
-  "author": "blaxel",
-  "license": "MIT",
   "dependencies": {
-    "@blaxel/sdk": "0.0.73",
-    "@langchain/anthropic": "^0.3.12",
-    "@langchain/cohere": "^0.3.2",
-    "@langchain/deepseek": "^0.0.1",
-    "@langchain/langgraph": "^0.2.41",
-    "@langchain/mistralai": "^0.2.0",
-    "@langchain/openai": "^0.3.17",
-    "@langchain/xai": "^0.0.1"
+    "@ai-sdk/openai": "^1.2.5",
+    "@blaxel/sdk": "0.1.1-preview.20",
+    "ai": "^4.1.61",
+    "fastify": "^5.2.1",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@tsconfig/node20": "^20.1.4",
-    "@types/jest": "^29.5.14",
-    "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.10.5",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.2.5",
-    "typescript": "^5.7.2"
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.13.11",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   }
 }
