@@ -11,11 +11,9 @@ from pathlib import Path
 
 import requests
 import yaml
-from blaxel.common.settings import init
 
 os.environ["BL_WORKSPACE"] = "main"
 
-init()
 
 mapping = {
     "str": "string",
